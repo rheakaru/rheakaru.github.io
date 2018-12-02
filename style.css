@@ -109,8 +109,8 @@ body {
   color: #000000;
 }
 
-ul {
-  display: inline;
+nav li {
+  display: inline-block;
 }
 
 
