@@ -367,7 +367,7 @@ input:-webkit-autofill:focus {
 
 .mainmenu-area ul.nav.navbar-nav li a:hover,
 .mainmenu-area ul.nav.navbar-nav li.active a {
-    border-bottom-color: #ffffff;
+    border-bottom-color: #000000;
 }
 
 .mainmenu-area .navbar-brand {
