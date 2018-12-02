@@ -119,14 +119,6 @@ nav li {
   display: inline-block;
 }
 
-li a {
-  display: inline-block;
-  color: #444444;
-  text-align: center;
-}
-li a:hover{
-  background-color: #333333;
-}
 
 
 
