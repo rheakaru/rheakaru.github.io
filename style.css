@@ -106,14 +106,26 @@ body {
   font-weight: 10;
   font-size: auto;
   line-height: 100px;
-  color: #000000;
+  color: #FFFFFF;
+  display: inline-block;
 }
 
 nav ul {
+  background-color: #000000;
   display: inline-block;
 }
+
 nav li {
   display: inline-block;
+}
+
+li a {
+  display: inline-block;
+  color: #444444;
+  text-align: center;
+}
+li a:hover{
+  background-color: #333333;
 }
 
 
