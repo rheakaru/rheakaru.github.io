@@ -109,6 +109,11 @@ body {
   color: #000000;
 }
 
+.navText ul li{
+  display: inline;
+}
+
+
 
 
 /* Remove Chrome Input Field's Unwanted Yellow Background Color */
