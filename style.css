@@ -116,9 +116,9 @@ body {
 nav {
   width: 100%;
   margin: 0;
-  height: 50px;
-  border: 10px solid;
+  height: 10px;
 }
+
 
 nav ul {
   display: flex;
@@ -137,6 +137,9 @@ nav ul li {
   background-color: #333333
 }
 
+.artgrid {
+  padding-top: 50px;
+}
 
 .artGrid.row {
   display: flex;
