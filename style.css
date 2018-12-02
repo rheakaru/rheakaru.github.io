@@ -116,6 +116,7 @@ body {
 nav ul {
   display: flex;
   /* display: inline-block*/
+  padding-inline-start: 0px;
   justify-content: space-around;
   background-color: #ffffff;
   border-bottom: 1px solid;
