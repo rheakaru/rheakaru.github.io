@@ -106,15 +106,22 @@ body {
   font-weight: 10;
   font-size: auto;
   line-height: 100px;
-  color: #FFFFFF;
+  color: #000000;
 }
 
 nav ul {
+  display: flex;
+  justify-content: space-around;
   background-color: #ffffff;
-  display: inline-block;
 }
 
 nav ul li {
+  display: inline-block;
+}
+
+nav ul li:hover {
+  background-color: #333333;
+  border-bottom: 1px solid;
   display: inline-block;
 }
 
