@@ -152,6 +152,8 @@ nav ul li {
 }
 
 .artGrid.column img {
+  width: 100px;
+  height: 100px;
   margin-top: 8px;
   vertical-align: middle;
 }
