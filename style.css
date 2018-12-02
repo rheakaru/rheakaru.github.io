@@ -57,7 +57,7 @@ a:focus,
 a:hover {
     text-decoration: none;
     outline: none;
-    color: #ffffff;
+    color: #000000;
 }
 
 img {
@@ -109,6 +109,10 @@ body {
   color: #000000;
 }
 
+.navText.hover {
+  border: 1px solid
+}
+
 nav ul {
   display: flex;
   /* display: inline-block*/
@@ -121,10 +125,7 @@ nav ul li {
   display: inline-block;
 }
 
-nav ul li:hover {
-  border: 1px solid;
-  display: inline-block;
-}
+
 
 
 
