@@ -55,9 +55,9 @@ input:focus,
 button:focus,
 a:focus,
 a:hover {
-    text-decoration: none;
+    text-decoration: underline;
     outline: none;
-    color: #000000;
+    color: #444444;
 }
 
 img {
@@ -110,28 +110,14 @@ body {
   display: inline-block;
 }
 
-.navText.hover{
-  text-decoration: underline;
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 10;
-  font-size: auto;
-  line-height: 100px;
-  color: #444444;
-  display: inline-block;
-}
 
 nav ul {
   background-color: #000000;
   display: inline-block;
 }
 
-nav li {
-  display: inline-block;
-}
 
-nav li:hover {
-  background-color: #333333;
-}
+
 
 
 
