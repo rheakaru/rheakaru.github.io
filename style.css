@@ -107,11 +107,10 @@ body {
   font-size: auto;
   line-height: 100px;
   color: #FFFFFF;
-  display: inline-block;
 }
 
 nav ul {
-  background-color: #000000;
+  background-color: #ffffff;
   display: inline-block;
 }
 
