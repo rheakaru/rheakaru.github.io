@@ -152,6 +152,7 @@ nav ul li {
 }
 
 .artGrid .column img {
+  flex = 50%
   margin-top: 8px;
   vertical-align: middle;
 }
