@@ -105,7 +105,7 @@ body {
 
 
 nav ul {
-  background-color: #000000;
+  background-color: #ffffff;
   display: inline-block;
 }
 
@@ -113,7 +113,7 @@ nav li {
   display: inline-block;
 }
 
-nav li a{
+nav li a {
   font-family: 'Open Sans', sans-serif;
   font-weight: 10;
   font-size: auto;
