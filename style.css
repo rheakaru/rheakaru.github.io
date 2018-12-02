@@ -109,7 +109,11 @@ body {
   color: #000000;
 }
 
-ul li{
+ul {
+  display: inline;
+}
+
+li {
   display: inline;
 }
 
