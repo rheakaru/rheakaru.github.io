@@ -103,10 +103,10 @@ body {
 
 .navText {
   font-family: 'Open Sans', sans-serif;
-  font-weight: 400;
-  font-size: 200px;
-  line-height: 320px;
-  color: #ffffff;
+  font-weight: 10;
+  font-size: auto;
+  line-height: 100px;
+  color: #000000;
 }
 
 
