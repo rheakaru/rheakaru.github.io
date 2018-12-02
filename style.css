@@ -102,6 +102,15 @@ body {
 }
 
 
+.navText {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 10;
+  font-size: auto;
+  line-height: 100px;
+  color: #FFFFFF;
+  display: inline-block;
+}
+
 
 
 nav ul {
@@ -110,15 +119,6 @@ nav ul {
 }
 
 nav li {
-  display: inline-block;
-}
-
-.navText {
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 10;
-  font-size: auto;
-  line-height: 100px;
-  color: #FFFFFF;
   display: inline-block;
 }
 
