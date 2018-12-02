@@ -55,7 +55,7 @@ input:focus,
 button:focus,
 a:focus,
 a:hover {
-    text-decoration: underline;
+    text-decoration: none;
     outline: none;
     color: #444444;
 }
@@ -101,7 +101,6 @@ body {
     color: #ffffff;
 }
 
-
 .navText {
   font-family: 'Open Sans', sans-serif;
   font-weight: 10;
@@ -112,9 +111,8 @@ body {
 }
 
 
-
 nav ul {
-  background-color: #ffffff;
+  background-color: #000000;
   display: inline-block;
 }
 
