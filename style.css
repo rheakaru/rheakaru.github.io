@@ -109,7 +109,7 @@ body {
   color: #000000;
 }
 
-nav li {
+nav ul li {
   display: inline-block;
 }
 
