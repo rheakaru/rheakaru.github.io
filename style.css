@@ -57,7 +57,7 @@ a:focus,
 a:hover {
     text-decoration: none;
     outline: none;
-    color: #444444;
+    color: #000000;
 }
 
 img {
@@ -110,7 +110,6 @@ body {
   display: inline-block;
 }
 
-
 nav ul {
   background-color: #000000;
   display: inline-block;
@@ -119,6 +118,7 @@ nav ul {
 nav li {
   display: inline-block;
 }
+
 
 
 
