@@ -148,6 +148,9 @@ nav ul li {
   padding: 0 4px;
 }
 
+.artImg{
+  flex: auto;
+}
 /* Remove Chrome Input Field's Unwanted Yellow Background Color */
 
 input:-webkit-autofill,
