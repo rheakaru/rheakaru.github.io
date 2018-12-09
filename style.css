@@ -132,7 +132,7 @@ nav ul li {
 
 .firstDiv {
   /*padding: 5px 0px 5px 0px;*/
-  margin-top: 5px;
+  margin-top: 50px;
   margin-left: 5px;
   margin-right: 5px;
   background-color: #ffffff;
@@ -157,7 +157,7 @@ nav ul li {
 .column {
   flex: 40%;
   float: left;
-  padding-right: 2%;
+  padding-right: 3%;
 }
 
 .artImg{
