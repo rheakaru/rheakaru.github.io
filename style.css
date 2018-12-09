@@ -61,7 +61,6 @@ a:hover {
 }
 
 img {
-    max-width: 100%;
     height: auto;
 }
 
@@ -150,7 +149,7 @@ nav ul li {
 }
 
 .artImg{
-  flex: auto;
+  flex: 50%;
 }
 /* Remove Chrome Input Field's Unwanted Yellow Background Color */
 
