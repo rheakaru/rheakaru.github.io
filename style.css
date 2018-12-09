@@ -159,7 +159,7 @@ nav ul li {
 
 .artImg{
   flex: 100%;
-  max-width: 50%;
+  max-width: 100%;
 }
 /* Remove Chrome Input Field's Unwanted Yellow Background Color */
 
