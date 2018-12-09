@@ -135,15 +135,16 @@ nav ul li {
   background-color: #333333
 }
 
-.row {
+
+.artgrid .row {
   display: flex;
   flex-wrap: wrap;
   padding: 0 4px;
 }
 
 /* Create two equal columns that sits next to each other */
-.column {
-  flex: 50%;
+.artgrid .column {
+  flex: 25%;
   float: left;
   padding: 0 4px;
 }
