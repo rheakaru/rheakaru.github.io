@@ -142,7 +142,7 @@ nav ul li {
 }
 
 .artGrid {
-  background-color: #000000;
+  background-color: #ffffff;
 }
 .row {
   display: flex;
@@ -154,12 +154,14 @@ nav ul li {
 .column {
   flex: 50%;
   float: left;
-  padding: 0 4px;
 }
 
 .artImg{
   flex: 100%;
   max-width: 100%;
+  border-width: thin;
+  border-style: solid;
+  border-color: #000000
 }
 /* Remove Chrome Input Field's Unwanted Yellow Background Color */
 
