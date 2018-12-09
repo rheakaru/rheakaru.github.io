@@ -131,7 +131,10 @@ nav ul li {
 
 .firstDiv {
   /*padding: 5px 0px 5px 0px;*/
-  background-color: #333333
+  background-color: #ffffff;
+  border-width: medium;
+  border-color: #000000;
+  border-style: solid;
 }
 
 
