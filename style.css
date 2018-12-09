@@ -142,7 +142,6 @@ nav ul li {
 }
 
 .artGrid {
-  flex: 70%;
   background-color: #ffffff;
   padding-top: 30px;
   padding-left: 3%;
@@ -157,7 +156,7 @@ nav ul li {
 
 /* Create two equal columns that sits next to each other */
 .column {
-  flex: 40%;
+  flex: 20%;
   float: left;
   padding-right: 3%;
 }
