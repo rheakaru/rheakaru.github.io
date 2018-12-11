@@ -27,9 +27,9 @@
 
 
 <div class="firstDiv">
+  <p id = "interest"> </p>
 
   <script>
-  <p id = "interest"> text </p>
   var interests = ["Discovering Stories", "Facilitating Growth", "Designing Solutions"]
   var elem = document.getElementById("interest");
 function frame() {
@@ -38,7 +38,7 @@ function frame() {
     if (i > 2) {
       i = 0
     }
-    document.getElementById("interest").innerHTML = interests[i];
+    document.getElementById("interest").innerHTML = "text";
     i += 1
    }
   }

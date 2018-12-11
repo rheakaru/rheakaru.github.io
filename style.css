@@ -174,7 +174,41 @@ input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0px 1000px white inset !important;
 }
 
-/*-- 3. Button-Style --*/
+/*--class="image-caption-wrapper" --*/
+.sqs-block-image .image-block-outer-wrapper.layout-caption-overlay-hover .image-caption-wrapper {
+    opacity: 0;
+    transition: opacity .1s ease-out;
+    visibility: hidden;
+}
+
+.sqs-block-image .image-block-outer-wrapper.layout-caption-overlay .image-caption-wrapper, .sqs-block-image .image-block-outer-wrapper.layout-caption-overlay-hover .image-caption-wrapper {
+    position: absolute;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 18px;
+    background: rgba(0,0,0,.7);
+    max-height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.image-block-outer-wrapper.layout-caption-overlay-hover .image-caption-wrapper, .image-block.layout-caption-overlay-hover .image-caption-wrapper {
+    -webkit-transition: all .5s ease !important;
+    -moz-transition: all .5s ease !important;
+    -ms-transition: all .5s ease !important;
+    -o-transition: all .5s ease !important;
+    transition: all .5s ease !important;
+    background: rgba(0,0,0,.7) !important;
+    max-height: 100% !important;
+    overflow: hidden;
+    text-align: center !important;
+    top: 0 !important;
+    z-index: 1 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
 
 .underlined {
