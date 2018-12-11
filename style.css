@@ -147,6 +147,9 @@ nav ul li {
   padding-top: 30px;
   padding-left: 3%;
   padding-right: 1%;
+  border-width: thin;
+  border-style: solid;
+  flex: 50%;
 }
 
 .row {
@@ -157,7 +160,7 @@ nav ul li {
 
 /* Create two equal columns that sits next to each other */
 .column {
-  flex: 20%;
+  flex: 40%;
   float: left;
   padding-right: 3%;
 }
