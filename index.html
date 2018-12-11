@@ -27,6 +27,22 @@
 
 
 <div class="firstDiv">
+  <p id = "interest"> text </p>
+  <script>
+  var interests = ["Discovering Stories", "Facilitating Growth", "Designing Solutions"]
+  var elem = document.getElementById("interest");
+function frame() {
+  var i = 0;
+  while (true) {
+    if (i > 2) {
+      i= 0
+    }
+    document.getElementById("interest").innerHTML = interests[i];
+    i += 1
+   }
+  }
+}
+</script>
 <p> djcnkdfnvkfnvkgnkgb<p>
 </div>
 
