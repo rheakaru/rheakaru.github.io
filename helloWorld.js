@@ -1,4 +1,4 @@
 
 function helloWorld() {
-  alert("Hello, World");
+  document.write("<p> Hello VBScript!</p>")
 }
