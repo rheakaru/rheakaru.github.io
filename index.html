@@ -27,18 +27,18 @@
 
 
 <div class="firstDiv">
-  <p id = "interest"> </p>
+  <p id ="interest"> </p>
 
   <script>
   var interests = ["Discovering Stories", "Facilitating Growth", "Designing Solutions"]
   var elem = document.getElementById("interest");
-function frame() {
+  let frame() {
   var i = 0;
   while (true) {
     if (i > 2) {
       i = 0
     }
-    document.getElementById("interest").innerHTML = "text";
+    elem.innerHTML = "text";
     i += 1
    }
   }
