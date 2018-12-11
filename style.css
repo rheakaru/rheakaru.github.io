@@ -151,7 +151,7 @@ nav ul li {
   border-width: thin;
   border-style: solid;
   float: left;
-  width: 50%;
+  width: 30%;
 }
 
 .row {
@@ -169,7 +169,8 @@ nav ul li {
 .artImg{
   flex: 100%;
   max-width: 100%;
-  border-width: 2px;
+  height: auto;
+  border-width: 1px;
   border-style: solid;
 }
 /* Remove Chrome Input Field's Unwanted Yellow Background Color */
