@@ -146,9 +146,8 @@ nav ul li {
 .artGrid {
   display: flex;
   background-color: #ffffff;
-  padding-top: 30px;
   padding-left: 3%;
-  padding-right: 1%;
+  padding-right: 3%;
   border-width: thin;
   border-style: solid;
   float: left;
@@ -164,12 +163,14 @@ nav ul li {
 /* Create two equal columns that sits next to each other */
 .column {
   flex: 40%;
-  padding-right: 3%;
+  padding: 1%;
 }
 
 .artImg{
   flex: 100%;
   max-width: 100%;
+  border-width: 2px;
+  border-style: solid;
 }
 /* Remove Chrome Input Field's Unwanted Yellow Background Color */
 
