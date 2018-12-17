@@ -2,31 +2,47 @@
 <html>
 <head>
 <title> Rhea Karuturi Writing Page.</title>
-<!-- <link rel="stylesheet" href="style.css"> -->
+<link rel="stylesheet" href="style.css">
 <script src="helloWorld.js"> </script>
 </head>
 <body >
-  <button type="button" onclick= "helloWorld();">
-  RED
-</button>
+  <header>
+    <div>
+      <a href="index.html">
+  <img border="0" src="header.png" align="middle">
+  </a>
+    </div>
+    <nav align="middle">
+      <ul>
+        <li> <a class= "navText" href="index.html">Home</a> </li>
+        <li> <a class= "navText" href="act.html">Activities</a> </li>
+        <li> <a class= "navText" href="cs.html">Computer Science</a></li>
+        <li> <a class= "navText" href="writing.html">Writing</a></li>
+        <li> <a class= "navText" href="art.html">Art</a></li>
+      </ul>
+    </nav>
+  </header>
 
-<!-- Header area-
-<header>
-  <div>
-    <a href="index.html">
-<img border="0" src="header.png" align="middle">
-</a>
-  </div>
-  <nav align="middle">
-    <ul>
-      <li> <a class= "navText" href="index.html">Home</a> </li>
-      <li> <a class= "navText" href="act.html">Activities</a> </li>
-      <li> <a class= "navText" href="cs.html">Computer Science</a></li>
-      <li> <a class= "navText" href="writing.html">Writing</a></li>
-      <li> <a class= "navText" href="art.html">Art</a></li>
-    </ul>
-  </nav>
-</header> -->
+<script>
+var numTimes = 10;
+while (numTimes > 0) {
+  document.write("<div class=\"writingGrid\"><p>hello world " + numTimes + " </p><button type=\"button\" onclick=\"helloWorld();\"> RED </button> </div>");
+  numTimes --;
+}
+</script>
+
+<!-- sections:
+Academic Writing
+Journalism
+Blogging
+Written about me
+other
+
+Blocks: shows preview of like 4
+when hovered over, shows title of the thing
+When clicked shows that stuff on the Page
+-->
+
 
 </body>
 </html>
