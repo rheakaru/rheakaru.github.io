@@ -149,11 +149,11 @@ nav ul li {
   padding: 1%;
   margin-right: 1%;
   margin-left: 1%;
-  border-width: thin;
+  border-width: thick;
   border-style: solid;
   float: left;
-  width: 45.5%;
-  height: 300px;
+  width: 45%;
+  height: 40vw;
   overflow-y: scroll;
 }
 
