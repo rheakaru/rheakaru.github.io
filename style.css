@@ -216,6 +216,30 @@ input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0px 1000px white inset !important;
 }
 
+/*--video inside TV screen from pudding --*/
+.crt-intro img {
+  position: absolute;
+  width:80%;
+}
+
+.crt-intro video {
+    position: absolute;
+    width: 60%;
+    left: 10%;
+    top: 6%;
+}
+
+
+.crt-intro .intro_overlay {
+position: absolute;
+width: 68%;
+height: 68%;
+opacity: .5;
+background-repeat: repeat;
+background-size: 70%;
+left: 8%;
+top: 11%;
+}
 /*--class="image-caption-wrapper" --*/
 .sqs-block-image .image-block-outer-wrapper.layout-caption-overlay-hover .image-caption-wrapper {
     opacity: 0;
