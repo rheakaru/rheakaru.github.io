@@ -4,32 +4,18 @@
 <title> Rhea Karuturi Writing Page.</title>
 <link rel="stylesheet" href="style.css">
 <script src="helloWorld.js"> </script>
+<script src="writing.js"> </script>
+<!--  change to script and add descriptions to go with, programatically open any images -->
+
 </head>
-<body >
+
+<body id="writingBody" onpageshow="loadWriting()">
   <header>
-    <div>
-      <a href="index.html">
-  <img border="0" src="header.png" align="middle">
-  </a>
-    </div>
-    <nav align="middle">
-      <ul>
-        <li> <a class= "navText" href="index.html">Home</a> </li>
-        <li> <a class= "navText" href="act.html">Activities</a> </li>
-        <li> <a class= "navText" href="cs.html">Computer Science</a></li>
-        <li> <a class= "navText" href="writing.html">Writing</a></li>
-        <li> <a class= "navText" href="art.html">Art</a></li>
-      </ul>
-    </nav>
+    <div id="headerImage">  </div>
+    <nav id ="nav" align="middle">  </nav>
   </header>
 
-<script>
-var numTimes = 10;
-while (numTimes > 0) {
-  document.write("<div class=\"writingGrid\"><p>hello world " + numTimes + " </p><button type=\"button\" onclick=\"helloWorld();\"> RED </button> </div>");
-  numTimes --;
-}
-</script>
+
 
 <!-- sections:
 Academic Writing

@@ -140,6 +140,7 @@ nav ul li {
   border-width: medium;
   border-color: #000000;
   border-style: solid;
+  padding: 3vw;
 
 }
 
@@ -149,6 +150,7 @@ nav ul li {
   padding: 1%;
   margin-right: 1%;
   margin-left: 1%;
+  margin-bottom: 3vw;
   border-width: thick;
   border-style: solid;
   float: left;
@@ -160,17 +162,18 @@ nav ul li {
 .writingGrid {
   display: flex;
   background-color: #ffffff;
-  padding: 1%;
-  margin-right: 1%;
-  margin-left: 1%;
+  padding: 2%;
+  margin-right: 1.5%;
+  margin-left: 1.5%;
+  margin-bottom: 3vw;
   border-width: thin;
   border-style: solid;
   float: left;
-  width: 45.5%;
+  width: 42%;
   height: 300px;
 }
 
-.writingGrid:hover {
+/* .writingGrid:hover {
   opacity: 0;
   transition: opacity .1s ease-out;
   visibility: hidden;
@@ -187,7 +190,8 @@ nav ul li {
   z-index: 1 !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
+} */
+
 
 .row {
   display: flex;
@@ -219,16 +223,23 @@ input:-webkit-autofill:focus {
 /*--video inside TV screen from pudding --*/
 .crt-intro img {
   position: absolute;
-  width:80%;
+  width:100%;
 }
 
 .crt-intro video {
-    position: absolute;
-    width: 60%;
-    left: 10%;
-    top: 6%;
+  position: absolute;
+  width: 68%;
+  left: 8%;
+  top: 11%;
 }
 
+.crt-outro {
+    width: 60%;
+    height: 40vw;
+    margin: auto;
+    position: relative;
+    margin-top: 60px;
+}
 
 .crt-intro .intro_overlay {
 position: absolute;

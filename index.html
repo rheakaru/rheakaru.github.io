@@ -6,69 +6,55 @@
 <script src="helloWorld.js"> </script>
 </head>
 
-<body onload="header();">
+<body>
 <div id="test"> </div>
 <!-- Header area -->
 <header>
-  <div>
-    <a href="index.html">
-<img border="0" src="header.png" align="middle">
-</a>
-  </div>
-  <nav align="middle">
-    <ul>
-      <li> <a class= "navText" href="index.html">Home</a> </li>
-      <li> <a class= "navText" href="act.html">Activities</a> </li>
-      <li> <a class= "navText" href="cs.html">Computer Science</a></li>
-      <li> <a class= "navText" href="writing.html">Writing</a></li>
-      <li> <a class= "navText" href="art.html">Design</a></li>
-    </ul>
-  </nav>
+  <div id="headerImage">  </div>
+  <nav id ="nav" align="middle">  </nav>
 </header>
 
 
 <div class="firstDiv">
-  <p id="toWrite"> <p>
-  <script>
-  var elem = document.findElementById("toWrite");
-  elem.innerHTML = 'Please do not press me';
-  </script>
-  <button onclick="document.write('<h1>Please do not press me</h1>')"> RED </button>
-</div>
-<div class="firstDiv">
-  <div class= "row">
-    <div class= "column" style = " flex: 20%;">
-      <p> Hello world <p>
-        <p> wouldn't more sections be nice? </p>
-    </div>
-    <div class= "column" style = " flex: 70%;">
-      <p> Hello world <p>
-        <p> wouldn't more sections be nice? </p>
-    </div>
+  <div class="row">
+  <div style="flex: 15%; margin-right: 3vw;">
+    <img style="border-width: medium; border-color: #000000; border-style: solid;" src="rhea.png"> </img>
   </div>
-
+  <div style="flex: 80%;"> <h3> About Me</h3>
+  <p> I'm currently a senior pursuing a Bachelors of Science in Science, Technology and Society at Stanford Universtiy.
+    I'm interested in education, design and how we can bridge the divide between technical knowledge and social problems.
+    I love to read widely and deeply, and always looking for a good recommendation. </p> </div>
+    </div>
 </div>
 
-<!--About me
-<div>
-  <row>
-      <col>
-      <script>
-      var x = "rhea";
-      for (i=0; i < 3; i++) {
-        document.getElementById("demo").innerHTML = x;
-      }
-      </script>
-      </col>
-      <p> blah blah bljahldsv
-      dscfvrvefvfrvr</p>
-      <col>
-      </col>
-  </row>
-</div> -->
 
 
+<div class="writingGrid" style="margin-top: 3vw;">
+  <div > <h3> Section Leading </h3>
+  <p> I'm currently a section leader for Stanford's introductory CS course CS106ap (python), and have previously section led for CS106a (java). Responsibilities include teaching at weekly section meetings, holding debugging office hours, grading assignments, writing problems etc. </p> </div>
+    </div>
+</div>
 
+<div class="writingGrid" style="margin-top: 3vw;">
+  <div > <h3> Rose Bazaar </h3>
+  <p> India's first farm to table flower retail company. We beleive flowers are a way of life, and with our subscription based model, want to help people start everyday with fresh flowers at their doorstep.
+    We grow our roses using sustainable agricultural practises only and cut out middle men to give our customers the best product possible, with no hidden costs.
+    Check out: rosebazaar.in for more details. </p> </div>
+    </div>
+</div>
+
+<div class="writingGrid">
+  <div > <h3> Karuturi Kubed </h3>
+  <p> We are working on developing a dessicant based Air to Water machine to alleviate water scarcity in arid and dry areas. Partnered with Conn Center for Renewable Energy Research, University of Louisville.</p> </div>
+    </div>
+</div>
+
+<div class="writingGrid">
+  <div > <h3> The Bowl</h3>
+  <p> How can we stop research labs from losing knowledge every time an intern leaves? The Bowl wants to solve this problem and plug the leaks on institutional information loss.
+     Supported by Stanford Venture Studio, Graduate School of Business.</p> </div>
+    </div>
+</div>
 
 
 

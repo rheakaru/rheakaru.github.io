@@ -1,30 +1,31 @@
+window.onload = function header() {
+  var div = document.getElementById("headerImage")
+  var a = document.createElement("a");
+  a.setAttribute("href", "index.html");
+  var hImg = document.createElement("img");
+  hImg.setAttribute("border", 0);
+  hImg.setAttribute("src", "header.png");
+  hImg.setAttribute("align", "align");
+  a.appendChild(hImg)
+  div.appendChild(a)
 
-function helloWorld() {
-  //read in information from file
-  //get number of sections
-  //for each section:
-    //get info
-    //add to screen with appropriate
-  document.write("<img src=\"art/art-1.png\" class=\"artImg\"> Hello VBScript!</img> ");
-  var numTimes = 10;
-  while (numTimes > 0) {
-    document.write("<p>hello world</p>");
-    numTimes --;
+  text = ["Home", "Computer Science", "Writing","Design"] //"Activities",
+  links = ["index.html",  "cs.html", "writing.html", "art.html"] //"act.html",
+  var ul = document.createElement("ul");
+  for (i = 0; i < text.length;i++) {
+    var li = document.createElement("li");
+    var a = document.createElement("a");
+    a.setAttribute("class","navText")
+    a.setAttribute("href",links[i])
+    a.innerHTML = text[i]
+    li.appendChild(a)
+    ul.appendChild(li)
   }
+  var nav = document.getElementById("nav")
+  nav.appendChild(ul)
 }
 
-function header() {
-  var div = document.getElementById("test")
-  div.innerHTML = <header><div><a href=\"index.html\"><img border=\"0\" src=\"header.png\" align=\"middle\"></a></div><nav align=\"middle\"><ul><li> <a class= \"navText\" href=\"index.html\">Home</a> </li><li> <a class= \"navText\" href=\"act.html\">Activities</a> </li><li> <a class= \"navText\" href=\"cs.html\">Computer Science</a></li><li> <a class= \"navText\" href=\"writing.html\">Writing</a></li><li> <a class= \"navText\" href=\"art.html\">Design</a></li></ul></nav></header>";
-  var head = document.createElement("HEADER");                       // Create a <p> node
-  var div = document.createElement("DIV");      // Create a text node
-  head.appendChild(div);
-
-  //var para = document.createElement("P");                       // Create a <p> node
-//  var t = document.createTextNode("This is a paragraph.");      // Create a text node
-//  para.appendChild(t);
-  //div.appendChild(para)
-  document.body.prepend(head);                                // Append the text to <p>
-  //document.getElementById("test").appendChild(para);           // Append <p> to <div> with id="myDIV"
-    //"<header><div><a href=\"index.html\"><img border=\"0\" src=\"header.png\" align=\"middle\"></a></div><nav align=\"middle\"><ul><li> <a class= \"navText\" href=\"index.html\">Home</a> </li><li> <a class= \"navText\" href=\"act.html\">Activities</a> </li><li> <a class= \"navText\" href=\"cs.html\">Computer Science</a></li><li> <a class= \"navText\" href=\"writing.html\">Writing</a></li><li> <a class= \"navText\" href=\"art.html\">Design</a></li></ul></nav></header>")
+function showMessage() {
+  var elem = document.getElementById("toWrite");
+  elem.innerHTML = 'Please do not press me';
 }

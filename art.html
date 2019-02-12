@@ -3,107 +3,19 @@
 <head>
 <title> Rhea Karuturi Art Page.</title>
 <link rel="stylesheet" href="style.css">
+<script src="helloWorld.js"> </script>
+<script src="art.js"> </script>
+<!--  change to script and add descriptions to go with, programatically open any images -->
+
 </head>
-<body >
 
-<!-- Header area-->
+<body onpageshow="loadArt()">
+<!-- Header area -->
 <header>
-  <div>
-    <a href="index.html">
-<img border="0" src="header.png" align="middle">
-</a>
-  </div>
-  <nav align="middle">
-    <ul>
-      <li> <a class= "navText" href="index.html">Home</a> </li>
-      <li> <a class= "navText" href="act.html">Activities</a> </li>
-      <li> <a class= "navText" href="cs.html">Computer Science</a></li>
-      <li> <a class= "navText" href="writing.html">Writing</a></li>
-      <li> <a class= "navText" href="art.html">Art</a></li>
-    </ul>
-  </nav>
+  <div id="headerImage">  </div>
+  <nav id ="nav" align="middle">  </nav>
 </header>
-
-<!--
-<div class="image-caption-wrapper">
-<img class ="sqs-block-image" src="art/art-1.png">
-</img>
-</div>
- -->
-
-
-
-
-
-
-
-<div class= "row">
-<!--  <div> <h3> Art </h3> </div> -->
-<div class = "artGrid">
-<div class= "row">
-  <div class= "column">
-    <img class= "artImg" src="art/art-1.png">
-    <img class= "artImg" src="art/art-2.png">
-    <img class= "artImg" src="art/art-3.png">
-    <img class= "artImg" src="art/art-4.png">
-    <img class= "artImg" src="art/art-5.png">
-    <img class= "artImg" src="art/art-6.png">
-    <img class= "artImg" src="art/art-7.png">
-  </div>
-  <div class="column">
-    <img class= "artImg" src="art/art-8.png">
-    <img class= "artImg" src="art/art-9.png">
-    <img class= "artImg" src="art/art-10.png">
-    <img class= "artImg" src="art/art-11.png">
-    <img class= "artImg" src="art/art-12.png">
-    <img class= "artImg" src="art/art-13.jpg">
-    <img class= "artImg" src="art/art-14.jpg">
-    <img class= "artImg" src="art/art-15.jpg">
-  </div>
-</div>
-</div>
-
-<!--  <div> <h3> Gifs </h3> </div> -->
-<div class = "artGrid">
-  <div class= "row">
-  <div class= "column">
-    <img class= "artImg" src="art/gif-1.gif">
-    <img class= "artImg" src="art/gif-2.gif">
-    <img class= "artImg" src="art/gif-3.gif">
-  </div>
-  <div class= "column">
-<img class= "artImg" src="art/gif-4.gif">
-<img class= "artImg" src="art/gif-5.gif">
-<img class= "artImg" src="art/gif-6.gif">
-<img class= "artImg" src="art/gif-7.gif">
-</div>
-</div>
-</div>
-
-</div>
-<!-- About me
-<div>
-  <row>
-      <col>
-      <script>
-      var x = "rhea";
-      for (i=0; i < 3; i++) {
-        document.getElementById("demo").innerHTML = x;
-      }
-      </script>
-      </col>
-      <p> blah blah bljahldsv
-      dscfvrvefvfrvr</p>
-      <col>
-      </col>
-  </row>
-</div> -->
-
-
-
-
-
-
+<div class= "row" id="designItems"> </div>
 
 </body>
 </html>
