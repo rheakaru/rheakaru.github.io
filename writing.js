@@ -24,11 +24,11 @@ function loadWriting() {
     var div2= document.createElement("div")
     var header = document.createElement("h3")
     header.innerHTML = types[i]
-    div2.setAttribute("class", "row")
+    div2.setAttribute("class", "col")
     div2.appendChild(header)
 
     div.appendChild(div2)
-    //body.appendChild(div)
+    body.appendChild(div)
   }
   var big = document.createElement("div")
   big.setAttribute("style", "padding:1vw;")
