@@ -2,7 +2,7 @@ function loadArt() {
   types = ["drawings/","graphicDs/", "posters/","gifs/"]
   var area = document.getElementById("designItems")
   var str = "art/"
-  num = [9,10,11,7]
+  num = [9,10,20,7]
   type = [".png",".png",".png", ".gif"]
   for (i = 0; i < types.length; i++) {
     var div = document.createElement("div")
