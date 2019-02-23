@@ -48,7 +48,7 @@ a {
     -webkit-transition: 0.4s;
     -o-transition: 0.4s;
     transition: 0.4s;
-    color: #000000;
+    color: #000;
 }
 
 input:focus,
@@ -57,7 +57,7 @@ a:focus,
 a:hover {
     text-decoration: none;
     outline: none;
-    color: #000000;
+    color: #966663;
 }
 
 
@@ -113,7 +113,7 @@ body {
 }
 
 .navText:hover {
-  border-bottom: 1px solid
+  border-bottom: 1px solid;
 }
 
 nav {
@@ -206,6 +206,33 @@ a.fill-div {
 .writingGrid:hover .a {
      color: #444444;
 }
+
+
+
+.articleGrid {
+  display: flex;
+  background-color: #ffffff;
+  padding: 2%;
+  margin-right: 1.5%;
+  margin-left: 1.5%;
+  margin-bottom: 3vw;
+  border-width: thin;
+  border-style: solid;
+  float: left;
+  width: 17%;
+  height: 21vw;
+  overflow-y: scroll;
+}
+
+.articleGrid:hover {
+  background-color: #CABEAF;
+}
+
+.articleGrid:hover .a {
+     color: #444444;
+}
+
+
 .row {
   display: flex;
   flex-wrap: wrap;
