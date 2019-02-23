@@ -9,8 +9,8 @@ window.onload = function header() {
   a.appendChild(hImg)
   div.appendChild(a)
 
-  text = ["Home", "Computer Science", "Writing","Design"] //"Activities",
-  links = ["index.html",  "cs.html", "writing.html", "art.html"] //"act.html",
+  text = ["Home", "Computer Science", "Writing","Design", "Activities"] //"Activities",
+  links = ["index.html",  "cs.html", "writing.html", "art.html", "act.html"] //"act.html",
   var ul = document.createElement("ul");
   for (i = 0; i < text.length;i++) {
     var li = document.createElement("li");

@@ -76,6 +76,8 @@ function loadSimple() {
   {"title": "Kilimanjaro", "link": "https://bangaloremirror.indiatimes.com/opinion/sunday-read/on-top-of-the-world/articleshow/53890829.cms", "image": "killi.png", "type":"Media about me"},
   {"title": "GSB Research", "link": "https://globalpoverty.stanford.edu/news/stanford-students-find-challenges-and-rewards-while-doing-field-research-center-faculty" , "image": "gsb.png", "type":"Media about me"}
 ]
+
+
   var body = document.getElementById("writingBody")
   for(i=0; i< all.length;i++) {
     var div = document.createElement("div")
@@ -94,13 +96,16 @@ function loadSimple() {
 
 
     var a = document.createElement("a")
+    a.setAttribute("class", "fill-div")
     a.setAttribute("href", all[i]["link"])
 
-    a.appendChild(img)
-
-    div.appendChild(title)
+    var span= document.createElement("span")
     title.appendChild(p)
-    title.appendChild(a)
+    span.appendChild(title)
+    span.appendChild(img)
+
+    a.appendChild(span)
+    div.appendChild(a)
 
     body.appendChild(div)
 
