@@ -1,6 +1,7 @@
 function loadWriting() {
-  types = ["Journalism", "Blogging", "Media about Me"]
-  all = [journ = [{"title": "Stanford Daily: All", "link": "https://www.stanforddaily.com/?s=rhea+karuturi", "image": "daily.png"},
+  types = ["Essays","Journalism", "Blogging", "Media about Me"]
+  all = [essays = [  {"title": "Saying Goodbye", "link": "gbyeStanny.html", "image": "gbyeStanny.png" }],
+  journ = [{"title": "Stanford Daily: All", "link": "https://www.stanforddaily.com/?s=rhea+karuturi", "image": "daily.png"},
   {"title": "Bay City Beacon: Uber and Lyft", "link": "https://www.thebaycitybeacon.com/politics/background-checks-for-uber-and-lyft/article_8112ec2c-3be3-11e7-8e32-d3a18f6232ca.html", "image": "uber.png" },
   {"title": "Bay City Beacon: Internet in Juvenile Prisons", "link": "https://www.thebaycitybeacon.com/politics/ab---granting-the-right-to-internet-in-juvenile/article_09e90126-3bee-11e7-81e0-2b4920c85858.html", "image": "juvi.png"},
 {"title": "Deccan Herald", "link":"https://www.deccanherald.com/content/426276/artists-go-multisensorial-media-works.html" , "image": "artShow.png"}
