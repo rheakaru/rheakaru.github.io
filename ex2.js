@@ -1,22 +1,18 @@
-inputFilePath = 'books_read_populated.csv'
+var readLine = require("readline");
+var rl = readLine.createInterface(process.stdin, process.stdout);
 
-const fs = require('fs');
-const csv = require('csv-parser');
+var realP = {
+  name: "",
+  sayings: []
+};
 
-let dataFinal = fs.createReadStream(inputFilePath)
-.pipe(csv())
-.on('data', function(data){
-    try {
-
-    }
-    catch(err) {
-        //error handler
-    }
-})
-.on('end',function(){
-    //some final operation
+rl.question("what is their name?", function(answer){
+  realP.name = answer;
+  rl.setPrompt(`What does ${realP.name} say?`);
+  rl.prompt();
+  rl.on('line', function(saying){
+    realP.sayings.push(saying)
+    rl.prompt();
+    console.log(realP.sayings)
+  });
 });
-
-export function hello() {
-  return dataFinal;
-}
