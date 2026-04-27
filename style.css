@@ -348,6 +348,17 @@ em { font-style: italic; }
   color: var(--rule);
 }
 
+/* Sub-section heading inside a section (e.g. press categories) */
+.subhead {
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 2.25rem 0 0.75rem;
+}
+.subhead:first-of-type { margin-top: 0.25rem; }
+
 /* Selection */
 ::selection {
   background: var(--accent);
