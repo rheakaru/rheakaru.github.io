@@ -276,6 +276,66 @@ em { font-style: italic; }
 }
 .foot p { margin: 0; }
 
+/* Embedded media (lazy-loaded YouTube) */
+.embed {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  margin: 1.25rem 0 0.5rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+.embed iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: 0;
+}
+
+/* Subpage back-link */
+.backlink {
+  display: inline-block;
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 0;
+  margin-bottom: 2rem;
+}
+.backlink:hover { color: var(--accent-2); }
+
+/* Writing archive — entries by category */
+.archive {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+}
+.archive li {
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--rule);
+}
+.archive li:last-child { border-bottom: 1px solid var(--rule); }
+.archive a {
+  display: block;
+  border: 0;
+  color: var(--ink);
+}
+.archive a:hover .arc-title { color: var(--accent-2); }
+.arc-title {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin-bottom: 0.1rem;
+  transition: color 160ms ease;
+}
+.arc-meta {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
 /* Selection */
 ::selection {
   background: var(--accent);
