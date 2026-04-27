@@ -335,12 +335,125 @@ em { font-style: italic; }
   color: var(--muted);
   letter-spacing: 0.02em;
 }
+.arc-meta a {
+  color: var(--accent);
+  border-bottom-color: transparent;
+}
+.arc-meta a:hover {
+  border-bottom-color: var(--accent);
+  color: var(--accent-2);
+}
+.arc-meta .sep {
+  margin: 0 0.4em;
+  color: var(--rule);
+}
 
 /* Selection */
 ::selection {
   background: var(--accent);
   color: var(--bg);
 }
+
+/* Essay layout (slightly wider so images can sit in the margin) */
+.page.essay {
+  max-width: 52rem;
+  padding-top: 4rem;
+}
+
+.essay-title {
+  text-align: center;
+  font-size: 2.4rem;
+  font-style: italic;
+  font-weight: 400;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.005em;
+}
+.essay-meta {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 2.5rem;
+}
+.essay-body {
+  max-width: 38rem;
+  margin: 0 auto;
+}
+.essay-body p {
+  margin: 0 0 1em;
+  line-height: 1.7;
+}
+
+/* Marginalia images (float to the side on wide screens, inline on mobile) */
+.aside-img {
+  display: block;
+  margin: 1.5rem auto;
+  max-width: 100%;
+  height: auto;
+  background: var(--bg-soft);
+}
+
+@media (min-width: 800px) {
+  .aside-img.right {
+    float: right;
+    width: 14rem;
+    margin: 0.4rem -7rem 1.2rem 1.6rem;
+    clear: right;
+  }
+  .aside-img.left {
+    float: left;
+    width: 14rem;
+    margin: 0.4rem 1.6rem 1.2rem -7rem;
+    clear: left;
+  }
+}
+
+.aside-img.tilt-r { transform: rotate(1.8deg); }
+.aside-img.tilt-l { transform: rotate(-1.6deg); }
+.aside-img.tilt-rr { transform: rotate(3.5deg); }
+
+.essay-inline {
+  display: block;
+  margin: 1.6rem auto;
+  max-width: 18rem;
+  height: auto;
+}
+
+.essay-wide {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 2rem 0 0;
+}
+
+.essay-quote {
+  margin: 1.2rem 0 1.2rem 1.5rem;
+  padding-left: 1.2rem;
+  border-left: 2px solid var(--rule);
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.essay-aside {
+  text-align: center;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin: 3rem auto 1.5rem;
+  max-width: 32rem;
+}
+
+.footnotes {
+  clear: both;
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+.footnotes p { margin: 0 0 0.8em; line-height: 1.55; }
+.footnotes a[href^="#"] { color: var(--accent); border: 0; }
+
+sup a { color: var(--accent); border: 0; font-size: 0.7em; }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
