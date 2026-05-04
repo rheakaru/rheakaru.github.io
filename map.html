@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rhea Karuturi &mdash; Concept Map</title>
+<meta name="description" content="An interactive concept map of Rhea Karuturi's work — reading & writing, trust infrastructure, building, and teaching.">
+<meta name="theme-color" content="#F7F4EC">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300..700;1,300..700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52' font-family='Georgia,serif' fill='%23A04A2A'%3E%E2%9D%A6%3C/text%3E%3C/svg%3E">
+
+<style>
+  :root {
+    --bg:        #F7F4EC;
+    --ink:       #2A2520;
+    --ink-soft:  #5A534A;
+    --muted:     #948B7E;
+    --rule:      #D8D1C0;
+    --accent:    #A04A2A;
+    --paper:     #FFFCF4;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, 'Iowan Old Style', serif;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'kern', 'liga', 'onum';
+    overflow: hidden;
+  }
+
+  /* Stage that scales the map to fit the viewport */
+  .map-stage {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .map {
+    width: 1400px;
+    height: 900px;
+    position: relative;
+    transform-origin: center center;
+    flex-shrink: 0;
+  }
+  #lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* Tiny corner watermark — page identification, very subtle */
+  .corner-mark {
+    position: fixed;
+    bottom: 12px;
+    right: 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    z-index: 10;
+  }
+  .corner-mark a { color: inherit; text-decoration: none; }
+  .corner-mark a:hover { color: var(--accent); }
+
+  /* Cluster labels (small, sans, muted) */
+  .cluster-label {
+    position: absolute;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Identity (name + tagline, upper left, NOT centered) */
+  .identity {
+    position: absolute;
+    left: 50px;
+    top: 50px;
+    width: 320px;
+  }
+  .identity h1 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 30px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    line-height: 1.1;
+  }
+  .identity .tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .identity .blurb {
+    margin-top: 14px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  /* Generic node */
+  .node {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 6px 14px;
+    pointer-events: auto;
+  }
+  .node .label {
+    font-family: 'Source Serif 4', serif;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+  .node .label.italic { font-style: italic; }
+  .node .sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 5px;
+    letter-spacing: 0.02em;
+  }
+
+  .node-major-prom .label { font-size: 22px; font-weight: 500; letter-spacing: -0.005em; }
+  .node-major .label      { font-size: 19px; font-weight: 500; }
+  .node-minor .label      { font-size: 16px; font-weight: 400; }
+  .node-tiny  .label      { font-size: 14px; font-weight: 400; }
+  .node-tiny  .sub        { font-size: 10.5px; }
+
+  /* Substack adjacent: small italic list of essays */
+  .essay-list {
+    position: absolute;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    pointer-events: none;
+  }
+  .essay-list li {
+    list-style: none;
+    padding-left: 12px;
+    position: relative;
+    margin: 1px 0;
+  }
+  .essay-list li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+  .essay-list ul { margin: 0; padding: 0; }
+
+  /* LIGHGHT card — instagram-style preview */
+  .insta-card {
+    position: absolute;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 10px 12px 11px;
+    box-shadow: 1px 2px 0 rgba(40,30,20,0.04);
+    pointer-events: none;
+  }
+  .insta-card .card-handle {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .insta-card .card-title {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .insta-card .card-quote {
+    font-family: 'Source Serif 4', serif;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+  .insta-card .card-meta {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Press constellation dots — drawn in SVG, hidden labels for stage 2 */
+  /* (no .css needed; rendered through Rough.js) */
+
+  /* Mobile fallback */
+  .mobile-fallback {
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    body { overflow: auto; }
+    .map-stage, .corner-mark { display: none; }
+    .mobile-fallback {
+      display: block;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 6rem;
+    }
+    .mobile-fallback h1 {
+      font-family: 'Source Serif 4', serif;
+      font-size: 28px;
+      font-weight: 400;
+      margin: 0 0 4px;
+    }
+    .mobile-fallback .tag {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 2.5rem;
+    }
+    .mobile-fallback h2 {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 3rem 0 1rem;
+    }
+    .mobile-fallback h3 {
+      font-family: 'Source Serif 4', serif;
+      font-size: 19px;
+      font-weight: 500;
+      margin: 1.4rem 0 0.25rem;
+    }
+    .mobile-fallback h3 em { font-style: italic; }
+    .mobile-fallback p {
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin: 0 0 0.75rem;
+    }
+    .mobile-fallback .meta {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="map-stage" id="stage">
+  <div class="map" id="map">
+    <svg id="lines" width="1400" height="900" aria-hidden="true"></svg>
+
+    <!-- Identity (corner, intentionally not centered) -->
+    <div class="identity">
+      <h1>Rhea Karuturi</h1>
+      <div class="tag">Bangalore &middot; San Francisco</div>
+      <div class="blurb">A builder and a writer. The work is the centre.</div>
+    </div>
+
+    <!-- Cluster labels -->
+    <div class="cluster-label" style="left: 60px; top: 175px;">Teaching</div>
+    <div class="cluster-label" style="left: 60px; top: 510px;">Trust Infrastructure</div>
+    <div class="cluster-label" style="left: 800px; top: 50px;">Reading &amp; Writing</div>
+    <div class="cluster-label" style="left: 820px; top: 510px;">Building</div>
+
+    <!-- LIGHGHT instagram-style card (placeholder content) -->
+    <div class="insta-card" style="left: 1085px; top: 290px; width: 200px;">
+      <div class="card-handle">@rhea_karuturi</div>
+      <div class="card-title">LIGHGHT</div>
+      <div class="card-quote">A short, strange book about attention and grief.</div>
+      <div class="card-meta">56,000 words &middot; out querying</div>
+    </div>
+
+    <!-- Substack adjacent essay titles (placeholder — replace with real titles) -->
+    <ul class="essay-list" style="left: 800px; top: 295px; width: 190px;">
+      <li>On returning home</li>
+      <li>Notes on attention</li>
+      <li>What ritual does</li>
+    </ul>
+
+    <!-- Nodes get injected here by JS -->
+  </div>
+</div>
+
+<div class="corner-mark">
+  <a href="index.html">&larr; classic view</a>
+</div>
+
+<!-- Mobile fallback: clean vertical list, same content -->
+<div class="mobile-fallback">
+  <h1>Rhea Karuturi</h1>
+  <div class="tag">Bangalore &middot; San Francisco</div>
+
+  <h2>Reading &amp; Writing</h2>
+  <h3>Million Page Project</h3>
+  <p>Every book I've finished, since 6th grade. 624 and counting.</p>
+  <p class="meta">Connects to the YouTube book club &middot; cross-references Chapel.</p>
+
+  <h3><em>LIGHGHT</em></h3>
+  <p>Debut novel. 56,000 words, experimental literary fiction. Out querying.</p>
+
+  <h3><em>The Rose King</em></h3>
+  <p>Second novel, in progress. Set partly in the flower markets I grew up around.</p>
+
+  <h3>Substack</h3>
+  <p>Essays, mostly on books and building.</p>
+
+  <h2>Trust Infrastructure</h2>
+  <h3>Aadhaar Thesis</h3>
+  <p>Stanford honors thesis on India's identity infrastructure. Trust as a lens has stayed with me.</p>
+  <p class="meta">Throughline to Hoovu (commerce) &middot; to Chapel (taste &amp; memory).</p>
+
+  <h3>Science, Technology &amp; Society</h3>
+  <p>Major. The frame I learned to think in.</p>
+
+  <h3>William Woo Award</h3>
+  <p>For opinion writing at the Stanford Daily.</p>
+
+  <h2>Building</h2>
+  <h3>Hoovu Fresh</h3>
+  <p>B2B puja flower supply chain across nine Indian cities. ~₹20cr revenue. Featured on Shark Tank India S2.</p>
+
+  <h3>Chapel</h3>
+  <p>A second brain where the things that shape your ideas live and grow together.</p>
+
+  <h3>Smaller projects</h3>
+  <p>Vendetta, The Brief, ComPrice, Cahoots, Aarti, Pelli.</p>
+
+  <h2>Teaching</h2>
+  <h3>Claude Community</h3>
+  <p>A community of 141 people learning to build with AI together. Weekly workshops.</p>
+
+  <h3>Earlier teaching</h3>
+  <p>Stanford CS section leader (CS106A, CS106AP). College tutoring through high school. The YouTube book club.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
+<script>
+(function () {
+  // ----- Layout data ------------------------------------------------------
+
+  const NODES = [
+    // TEACHING (left middle)
+    { id: 'claude',    x:  60, y: 200, w: 230, h: 75, kind: 'major', label: 'Claude Community', sub: '141 people' },
+    { id: 'workshops', x:  60, y: 295, w: 220, h: 55, kind: 'minor', label: 'Weekly workshops' },
+    { id: 'sectioncs', x: 305, y: 260, w: 180, h: 60, kind: 'minor', label: 'Stanford CS section', sub: 'CS106A · CS106AP' },
+    { id: 'tutoring',  x:  60, y: 380, w: 220, h: 50, kind: 'tiny',  label: 'College tutoring' },
+
+    // TRUST INFRASTRUCTURE (lower left)
+    { id: 'thesis', x:  90, y: 540, w: 250, h: 85, kind: 'major', label: 'Aadhaar Thesis', sub: 'Stanford honors thesis' },
+    { id: 'sts',    x:  60, y: 655, w: 130, h: 50, kind: 'tiny',  label: 'STS', sub: 'major' },
+    { id: 'civic',  x: 210, y: 655, w: 170, h: 50, kind: 'tiny',  label: 'Civic volunteering' },
+    { id: 'wmwoo',  x:  90, y: 740, w: 240, h: 55, kind: 'minor', label: 'William Woo Award', sub: 'opinion writing' },
+
+    // READING & WRITING (upper right)
+    { id: 'mpp',      x: 1040, y:  75, w: 240, h: 85, kind: 'major', label: 'Million Page Project', sub: '624 books · since 6th grade' },
+    { id: 'bookclub', x:  800, y: 105, w: 210, h: 60, kind: 'minor', label: 'YouTube Book Club' },
+    { id: 'substack', x:  800, y: 230, w: 190, h: 60, kind: 'minor', label: 'Substack', sub: 'essays' },
+    { id: 'lighght',  x: 1080, y: 200, w: 200, h: 75, kind: 'major', label: 'LIGHGHT', italic: true, sub: 'debut novel' },
+    { id: 'rosekng',  x: 1130, y: 425, w: 170, h: 55, kind: 'minor', label: 'The Rose King', italic: true, sub: 'in progress' },
+
+    // BUILDING (lower right)
+    { id: 'hoovu',     x: 820, y: 525, w: 270, h: 95, kind: 'major-prom', label: 'Hoovu Fresh', sub: 'B2B puja flowers · 9 cities · ~₹20cr' },
+    { id: 'sharktank', x: 1140, y: 535, w: 150, h: 60, kind: 'tiny',  label: 'Shark Tank', sub: 'S2' },
+    { id: 'chapel',    x: 820, y: 660, w: 250, h: 85, kind: 'major', label: 'Chapel', sub: 'second brain for art' },
+    { id: 'vendetta',  x: 1100, y: 650, w: 140, h: 50, kind: 'tiny',  label: 'Vendetta' },
+    { id: 'brief',     x: 1100, y: 710, w: 140, h: 50, kind: 'tiny',  label: 'The Brief' },
+    { id: 'comprice',  x: 820,  y: 770, w: 130, h: 50, kind: 'tiny',  label: 'ComPrice' },
+    { id: 'cahoots',   x: 970,  y: 770, w: 130, h: 50, kind: 'tiny',  label: 'Cahoots' },
+    { id: 'aarti',     x: 1110, y: 775, w: 130, h: 50, kind: 'tiny',  label: 'Aarti' },
+    { id: 'pelli',     x: 970,  y: 830, w: 130, h: 45, kind: 'tiny',  label: 'Pelli' },
+  ];
+
+  // Heavy = throughline. Other = lighter, intra-cluster.
+  const CONNECTIONS = [
+    // Throughlines
+    { from: 'thesis',   to: 'hoovu',   heavy: true,  curve:  0.10 },
+    { from: 'thesis',   to: 'chapel',  heavy: true,  curve:  0.16 },
+    { from: 'mpp',      to: 'chapel',  heavy: true,  curve: -0.16 },
+    { from: 'bookclub', to: 'claude',  heavy: true,  curve:  0.12 },
+    { from: 'chapel',   to: 'substack',heavy: true,  curve:  0.20 },
+    { from: 'claude',   to: 'workshops', heavy: true, curve: 0.08 },
+
+    // Intra-cluster, lighter
+    { from: 'claude',    to: 'sectioncs',  curve: -0.10 },
+    { from: 'sectioncs', to: 'tutoring',   curve:  0.10 },
+    { from: 'mpp',       to: 'bookclub',   curve:  0.08 },
+    { from: 'mpp',       to: 'lighght',    curve:  0.10 },
+    { from: 'lighght',   to: 'rosekng',    curve:  0.06 },
+    { from: 'lighght',   to: 'substack',   curve: -0.08 },
+    { from: 'thesis',    to: 'sts',        curve:  0.04 },
+    { from: 'thesis',    to: 'civic',      curve: -0.05 },
+    { from: 'thesis',    to: 'wmwoo',      curve:  0.08 },
+    { from: 'hoovu',     to: 'sharktank',  curve: -0.05 },
+    { from: 'hoovu',     to: 'chapel',     curve:  0.05 },
+  ];
+
+  // Press constellation around hoovu — drawn unlabeled (stage 1).
+  // data-press attribute kept for stage 2 hover-to-reveal.
+  const PRESS = [
+    { cx: 1045, cy: 510, r:  8, name: 'Times of India' },
+    { cx: 1075, cy: 495, r:  7, name: 'CNBC-TV18' },
+    { cx: 1100, cy: 510, r:  9, name: 'YourStory' },
+    { cx: 1130, cy: 498, r:  7, name: 'Moneycontrol' },
+    { cx: 1175, cy: 505, r:  8, name: 'Entrepreneur India' },
+    { cx: 1215, cy: 495, r:  6, name: 'Better India' },
+    { cx: 1255, cy: 510, r:  9, name: 'Indian Express' },
+  ];
+
+  // ----- Geometry helpers -------------------------------------------------
+
+  const nodeMap = Object.fromEntries(NODES.map(n => [n.id, n]));
+
+  function edgeOf(node, towardX, towardY) {
+    const cx = node.x + node.w / 2;
+    const cy = node.y + node.h / 2;
+    const dx = towardX - cx;
+    const dy = towardY - cy;
+    if (Math.abs(dx) < 0.001 && Math.abs(dy) < 0.001) return [cx, cy];
+    const halfW = node.w / 2 + 4;
+    const halfH = node.h / 2 + 4;
+    const tx = halfW / Math.abs(dx);
+    const ty = halfH / Math.abs(dy);
+    const t = Math.min(tx, ty);
+    return [cx + dx * t, cy + dy * t];
+  }
+
+  function curvePath(a, b, curvature) {
+    const ax = a.x + a.w / 2, ay = a.y + a.h / 2;
+    const bx = b.x + b.w / 2, by = b.y + b.h / 2;
+    const [sx, sy] = edgeOf(a, bx, by);
+    const [ex, ey] = edgeOf(b, ax, ay);
+    const mx = (sx + ex) / 2, my = (sy + ey) / 2;
+    const dx = ex - sx, dy = ey - sy;
+    const len = Math.hypot(dx, dy) || 1;
+    const px = -dy / len, py = dx / len; // perpendicular
+    const cx = mx + px * len * curvature;
+    const cy = my + py * len * curvature;
+    return `M ${sx.toFixed(1)} ${sy.toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`;
+  }
+
+  // ----- Render -----------------------------------------------------------
+
+  const map = document.getElementById('map');
+  const svg = document.getElementById('lines');
+  const rc  = rough.svg(svg);
+
+  // 1. Connection lines (drawn first, behind nodes)
+  CONNECTIONS.forEach(conn => {
+    const a = nodeMap[conn.from], b = nodeMap[conn.to];
+    if (!a || !b) return;
+    const path = curvePath(a, b, conn.curve || 0.1);
+    const opts = {
+      stroke: '#2A2520',
+      strokeWidth: conn.heavy ? 1.45 : 0.85,
+      roughness: conn.heavy ? 1.25 : 1.6,
+      bowing: 1.2,
+      fill: 'none'
+    };
+    const el = rc.path(path, opts);
+    if (!conn.heavy) el.style.opacity = '0.55';
+    svg.appendChild(el);
+  });
+
+  // 2. Press constellation (small unlabeled circles)
+  PRESS.forEach(p => {
+    const el = rc.circle(p.cx, p.cy, p.r * 2, {
+      stroke: '#2A2520',
+      strokeWidth: 0.9,
+      roughness: 1.5,
+      fill: '#F7F4EC',
+      fillStyle: 'solid'
+    });
+    el.setAttribute('data-press', p.name);
+    el.style.opacity = '0.7';
+    svg.appendChild(el);
+  });
+
+  // 3. Node outlines (rough rectangles)
+  NODES.forEach(n => {
+    const opts = {
+      stroke: '#2A2520',
+      strokeWidth: n.kind === 'major-prom' ? 1.7
+                  : n.kind === 'major'      ? 1.3
+                  : n.kind === 'minor'      ? 1.05
+                  :                          0.85,
+      roughness: n.kind === 'tiny' ? 1.5 : 1.25,
+      bowing: 1.4,
+      fill: 'none'
+    };
+    const rect = rc.rectangle(n.x, n.y, n.w, n.h, opts);
+    rect.setAttribute('data-node', n.id);
+    svg.appendChild(rect);
+  });
+
+  // 4. HTML labels (positioned absolutely on top)
+  NODES.forEach(n => {
+    const div = document.createElement('div');
+    div.className = 'node node-' + n.kind;
+    div.setAttribute('data-node', n.id);
+    div.style.left   = n.x + 'px';
+    div.style.top    = n.y + 'px';
+    div.style.width  = n.w + 'px';
+    div.style.height = n.h + 'px';
+
+    const label = document.createElement('div');
+    label.className = 'label' + (n.italic ? ' italic' : '');
+    label.textContent = n.label;
+    div.appendChild(label);
+
+    if (n.sub) {
+      const sub = document.createElement('div');
+      sub.className = 'sub';
+      sub.textContent = n.sub;
+      div.appendChild(sub);
+    }
+
+    map.appendChild(div);
+  });
+
+  // ----- Fit-to-viewport scaling -----------------------------------------
+
+  function fitMap() {
+    const stage = document.getElementById('stage');
+    const sw = stage.clientWidth;
+    const sh = stage.clientHeight;
+    const scale = Math.min(sw / 1400, sh / 900, 1);
+    map.style.transform = 'scale(' + scale + ')';
+  }
+  window.addEventListener('resize', fitMap);
+  fitMap();
+})();
+</script>
+
+</body>
+</html>
