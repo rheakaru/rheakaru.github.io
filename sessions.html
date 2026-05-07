@@ -160,12 +160,33 @@
   <section>
     <h2>Get in touch</h2>
     <p>
-      Fill this in and hitting Send opens your email client with a
-      pre-filled draft to me. Or write directly to
+      Fill this in and I'll get back to you. Or write directly to
       <a href="mailto:rhea@rosebazaar.in">rhea@rosebazaar.in</a>.
     </p>
 
-    <form class="session-form" id="session-form" novalidate>
+    <!--
+      This form posts to Formspree so submissions land in your inbox
+      with no extra step for the visitor. Setup (one time, ~1 minute):
+
+        1. Sign up at https://formspree.io with rhea@rosebazaar.in
+        2. Create a new form, name it "Sessions"
+        3. Copy the endpoint, e.g. https://formspree.io/f/abcd1234
+        4. Paste it into the action attribute below, replacing
+           YOUR_FORM_ID_HERE
+
+      Until that swap happens, the form falls back to opening the
+      visitor's email client (mailto:) so it still works.
+    -->
+    <form class="session-form" id="session-form"
+          action="https://formspree.io/f/YOUR_FORM_ID_HERE"
+          method="POST" novalidate>
+      <input type="hidden" name="_subject" value="Let's hang w AI">
+
+      <div class="field">
+        <label for="email">Your email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+
       <div class="field">
         <label for="company">Company name</label>
         <input type="text" id="company" name="company" required>
@@ -196,14 +217,14 @@
 
       <div class="field check">
         <label>
-          <input type="checkbox" name="confirm-pay" required>
+          <input type="checkbox" name="confirm-pay" value="yes" required>
           <span>Same-day payment of &#8377;1 lakh on the day of the session works for me.</span>
         </label>
       </div>
 
       <div class="field check">
         <label>
-          <input type="checkbox" name="confirm-senior" required>
+          <input type="checkbox" name="confirm-senior" value="yes" required>
           <span>I can have one senior management person in the session throughout.</span>
         </label>
       </div>
@@ -215,6 +236,15 @@
       (function () {
         var form = document.getElementById('session-form');
         if (!form) return;
+        var actionAttr = form.getAttribute('action') || '';
+        var formspreeReady =
+          actionAttr.indexOf('formspree.io/f/') !== -1 &&
+          actionAttr.indexOf('YOUR_FORM_ID_HERE') === -1;
+
+        // If Formspree is wired up, let the form submit normally and
+        // skip the mailto fallback entirely.
+        if (formspreeReady) return;
+
         form.addEventListener('submit', function (e) {
           e.preventDefault();
           if (!form.checkValidity()) { form.reportValidity(); return; }
@@ -223,6 +253,7 @@
             .map(function (k) { return fd.get(k); })
             .filter(Boolean);
           var lines = [
+            'From: ' + (fd.get('email') || ''),
             'Company: ' + (fd.get('company') || ''),
             'Website: ' + (fd.get('website') || ''),
             'Office location: ' + (fd.get('location') || ''),
