@@ -160,8 +160,85 @@
   <section>
     <h2>Get in touch</h2>
     <p>
-      <a href="mailto:rhea@rosebazaar.in">rhea@rosebazaar.in</a>
+      Fill this in and hitting Send opens your email client with a
+      pre-filled draft to me. Or write directly to
+      <a href="mailto:rhea@rosebazaar.in">rhea@rosebazaar.in</a>.
     </p>
+
+    <form class="session-form" id="session-form" novalidate>
+      <div class="field">
+        <label for="company">Company name</label>
+        <input type="text" id="company" name="company" required>
+      </div>
+
+      <div class="field">
+        <label for="website">Company website</label>
+        <input type="url" id="website" name="website" placeholder="https://" required>
+      </div>
+
+      <div class="field">
+        <label for="location">Office location</label>
+        <select id="location" name="location" required>
+          <option value="">Select&hellip;</option>
+          <option value="Bangalore">Bangalore</option>
+          <option value="San Francisco">San Francisco</option>
+        </select>
+        <p class="field-hint">Bangalore and San Francisco only for now.</p>
+      </div>
+
+      <fieldset class="field">
+        <legend>Dates that work for you</legend>
+        <p class="field-hint">Pick a few options &mdash; we'll lock one down by email.</p>
+        <input type="date" id="date1" name="date1" required>
+        <input type="date" id="date2" name="date2">
+        <input type="date" id="date3" name="date3">
+      </fieldset>
+
+      <div class="field check">
+        <label>
+          <input type="checkbox" name="confirm-pay" required>
+          <span>Same-day payment of &#8377;1 lakh on the day of the session works for me.</span>
+        </label>
+      </div>
+
+      <div class="field check">
+        <label>
+          <input type="checkbox" name="confirm-senior" required>
+          <span>I can have one senior management person in the session throughout.</span>
+        </label>
+      </div>
+
+      <button type="submit" class="submit-btn">Send</button>
+    </form>
+
+    <script>
+      (function () {
+        var form = document.getElementById('session-form');
+        if (!form) return;
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!form.checkValidity()) { form.reportValidity(); return; }
+          var fd = new FormData(form);
+          var dates = ['date1', 'date2', 'date3']
+            .map(function (k) { return fd.get(k); })
+            .filter(Boolean);
+          var lines = [
+            'Company: ' + (fd.get('company') || ''),
+            'Website: ' + (fd.get('website') || ''),
+            'Office location: ' + (fd.get('location') || ''),
+            '',
+            'Dates that work: ' + (dates.length ? dates.join(', ') : '(none provided)'),
+            '',
+            'Same-day ₹1 lakh payment: ' + (fd.get('confirm-pay') ? 'yes' : 'no'),
+            'Senior management person throughout: ' + (fd.get('confirm-senior') ? 'yes' : 'no')
+          ];
+          var url = 'mailto:rhea@rosebazaar.in'
+            + '?subject=' + encodeURIComponent("Let's hang w AI")
+            + '&body=' + encodeURIComponent(lines.join('\n'));
+          window.location.href = url;
+        });
+      })();
+    </script>
   </section>
 
   <footer class="foot">
