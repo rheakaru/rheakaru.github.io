@@ -61,6 +61,14 @@ body {
 .masthead {
   margin-bottom: 3rem;
 }
+.portrait {
+  display: block;
+  width: 140px;
+  height: auto;
+  border-radius: 4px;
+  margin: 0 0 1.25rem;
+  background: var(--bg-soft);
+}
 .kicker {
   margin: 0;
   font-size: 1.05rem;
