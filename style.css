@@ -348,6 +348,37 @@ em { font-style: italic; }
   color: var(--rule);
 }
 
+/* Front-page invite callout (links to sessions.html) */
+.invite {
+  background: var(--bg-soft);
+  border-left: 3px solid var(--accent);
+  padding: 1.4rem 1.5rem 1.25rem;
+  margin: 2.5rem 0;
+}
+.invite p { margin: 0; }
+.invite-eyebrow {
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.6rem;
+}
+.invite-line {
+  color: var(--ink);
+  font-size: 1.02rem;
+  line-height: 1.55;
+  margin-bottom: 0.85rem;
+}
+.invite-cta a {
+  color: var(--accent);
+  border-bottom-color: transparent;
+  font-size: 0.95rem;
+}
+.invite-cta a:hover {
+  color: var(--accent-2);
+  border-bottom-color: var(--accent);
+}
+
 /* Bookshelf embed (Chapel) */
 .shelf {
   width: 100%;
