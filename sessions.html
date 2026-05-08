@@ -59,6 +59,15 @@
       another company build the equivalent &mdash; and they'll be better
       positioned to extend and customize it than any external vendor.
     </p>
+    <div class="embed">
+      <iframe
+        loading="lazy"
+        src="https://www.youtube.com/embed/tsKY4qQoyIg"
+        title="A brief intro to the Hoovu dashboard"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen></iframe>
+    </div>
   </section>
 
   <hr class="ornament" aria-hidden="true">
@@ -205,26 +214,35 @@
       <fieldset class="field">
         <legend>Dates that work for you</legend>
         <p class="field-hint">Pick a few options &mdash; we'll lock one down by email.</p>
-        <input type="date" id="date1" name="date1" required>
-        <input type="date" id="date2" name="date2">
-        <input type="date" id="date3" name="date3">
+        <div class="date-row">
+          <input type="date" id="date1" name="date1" required>
+          <input type="date" id="date2" name="date2">
+          <input type="date" id="date3" name="date3">
+        </div>
       </fieldset>
 
       <div class="field check">
-        <label>
+        <label class="check-label">
           <input type="checkbox" name="confirm-pay" value="yes" required>
-          <span>Same-day payment of &#8377;1 lakh on the day of the session works for me.</span>
+          <span class="check-mark" aria-hidden="true"></span>
+          <span class="check-text">Same-day payment of &#8377;1 lakh on the day of the session works for me.</span>
         </label>
       </div>
 
       <div class="field check">
-        <label>
+        <label class="check-label">
           <input type="checkbox" name="confirm-senior" value="yes" required>
-          <span>I can have one senior management person in the session throughout.</span>
+          <span class="check-mark" aria-hidden="true"></span>
+          <span class="check-text">I can have one senior management person in the session throughout.</span>
         </label>
       </div>
 
-      <button type="submit" class="submit-btn">Send</button>
+      <button type="submit" class="submit-btn">
+        <span>Send</span>
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+          <path d="M5 12h14M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </form>
 
     <script>

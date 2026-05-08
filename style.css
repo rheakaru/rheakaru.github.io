@@ -442,47 +442,186 @@ em { font-style: italic; }
 
 /* Sessions page contact form */
 .session-form {
-  margin: 1.25rem 0 0;
+  margin: 1.5rem 0 0;
 }
 .session-form .field {
-  margin-bottom: 1.4rem;
+  margin-bottom: 1.6rem;
+  padding: 0;
+  border: 0;
 }
 .session-form label,
 .session-form legend {
   display: block;
-  font-size: 0.92rem;
-  color: var(--ink-soft);
-  margin-bottom: 0.4rem;
-  letter-spacing: 0.01em;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 400;
+  margin-bottom: 0.55rem;
   padding: 0;
 }
 .session-form input[type="text"],
 .session-form input[type="email"],
 .session-form input[type="url"],
 .session-form input[type="date"],
-.session-form select,
 .session-form textarea {
   display: block;
   width: 100%;
   font: inherit;
   font-size: 1rem;
-  padding: 0.55rem 0.7rem;
+  padding: 0.75rem 0.9rem;
   background: var(--bg);
   color: var(--ink);
   border: 1px solid var(--rule);
-  border-radius: 3px;
-  transition: border-color 160ms ease;
+  border-radius: 7px;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+  -webkit-appearance: none;
+  appearance: none;
 }
 .session-form textarea {
   resize: vertical;
   min-height: 3.4rem;
-  line-height: 1.45;
+  line-height: 1.5;
+  font-family: inherit;
+}
+.session-form input::placeholder,
+.session-form textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+.session-form input:hover,
+.session-form textarea:hover {
+  border-color: var(--ink-soft);
 }
 .session-form input:focus,
-.session-form select:focus,
 .session-form textarea:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--bg-soft);
+}
+.session-form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1.6rem;
+}
+.session-form .field-hint {
+  font-size: 0.88rem;
+  color: var(--muted);
+  font-style: italic;
+  margin: -0.1rem 0 0.55rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.session-form .date-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+.session-form .date-row input[type="date"] {
+  flex: 1 1 9rem;
+  min-width: 0;
+}
+
+/* Custom checkboxes */
+.session-form .check { margin-bottom: 1.1rem; }
+.session-form .check-label {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: 0.97rem;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+}
+.session-form .check-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+}
+.session-form .check-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: 0 0 auto;
+  margin-top: 0.18rem;
+  border: 1.5px solid var(--rule);
+  border-radius: 5px;
+  background: var(--bg);
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.session-form .check-mark::after {
+  content: "";
+  width: 0.34rem;
+  height: 0.66rem;
+  border: solid var(--bg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  margin-top: -0.15rem;
+  transition: transform 180ms ease;
+}
+.session-form .check-label:hover .check-mark {
+  border-color: var(--ink-soft);
+}
+.session-form .check-label input:checked ~ .check-mark {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.session-form .check-label input:checked ~ .check-mark::after {
+  transform: rotate(45deg) scale(1);
+}
+.session-form .check-label input:focus-visible ~ .check-mark {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--bg-soft);
+}
+.session-form .check-text { flex: 1 1 auto; }
+
+/* Submit button */
+.session-form .submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1.7rem;
+  background: var(--accent);
+  color: var(--bg);
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  margin-top: 0.6rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+.session-form .submit-btn svg {
+  display: block;
+  transition: transform 180ms ease;
+}
+.session-form .submit-btn:hover {
+  background: var(--accent-2);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -8px rgba(139, 90, 60, 0.45);
+}
+.session-form .submit-btn:hover svg { transform: translateX(2px); }
+.session-form .submit-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.session-form .submit-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (max-width: 480px) {
+  .session-form .submit-btn { width: 100%; justify-content: center; }
 }
 
 /* Sessions page photo carousel */
