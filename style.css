@@ -457,9 +457,11 @@ em { font-style: italic; }
   padding: 0;
 }
 .session-form input[type="text"],
+.session-form input[type="email"],
 .session-form input[type="url"],
 .session-form input[type="date"],
-.session-form select {
+.session-form select,
+.session-form textarea {
   display: block;
   width: 100%;
   font: inherit;
@@ -471,10 +473,55 @@ em { font-style: italic; }
   border-radius: 3px;
   transition: border-color 160ms ease;
 }
+.session-form textarea {
+  resize: vertical;
+  min-height: 3.4rem;
+  line-height: 1.45;
+}
 .session-form input:focus,
-.session-form select:focus {
+.session-form select:focus,
+.session-form textarea:focus {
   outline: none;
   border-color: var(--accent);
+}
+
+/* Sessions page photo carousel */
+.session-photos {
+  margin: 1.5rem 0 0;
+}
+.session-photos-track {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 0.6rem;
+  -webkit-overflow-scrolling: touch;
+}
+.session-photos-track::-webkit-scrollbar {
+  height: 6px;
+}
+.session-photos-track::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border-radius: 3px;
+}
+.session-photos-track img {
+  flex: 0 0 auto;
+  height: 280px;
+  width: auto;
+  scroll-snap-align: start;
+  border-radius: 3px;
+  background: var(--bg-soft);
+  display: block;
+}
+.session-photos-caption {
+  margin: 0.4rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+@media (max-width: 480px) {
+  .session-photos-track img { height: 220px; }
 }
 .session-form fieldset {
   border: 0;
