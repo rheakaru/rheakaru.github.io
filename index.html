@@ -13,6 +13,9 @@
 <meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15120e" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52' font-family='Georgia,serif' fill='%238b5a3c'%3E%E2%9D%A6%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:wght@400;500;600&family=Playfair+Display:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -53,11 +56,12 @@
 
   <section class="lede">
     <p>
-      I build companies and write books. I co-founded Hoovu Fresh, a
-      B2B puja flower supply chain across nine Indian cities, where I'm
-      the CTO. My first novel, <em>LIGHGHT</em>, is out querying. I keep
-      a reading list that began in 6th grade and has, somehow, reached
-      624 books.
+      I care deeply about <span class="trust-chip" id="trust-origin">trust</span>:
+      I like to learn, build companies, write books, and teach others. I
+      co-founded Hoovu Fresh, a B2B puja flower supply chain across nine
+      Indian cities, where I'm the CTO. My first novel, <em>LIGHGHT</em>, is
+      out querying. I keep a reading list that began in 6th grade and has,
+      somehow, reached 624 books.
     </p>
     <p>
       I'm interested in trust infrastructures, systems thinking, innovation
@@ -65,6 +69,37 @@
       myself more time to be bored &mdash; that's when the best ideas happen.
       I have a bias towards building, and I love writing, teaching, reading
       and learning.
+    </p>
+  </section>
+
+  <section class="trust" id="trust">
+    <h2 data-trust-node>The throughline</h2>
+    <p>
+      If there's a single thread running through everything I've done, it's
+      trust. My Stanford honors thesis was on trust infrastructures &mdash;
+      <a href="https://purl.stanford.edu/nq331rf3846">Aadhaar</a>, India's
+      biometric ID system &mdash; and how the same architecture becomes
+      transparency or surveillance depending on who gets to see whom. That
+      question, who sees and who is seen, has followed me into every project
+      since.
+    </p>
+    <p>
+      At Hoovu we built a retail category that didn't exist before us, which
+      meant earning trust before we could build anything else &mdash; with
+      farmers, with temples, with customers buying flowers sight-unseen. On
+      <a href="https://www.youtube.com/watch?v=5aJPpLDidtQ">Shark Tank India</a>
+      in 2020, the one thing I said I'd never gamble on was the trust of our
+      customers. I still think it's the only real moat.
+    </p>
+    <p>
+      Now I think about trust's <em>speed</em>. Deployment happens at the
+      speed of trust, and the highest-leverage work in AI right now isn't at
+      the frontier but in the even distribution of what already works. It's
+      why I teach it, and why the tools I build refuse to fake it &mdash;
+      <a href="projects/throughline.html">Throughline</a> gives an honest read
+      or an honest stop; <a href="projects/comprice.html">ComPrice</a> shows
+      its sources and never pretends the data is more than it is. Trust is
+      earned as much by what you won't claim as by what you will.
     </p>
   </section>
 
@@ -112,7 +147,7 @@
   <hr class="ornament" aria-hidden="true">
 
   <section class="company">
-    <h2>Hoovu Fresh</h2>
+    <h2 data-trust-node>Hoovu Fresh</h2>
     <p>
       Hoovu is a tech-enabled supply chain for puja flowers &mdash; the
       garlands and loose blooms used in temples, weddings, and homes across
@@ -160,7 +195,7 @@
   <hr class="ornament" aria-hidden="true">
 
   <section class="building">
-    <h2>Building</h2>
+    <h2 data-trust-node>Building</h2>
     <p class="section-lede">
       Small, complete apps I designed and built end to end &mdash; most
       with React, Firebase, and Claude. Each has a write-up: how it was
@@ -169,115 +204,114 @@
 
     <ul class="featured">
       <li>
-        <article class="proj-card">
-          <h3 class="proj-card-name">The Brief</h3>
-          <p class="proj-card-desc">An anti-overwhelm news reader &mdash; a
-            calm front page for the news that goes as shallow or as deep as
-            you want.</p>
-          <p class="proj-card-links">
-            <a class="read" href="projects/thebrief.html">Read the build &rarr;</a>
-            <a href="https://thebrief.you/" target="_blank" rel="noopener">Live &#8599;</a>
-            <a href="https://github.com/rheakaru/theBrief" target="_blank" rel="noopener">Code &#8599;</a>
+        <article class="proj-card pc--thebrief pc--paper">
+          <span class="pc-kicker">anti-overwhelm news</span>
+          <h3 class="pc-name">The Brief</h3>
+          <p class="pc-desc">A calm front page for the news &mdash; go as
+            shallow or as deep as you want. No feed, no noise.</p>
+          <p class="pc-links">
+            <a class="pc-btn pc-btn-primary" href="projects/thebrief.html">Read the build</a>
+            <a class="pc-btn" href="https://thebrief.you/" target="_blank" rel="noopener">Live &#8599;</a>
+            <a class="pc-btn" href="https://github.com/rheakaru/theBrief" target="_blank" rel="noopener">Code &#8599;</a>
           </p>
         </article>
       </li>
       <li>
-        <article class="proj-card">
-          <h3 class="proj-card-name">Chapel</h3>
-          <p class="proj-card-desc">A cross-medium personal library that
-            tracks the art that moved you &mdash; a commonplace book as a
-            living constellation.</p>
-          <p class="proj-card-links">
-            <a class="read" href="projects/chapel.html">Read the build &rarr;</a>
-            <a href="https://chapel-59b48.web.app" target="_blank" rel="noopener">Live &#8599;</a>
-            <a href="https://github.com/rheakaru/Chapel" target="_blank" rel="noopener">Code &#8599;</a>
+        <article class="proj-card pc--chapel">
+          <span class="pc-kicker">a living constellation</span>
+          <h3 class="pc-name">Chapel</h3>
+          <p class="pc-desc">A commonplace book reimagined as a living
+            constellation of the art that moved you.</p>
+          <p class="pc-links">
+            <a class="pc-btn pc-btn-primary" href="projects/chapel.html">Read the build</a>
+            <a class="pc-btn" href="https://chapel-59b48.web.app" target="_blank" rel="noopener">Live &#8599;</a>
+            <a class="pc-btn" href="https://github.com/rheakaru/Chapel" target="_blank" rel="noopener">Code &#8599;</a>
           </p>
         </article>
       </li>
       <li>
-        <article class="proj-card">
-          <h3 class="proj-card-name">Sima</h3>
-          <p class="proj-card-desc">Rank your beauty products head-to-head
-            and see what your friends &mdash; and the people whose skin
-            behaves like yours &mdash; actually love.</p>
-          <p class="proj-card-links">
-            <a class="read" href="projects/sima.html">Read the build &rarr;</a>
-            <a href="https://sima-c07b5.web.app" target="_blank" rel="noopener">Live &#8599;</a>
-            <a href="https://github.com/rheakaru/Sima" target="_blank" rel="noopener">Code &#8599;</a>
+        <article class="proj-card pc--sima pc--paper">
+          <span class="pc-kicker">ranked, social beauty</span>
+          <h3 class="pc-name">Sima</h3>
+          <p class="pc-desc">Rank your beauty products head-to-head and see
+            what your friends &mdash; and your skin twins &mdash; love.</p>
+          <p class="pc-links">
+            <a class="pc-btn pc-btn-primary" href="projects/sima.html">Read the build</a>
+            <a class="pc-btn" href="https://sima-c07b5.web.app" target="_blank" rel="noopener">Live &#8599;</a>
+            <a class="pc-btn" href="https://github.com/rheakaru/Sima" target="_blank" rel="noopener">Code &#8599;</a>
           </p>
         </article>
       </li>
       <li>
-        <article class="proj-card">
-          <h3 class="proj-card-name">Vendetta</h3>
-          <p class="proj-card-desc">A quieter way to actually see your
-            friends &mdash; a bubble universe that re-tints with the time of
-            day, with an AI that quietly does the planning.</p>
-          <p class="proj-card-links">
-            <a class="read" href="projects/vendetta.html">Read the build &rarr;</a>
-            <a href="https://vendetta-e6192.web.app" target="_blank" rel="noopener">Live &#8599;</a>
+        <article class="proj-card pc--vendetta">
+          <span class="pc-kicker">see your people</span>
+          <h3 class="pc-name">Vendetta</h3>
+          <p class="pc-desc">A quieter way to actually see your friends &mdash;
+            a bubble universe that tints with the time of day.</p>
+          <p class="pc-links">
+            <a class="pc-btn pc-btn-primary" href="projects/vendetta.html">Read the build</a>
+            <a class="pc-btn" href="https://vendetta-e6192.web.app" target="_blank" rel="noopener">Live &#8599;</a>
           </p>
         </article>
       </li>
       <li>
-        <article class="proj-card">
-          <h3 class="proj-card-name">Cahoots</h3>
-          <p class="proj-card-desc">A goal tracker built for two. Set a
-            northstar, break it into waypoints, and let a Claude co-pilot
-            help you keep it honest.</p>
-          <p class="proj-card-links">
-            <a class="read" href="projects/cahoots.html">Read the build &rarr;</a>
-            <a href="https://cahoots-266ab.web.app" target="_blank" rel="noopener">Live &#8599;</a>
-            <a href="https://github.com/rheakaru/Cahoots" target="_blank" rel="noopener">Code &#8599;</a>
+        <article class="proj-card pc--cahoots">
+          <span class="pc-kicker">for you and your person</span>
+          <h3 class="pc-name">Cahoots</h3>
+          <p class="pc-desc">A goal tracker built for two. Set a northstar,
+            break it into waypoints, keep each other honest.</p>
+          <p class="pc-links">
+            <a class="pc-btn pc-btn-primary" href="projects/cahoots.html">Read the build</a>
+            <a class="pc-btn" href="https://cahoots-266ab.web.app" target="_blank" rel="noopener">Live &#8599;</a>
+            <a class="pc-btn" href="https://github.com/rheakaru/Cahoots" target="_blank" rel="noopener">Code &#8599;</a>
           </p>
         </article>
       </li>
       <li>
-        <article class="proj-card">
-          <h3 class="proj-card-name">ComPrice</h3>
-          <p class="proj-card-desc">Commodity price intelligence for India's
-            APMC mandis &mdash; satellite market cards, 90-day price history,
-            and Claude-written briefs over Govt. of India Agmarknet data.</p>
-          <p class="proj-card-links">
-            <a class="read" href="projects/comprice.html">Read the build &rarr;</a>
-            <a href="https://comprice-bd2e3.web.app" target="_blank" rel="noopener">Live &#8599;</a>
-            <a href="https://github.com/rheakaru/ComPrice" target="_blank" rel="noopener">Code &#8599;</a>
+        <article class="proj-card pc--comprice">
+          <span class="pc-kicker">mandi price intelligence</span>
+          <h3 class="pc-name">ComPrice</h3>
+          <p class="pc-desc">Commodity price intelligence for India's APMC
+            mandis, over Govt. of India Agmarknet data.</p>
+          <p class="pc-links">
+            <a class="pc-btn pc-btn-primary" href="projects/comprice.html">Read the build</a>
+            <a class="pc-btn" href="https://comprice-bd2e3.web.app" target="_blank" rel="noopener">Live &#8599;</a>
+            <a class="pc-btn" href="https://github.com/rheakaru/ComPrice" target="_blank" rel="noopener">Code &#8599;</a>
           </p>
         </article>
       </li>
       <li>
-        <article class="proj-card">
-          <h3 class="proj-card-name">Throughline</h3>
-          <p class="proj-card-desc">An honest structural diagnosis for
-            businesses. Paste a URL and watch an agent stream an
-            evidence-backed read it refuses to fake.</p>
-          <p class="proj-card-links">
-            <a class="read" href="projects/throughline.html">Read the build &rarr;</a>
-            <a href="https://compai-web--compai-57d55.us-central1.hosted.app" target="_blank" rel="noopener">Live &#8599;</a>
-            <a href="https://github.com/rheakaru/compai" target="_blank" rel="noopener">Code &#8599;</a>
+        <article class="proj-card pc--throughline">
+          <span class="pc-kicker">honest diagnosis</span>
+          <h3 class="pc-name">Throughline</h3>
+          <p class="pc-desc">An honest structural diagnosis for businesses
+            &mdash; an evidence-backed read it refuses to fake.</p>
+          <p class="pc-links">
+            <a class="pc-btn pc-btn-primary" href="projects/throughline.html">Read the build</a>
+            <a class="pc-btn" href="https://compai-web--compai-57d55.us-central1.hosted.app" target="_blank" rel="noopener">Live &#8599;</a>
+            <a class="pc-btn" href="https://github.com/rheakaru/compai" target="_blank" rel="noopener">Code &#8599;</a>
           </p>
         </article>
       </li>
       <li>
-        <article class="proj-card">
-          <h3 class="proj-card-name">Hoovu Dashboard</h3>
-          <p class="proj-card-desc">An AI-run operating system for a flower
-            supply chain &mdash; an AI CEO and CFO, predictive flower pricing,
-            and meetings that turn into tasks. Built for Hoovu Fresh.</p>
-          <p class="proj-card-links">
-            <a class="read" href="projects/hoovu-dashboard.html">Read the build &rarr;</a>
+        <article class="proj-card pc--hoovu">
+          <span class="pc-kicker">an AI-run OS</span>
+          <h3 class="pc-name">Hoovu Dashboard</h3>
+          <p class="pc-desc">An AI-run operating system for a flower supply
+            chain &mdash; an AI CEO, CFO, and predictive flower pricing.</p>
+          <p class="pc-links">
+            <a class="pc-btn pc-btn-primary" href="projects/hoovu-dashboard.html">Read the build</a>
           </p>
         </article>
       </li>
       <li>
-        <article class="proj-card">
-          <h3 class="proj-card-name">Building AI agents</h3>
-          <p class="proj-card-desc">A field guide to building useful AI
-            agents inside an operational dashboard &mdash; personality, tools,
-            seeded memory, and the right surfaces. Drawn from Hoovu's AI CEO,
-            CFO and CMO.</p>
-          <p class="proj-card-links">
-            <a class="read" href="projects/hoovu-ai-agents.html">Read the guide &rarr;</a>
+        <article class="proj-card pc--agents">
+          <span class="pc-kicker">a field guide</span>
+          <h3 class="pc-name">Building AI agents</h3>
+          <p class="pc-desc">A field guide to building useful AI agents inside
+            an operational dashboard. Drawn from Hoovu's AI CEO, CFO and CMO.</p>
+          <p class="pc-links">
+            <a class="pc-btn pc-btn-primary" href="projects/hoovu-ai-agents.html">Read the guide</a>
           </p>
         </article>
       </li>
@@ -348,7 +382,7 @@
   <hr class="ornament" aria-hidden="true">
 
   <section class="about">
-    <h2>Background</h2>
+    <h2 data-trust-node>Background</h2>
     <p>
       I studied Science, Technology and Society at Stanford. My
       <a href="https://purl.stanford.edu/nq331rf3846">honors thesis</a>
@@ -384,6 +418,8 @@
   </footer>
 
 </main>
+
+<script src="trust-throughline.js" defer></script>
 
 </body>
 </html>
