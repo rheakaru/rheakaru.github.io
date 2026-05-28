@@ -1,6 +1,7 @@
 /* The throughline — a glowing gold line that emanates from the TRUST chip
-   and weaves down the page, drawing itself as you scroll and lighting a node
-   beside each trust-related section. Pure SVG, no dependencies. */
+   and weaves down the page: out to a node beside each trust-related section,
+   and in to thread behind a few inline "trust" words ([data-trust-touch]).
+   Draws itself as you scroll. Pure SVG, no dependencies. */
 (function () {
   var origin = document.getElementById('trust-origin');
   var page = document.querySelector('.page');
@@ -18,8 +19,13 @@
   path.setAttribute('class', 'tl-path');
   svg.appendChild(path);
 
-  var nodeEls = Array.prototype.slice.call(document.querySelectorAll('[data-trust-node]'));
-  var circles = nodeEls.map(function () {
+  // Anchors in document order: section nodes (sit in the gutter, get a dot)
+  // and inline word touches (sit at the word, no dot — the line threads behind).
+  var anchorEls = Array.prototype.slice.call(
+    document.querySelectorAll('[data-trust-node], [data-trust-touch]')
+  );
+  var circles = anchorEls.map(function (el) {
+    if (el.hasAttribute('data-trust-touch')) return null;
     var c = document.createElementNS(NS, 'circle');
     c.setAttribute('class', 'tl-node');
     c.setAttribute('r', '4.5');
@@ -59,15 +65,26 @@
     // start just below the chip so the line never crosses the word
     pts.push({ x: or.left + or.width / 2, y: or.bottom + sy + 7 });
 
-    nodeEls.forEach(function (el, i) {
+    var gutterIdx = 0;
+    anchorEls.forEach(function (el, i) {
       var r = el.getBoundingClientRect();
       var y = r.top + sy + r.height / 2;
-      var off = (i % 2 === 0) ? -20 : -34;
-      var x = Math.max(7, r.left + off);
+      var x;
+      if (el.hasAttribute('data-trust-touch')) {
+        // thread to the word itself
+        x = r.left + r.width / 2;
+      } else {
+        // sit just left of the heading, in the gutter, gently alternating
+        var off = (gutterIdx % 2 === 0) ? -18 : -30;
+        gutterIdx++;
+        x = Math.max(7, r.left + off);
+      }
       pts.push({ x: x, y: y });
-      circles[i]._y = y;
-      circles[i].setAttribute('cx', x);
-      circles[i].setAttribute('cy', y);
+      if (circles[i]) {
+        circles[i]._y = y;
+        circles[i].setAttribute('cx', x);
+        circles[i].setAttribute('cy', y);
+      }
     });
 
     path.setAttribute('d', smooth(pts));
@@ -79,7 +96,7 @@
 
     if (reduce) {
       path.style.strokeDashoffset = 0;
-      circles.forEach(function (c) { c.classList.add('lit'); });
+      circles.forEach(function (c) { if (c) c.classList.add('lit'); });
     } else {
       update();
     }
@@ -91,6 +108,7 @@
     var p = Math.max(0, Math.min(1, (head - startY) / (endY - startY)));
     path.style.strokeDashoffset = len * (1 - p);
     circles.forEach(function (c) {
+      if (!c) return;
       if (head >= c._y - 4) c.classList.add('lit');
       else c.classList.remove('lit');
     });

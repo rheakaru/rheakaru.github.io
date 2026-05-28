@@ -6,6 +6,7 @@ const path = require('path');
 const targets = [
   ['index.html', 'og/home.png'],
   ['projects.html', 'og/projects.png'],
+  ['sessions.html', 'og/sessions.png'],
   ['projects/thebrief.html', 'og/thebrief.png'],
   ['projects/chapel.html', 'og/chapel.png'],
   ['projects/sima.html', 'og/sima.png'],
