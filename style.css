@@ -655,6 +655,21 @@ em { font-style: italic; }
   transform: translateY(-1px);
   box-shadow: 0 12px 24px -12px rgba(139, 90, 60, 0.5);
 }
+.invite-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+.invite-photos img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+}
 
 /* Sessions page contact form */
 .session-form {
@@ -842,7 +857,7 @@ em { font-style: italic; }
 
 /* Sessions page photo carousel */
 .session-photos {
-  margin: 1.5rem 0 0;
+  margin: 1.5rem auto 0;
 }
 .session-photos-track {
   display: flex;
