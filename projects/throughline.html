@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Rhea Karuturi">
+<meta name="description" content="Throughline — an honest structural diagnosis tool for businesses. A build log on the architecture, invariants, and one knob that decide what the agent shows.">
+<meta name="theme-color" content="#15120e">
+<meta property="og:title" content="Throughline — Build Log · No. 01">
+<meta property="og:description" content="A self-serve structural diagnosis tool that refuses to fake completeness. Notes on the architecture, the ontology that's the moat, and the invariants worth stealing.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://rheakaru.github.io/projects/throughline.html">
+<title>Throughline — Build Log · Rhea Karuturi</title>
+
+<style>
+  /* ---------- type ---------- */
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #15120e;
+    --bg-soft: #1c1812;
+    --fg: #ece4d6;
+    --fg-dim: #b8ad99;
+    --fg-mute: #847a68;
+    --rule: #2a241c;
+    --accent: #d4a85f;
+    --serif: 'EB Garamond', 'Iowan Old Style', 'Apple Garamond', Georgia, serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --measure: 38rem;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--serif);
+    font-size: 1.18rem;
+    line-height: 1.62;
+    font-weight: 400;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* subtle paper grain */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(rgba(212,168,95,.012) 1px, transparent 1px),
+      radial-gradient(rgba(255,255,255,.008) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 1px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 4rem 1.5rem 6rem;
+  }
+
+  /* ---------- breadcrumb ---------- */
+  .crumb {
+    font-family: var(--mono);
+    font-size: .72rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--fg-mute);
+    margin-bottom: 3.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    align-items: baseline;
+  }
+  .crumb a { color: var(--fg-dim); text-decoration: none; border-bottom: 1px solid transparent; }
+  .crumb a:hover { border-bottom-color: var(--accent); }
+  .crumb .sep { color: var(--fg-mute); }
+
+  /* ---------- header ---------- */
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: .72rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    line-height: 1.08;
+    letter-spacing: -.01em;
+    margin: 0 0 1.4rem;
+    color: var(--fg);
+  }
+
+  .dek {
+    font-size: 1.32rem;
+    line-height: 1.5;
+    color: var(--fg-dim);
+    font-style: italic;
+    margin: 0 0 2.6rem;
+    max-width: 34rem;
+  }
+
+  /* ---------- meta strip ---------- */
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 1.2rem 2rem;
+    padding: 1.4rem 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 3rem;
+  }
+  .meta dt {
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--fg-mute);
+    margin-bottom: .3rem;
+  }
+  .meta dd { margin: 0; font-size: 1rem; color: var(--fg); line-height: 1.4; }
+  .meta dd a { color: var(--fg); border-bottom: 1px solid var(--rule); text-decoration: none; }
+  .meta dd a:hover { border-bottom-color: var(--accent); }
+
+  /* ---------- body type ---------- */
+  p { margin: 0 0 1.3rem; }
+
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(212,168,95,.35); }
+  a:hover { border-bottom-color: var(--accent); }
+
+  em, i { font-style: italic; color: var(--fg); }
+  strong { font-weight: 600; color: var(--fg); }
+
+  code, .mono { font-family: var(--mono); font-size: .92em; color: var(--accent); background: var(--bg-soft); padding: .05em .35em; border-radius: 3px; }
+
+  /* ---------- section heading ---------- */
+  .section {
+    margin-top: 4rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1.1rem;
+  }
+  .section .num {
+    font-family: var(--mono);
+    font-size: .78rem;
+    letter-spacing: .12em;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .section h2 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.7rem;
+    line-height: 1.2;
+    letter-spacing: -.005em;
+    margin: 0;
+    color: var(--fg);
+  }
+
+  h3 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.18rem;
+    margin: 2.3rem 0 .7rem;
+    color: var(--fg);
+    letter-spacing: -.003em;
+  }
+
+  /* ---------- pull quote ---------- */
+  .pull {
+    margin: 2.2rem 0;
+    padding: 0 0 0 1.4rem;
+    border-left: 2px solid var(--accent);
+    font-size: 1.25rem;
+    line-height: 1.45;
+    color: var(--fg);
+    font-style: italic;
+  }
+
+  /* ---------- code block ---------- */
+  pre {
+    background: var(--bg-soft);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: .82rem;
+    line-height: 1.55;
+    color: var(--fg-dim);
+    margin: 1.6rem 0;
+  }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+
+  /* ---------- invariants list (takeaway pattern) ---------- */
+  .takeaways {
+    margin: 2.5rem 0 1rem;
+    border-top: 1px solid var(--rule);
+  }
+  .takeaway {
+    padding: 1.7rem 0;
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 1rem;
+  }
+  .takeaway .n {
+    font-family: var(--mono);
+    font-size: .78rem;
+    letter-spacing: .1em;
+    color: var(--accent);
+    padding-top: .35rem;
+  }
+  .takeaway .label {
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--fg-mute);
+    margin-bottom: .35rem;
+  }
+  .takeaway h4 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.18rem;
+    line-height: 1.25;
+    margin: 0 0 .55rem;
+    color: var(--fg);
+    letter-spacing: -.003em;
+  }
+  .takeaway p { margin: 0; font-size: 1.05rem; line-height: 1.55; color: var(--fg-dim); }
+
+  /* ---------- inline list ---------- */
+  ul.plain {
+    margin: 1rem 0 1.6rem;
+    padding-left: 1.2rem;
+  }
+  ul.plain li {
+    margin-bottom: .55rem;
+    padding-left: .35rem;
+  }
+  ul.plain li::marker { color: var(--fg-mute); }
+
+  /* ---------- CTA strip ---------- */
+  .cta {
+    margin-top: 4.5rem;
+    padding: 2rem 0 0;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.6rem;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .cta .links { display: flex; gap: 1.4rem; flex-wrap: wrap; }
+  .cta a {
+    font-family: var(--mono);
+    font-size: .82rem;
+    letter-spacing: .04em;
+    color: var(--fg);
+    border-bottom: 1px solid var(--accent);
+  }
+  .cta a:hover { color: var(--accent); }
+
+  footer {
+    margin-top: 5rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: .72rem;
+    letter-spacing: .08em;
+    color: var(--fg-mute);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  footer a { color: var(--fg-mute); border: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* ---------- small screens ---------- */
+  @media (max-width: 540px) {
+    .wrap { padding: 2.5rem 1.2rem 4rem; }
+    body { font-size: 1.08rem; }
+    .dek { font-size: 1.15rem; }
+    .takeaway { grid-template-columns: 2rem 1fr; gap: .75rem; }
+    pre { font-size: .75rem; }
+  }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <nav class="crumb">
+    <a href="../index.html">← Rhea Karuturi</a>
+    <span class="sep">/</span>
+    <span>Build Log · No. 01</span>
+  </nav>
+
+  <div class="eyebrow">Build Log — Throughline</div>
+
+  <h1>An honest structural diagnosis for businesses</h1>
+
+  <p class="dek">A self-serve tool that refuses to fake completeness. Paste a URL, watch the agent stream its work, and correct the read where it&rsquo;s wrong — that&rsquo;s the interesting part.</p>
+
+  <dl class="meta">
+    <div><dt>Project</dt><dd>Throughline</dd></div>
+    <div><dt>Live</dt><dd><a href="https://compai-web--compai-57d55.us-central1.hosted.app" target="_blank" rel="noopener">compai-web&hellip;hosted.app</a></dd></div>
+    <div><dt>Code</dt><dd><a href="https://github.com/rheakaru/compai" target="_blank" rel="noopener">github.com/rheakaru/compai</a></dd></div>
+    <div><dt>Stack</dt><dd>Next.js 15 · Firebase · Anthropic</dd></div>
+    <div><dt>Status</dt><dd>Live, anonymous, free</dd></div>
+  </dl>
+
+  <!-- ---------- 01 ---------- -->
+  <div class="section">
+    <span class="num">01</span>
+    <h2>What it does</h2>
+  </div>
+
+  <p>Paste a company URL. You get an evidence-backed structural diagnosis: where the company sits on a 9-axis ontology, what&rsquo;s typically hard for a company shaped like that, and — if you give it your stack and a few real projects — which solved-domain analogies actually transfer.</p>
+
+  <p>It&rsquo;s not a tool that tells you what your company <em>is</em>. It&rsquo;s a tool that tells you what your <em>shape</em> is, and what tends to be hard for that shape. The difference matters. Most &ldquo;AI tells you about your business&rdquo; tools fabricate completeness — they pad until they fill the page, because the page expects to be filled. Throughline does the opposite. The product is engineered to fail honestly rather than pad.</p>
+
+  <p class="pull">A fabricated read negatively qualifies the lead it&rsquo;s meant to attract.</p>
+
+  <p>You watch the agent stream its work in real time: web search → fact → axis position → problem map. Every claim shows up with a provenance badge — <code>found_on_site</code>, <code>inferred_public</code>, <code>agent_hypothesis</code>, or <code>user_provided</code>. No claim is shown naked. When the agent is unsure about an axis, it doesn&rsquo;t guess and flag — it surfaces two candidates and asks the one question that would disambiguate. Your corrections sharpen the read visibly, and they&rsquo;re kept forever as an append-only event log. <strong>The trajectory is the product.</strong></p>
+
+  <p>It exists as the lead-gen surface for an AI-workshop consulting practice. The credibility of the free read is the conversion mechanism, which is the whole reason it has to refuse to fake it.</p>
+
+  <!-- ---------- 02 ---------- -->
+  <div class="section">
+    <span class="num">02</span>
+    <h2>How I built it</h2>
+  </div>
+
+  <h3>The architecture spine</h3>
+
+  <p>Three sentences, in order:</p>
+
+  <ul class="plain">
+    <li>A company is a position vector across 9 structural axes, defined in a versioned YAML file (<code>ontology.yaml</code>) that lives in git, not in the database.</li>
+    <li>The axis positions compute the weighted hot/dormant problem map via the ontology&rsquo;s consequence rules — the problems are <em>derived</em>, not guessed.</li>
+    <li>Nearest-neighbour matches in that 9-D vector space surface transferable solutions from solved domains, gated by a strict analogy-quality floor.</li>
+  </ul>
+
+  <p>That spine — vector → derive problems → nearest neighbour for analogies — is the whole thing. Everything else is plumbing.</p>
+
+  <h3>The moat asset is a YAML file</h3>
+
+  <p>The single most important file in the repo is <code>ontology.yaml</code>. It&rsquo;s 600 lines, hand-edited, git-diffable, and contains: the 9 axes (CODP, demand uncertainty, value-chain position, cash conversion cycle, customer concentration, etc.), the consequence rules that map each axis position to a hot/dormant problem list, the declared interactions (compounding pairs of axes that produce hard problems neither axis explains alone), the analogy library, and one knob — <code>analogy_floor: 0.72</code> — that decides whether to show a transferable solution at all.</p>
+
+  <p>Every diagnosis records the SHA of the ontology version that produced it. That way the trajectory of a single company through your evolving ontology is recoverable: a year from now, you can ask &ldquo;what changed in our read of this company, and was it the company or our model that moved?&rdquo;</p>
+
+  <h3>Data model — append-only event log</h3>
+
+  <p>The biggest call early was refusing to store profiles as documents. Profiles are <em>computed on read</em> from an append-only stream of claims (and corrections). Nothing is ever overwritten. The only mutation in the entire data model is the one-time <code>supersededBy: null → claimId</code> flip when a new claim replaces an old one.</p>
+
+<pre><code>companies/{id}/claims/{claimId}        kind, provenance, confidence, supersededBy
+companies/{id}/corrections/{cId}       type: wrong_about_company | wrong_about_reading</code></pre>
+
+  <p>Why bother? Because the interaction — the user correcting the machine and watching it sharpen — is the load-bearing experience. If you overwrite, you&rsquo;ve thrown away the only data that explains your tool&rsquo;s behaviour to its user.</p>
+
+  <h3>Streaming agent, server-side</h3>
+
+  <p>The research route is a Next.js App Router handler that calls the Anthropic API with web search enabled, streams NDJSON events back over SSE, and persists each event as a claim as it lands. The browser consumer renders claims into UI in real time. The Anthropic key never leaves the server — that&rsquo;s enforced architecturally, not by convention.</p>
+
+  <p>The system prompt is built from the ontology <em>at request time</em>, not hardcoded. So when I edit <code>ontology.yaml</code> and push, the agent&rsquo;s instructions change with it. The prompt&rsquo;s five non-negotiable rules — provenance on every claim, descriptive-never-corrective, agent-derives-user-corrects, no hallucinated completeness, plain English on every user-facing line — are the same five invariants the UI enforces. Single source of truth.</p>
+
+  <h3>The consequence engine (the bit I&rsquo;m most proud of)</h3>
+
+  <p>V1 of the consequence engine computed hot problems by looking up <code>consequence.&lt;value&gt;.hot</code> for each axis and concatenating. The result was generic — a single-axis vote sitting next to a brilliant deviation-aware one-liner, computed from different inputs and disagreeing with each other.</p>
+
+  <p>V2 blends three sources, with explicit weights:</p>
+
+  <ul class="plain">
+    <li><strong>Position</strong> (weight 1.0) — what&rsquo;s typically hard for this shape.</li>
+    <li><strong>Deviation</strong> (weight 1.5) — where the company departs from typical for that axis.</li>
+    <li><strong>Interaction</strong> (weight 1.8) — declared compounding pairs (e.g. customer concentration × zero-slack cash conversion → &ldquo;defend fill rate during demand spikes with no financial slack, against customers concentrated enough that any one failure is existential&rdquo;).</li>
+  </ul>
+
+  <p>The blend is scored, modulated by the load-bearing rank of the dominant contributing axis, and emitted as a single ordered list with attribution — every hot problem can show which sources voted and which axes drove it. The invariant the code enforces: <em>the top hot problem must reconcile with the one-liner.</em> They read the same deviations and they must not disagree.</p>
+
+  <h3>The analogy floor</h3>
+
+  <p>There is exactly one knob: <code>analogy_floor: 0.72</code>. It&rsquo;s a strict floor with no middle band. Above it: show the analogy clean — no hedge, no confidence label, no numeric score. Below it: don&rsquo;t show one at all; pitch the working session instead.</p>
+
+  <p class="pull">The temptation to add a &ldquo;medium-confidence&rdquo; tier is the temptation that kills the tool&rsquo;s signal-to-noise. I haven&rsquo;t given in.</p>
+
+  <h3>Stack</h3>
+
+  <p>Next.js 15 App Router + React 19 + TypeScript + Tailwind. Firebase (Firestore + Auth, anonymous + Google). Anthropic API with built-in web search. Firebase App Hosting for deploy (auto-deploys on push to main; 300s timeout for the long-running research stream). One YAML file doing more work than any of them.</p>
+
+  <!-- ---------- 03 invariants ---------- -->
+  <div class="section">
+    <span class="num">03</span>
+    <h2>The invariants worth stealing</h2>
+  </div>
+
+  <p>Pulled out as a list, because they&rsquo;re transferable to any &ldquo;AI summarises something for a user&rdquo; product.</p>
+
+  <div class="takeaways">
+
+    <div class="takeaway">
+      <span class="n">01</span>
+      <div>
+        <div class="label">Trust</div>
+        <h4>Provenance on every claim, no exceptions.</h4>
+        <p>The badge is non-negotiable. <code>found_on_site</code>, <code>inferred_public</code>, <code>agent_hypothesis</code>, <code>user_provided</code> — no claim is ever shown naked.</p>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <span class="n">02</span>
+      <div>
+        <div class="label">Tone</div>
+        <h4>Descriptive, never corrective.</h4>
+        <p>Never tell a company it is positioned wrong. Say: here&rsquo;s your shape, here&rsquo;s what&rsquo;s typically hard for this shape, here&rsquo;s where you deviate.</p>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <span class="n">03</span>
+      <div>
+        <div class="label">Uncertainty</div>
+        <h4>Agent derives, user corrects.</h4>
+        <p>Low-confidence reads expose their candidates and ask the one disambiguating question, instead of guessing and flagging.</p>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <span class="n">04</span>
+      <div>
+        <div class="label">Data model</div>
+        <h4>Append-only event log.</h4>
+        <p>Profiles are computed on read. The trajectory of how a read sharpens <em>is</em> the explanation the user needs.</p>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <span class="n">05</span>
+      <div>
+        <div class="label">Security</div>
+        <h4>Server-side LLM.</h4>
+        <p>The API key never reaches the browser. Architecture enforces it, not convention.</p>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <span class="n">06</span>
+      <div>
+        <div class="label">Honesty</div>
+        <h4>Honest stop beats padded continuation.</h4>
+        <p>If the floor isn&rsquo;t met, say so and pitch the conversation. The product is engineered to fail honestly rather than pad.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ---------- 04 prompt ---------- -->
+  <div class="section">
+    <span class="num">04</span>
+    <h2>A prompt to build it yourself</h2>
+  </div>
+
+  <p>If you wanted to spin up your own version of this — substitute your own domain (a structural diagnosis for restaurants, dev teams, novels, whatever) — here&rsquo;s a single prompt that should get you most of the way with any reasonably capable coding agent.</p>
+
+<pre><code>Build a Next.js 15 App Router app called Throughline. It is a public,
+self-serve structural-diagnosis tool. The user pastes a URL on the
+landing page and gets back an evidence-backed reading.
+
+Spine. A subject (e.g. a company) is a position vector across N
+structural axes defined in a hand-edited ontology.yaml at the repo
+root. The axes' positions compute a weighted hot/dormant problem map
+via the ontology's consequence rules. Nearest-neighbour matches in
+the N-D vector space surface transferable solutions from solved
+domains, gated by a single analogy_floor value with no middle band —
+above the floor, show the analogy clean; below, an honest stop.
+
+Data model. Append-only event log in Firestore.
+  subjects/{id}/claims/{claimId} are immutable except for a one-time
+  supersededBy flip. Profiles are computed on read from
+  non-superseded claims, never stored. Every claim carries a
+  provenance field:
+    found_on_site | inferred_public | agent_hypothesis | user_provided
+
+Streaming research route. A Next.js route handler (/api/research)
+that calls the Anthropic API with web search enabled and streams
+NDJSON events back over SSE. Build the agent's system prompt from
+ontology.yaml at request time (so editing the YAML changes the
+agent's instructions). The Anthropic key is server-only — never
+expose it to the browser.
+
+The five non-negotiable invariants the agent and UI must enforce
+together:
+  1. Provenance on every claim. No claim is ever shown naked.
+  2. Descriptive, never corrective. Never tell the subject it is
+     positioned wrong; say "here's your shape, here's what's
+     typically hard for this shape."
+  3. Agent derives, user corrects. When confidence on an axis is
+     below 0.6, the agent emits two candidate positions and one
+     disambiguating question — never a single guess with a "low
+     confidence" flag.
+  4. No hallucinated completeness. Empty categories are skipped,
+     not invented.
+  5. Plain English on every user-facing line. No domain jargon.
+
+Auth. Anonymous sessions for the free tier (cookie-based sessionId).
+Anonymous rows stitch to a ownerUid on sign-in. An operator role is
+a Firebase Auth custom claim, not a hardcoded email.
+
+Deploy. Firebase App Hosting with a 300s timeout to support the
+streaming research route. Secrets bound at runtime via
+  firebase apphosting:secrets:set.
+
+Stub the ontology with 3 axes to start. Get one URL flowing all the
+way through (paste → stream → axes → problem map → permalink)
+before adding more axes. The ontology is the moat — grow it slowly,
+one real case at a time.</code></pre>
+
+  <p class="pull">If your agent comes back with a 10-tab dashboard and 80 unread axis cards on day one, throw away its work and tell it to start with one URL.</p>
+
+  <!-- ---------- 05 try it ---------- -->
+  <div class="section">
+    <span class="num">05</span>
+    <h2>Try it</h2>
+  </div>
+
+  <p>Paste any company URL. It&rsquo;s anonymous; no signup. Correct the read if it&rsquo;s wrong — that&rsquo;s the interesting part.</p>
+
+  <div class="cta">
+    <div class="links">
+      <a href="https://compai-web--compai-57d55.us-central1.hosted.app" target="_blank" rel="noopener">Open Throughline →</a>
+      <a href="https://github.com/rheakaru/compai" target="_blank" rel="noopener">Read the code →</a>
+      <a href="../sessions.html">Book a working day →</a>
+    </div>
+  </div>
+
+  <footer>
+    <span>© Rhea Karuturi</span>
+    <span><a href="../index.html">← Back home</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
