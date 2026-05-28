@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vendetta — a quieter way to see your friends</title>
+<meta name="description" content="Vendetta is an app that helps culturally-curious adults actually see their friends. The build, the design thinking, and the journal." />
+
+<!-- Fonts: degrade gracefully to system serif/sans if offline -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+<style>
+  /* ─────────────────────────────────────────────────────────────
+     Vendetta page — the nine real time-of-day palettes.
+     The page tints to the visitor's local hour, and they can
+     preview any palette with the switcher. Same CSS variables
+     the app itself uses.
+  ───────────────────────────────────────────────────────────── */
+
+  :root[data-palette="midnight"]{
+    --bg:#0A0C14; --bg-gradient:linear-gradient(160deg,#0A0C14 0%,#080A10 100%);
+    --text:#C8C0D0; --dim:#5A5468; --accent:#7A6E9A; --card-friend:#9A8AB8;
+    --card-overlay:rgba(8,9,16,0.92); --divider:rgba(200,192,208,0.06); --dot-shadow:rgba(122,110,154,0.5);
+  }
+  :root[data-palette="predawn"]{
+    --bg:#0F1020; --bg-gradient:linear-gradient(160deg,#0F1020 0%,#141628 100%);
+    --text:#C8C4D8; --dim:#5C5870; --accent:#8878AA; --card-friend:#A090C0;
+    --card-overlay:rgba(12,14,28,0.9); --divider:rgba(200,196,216,0.07); --dot-shadow:rgba(136,120,170,0.5);
+  }
+  :root[data-palette="dawn"]{
+    --bg:#251828; --bg-gradient:linear-gradient(180deg,#1E1428 0%,#3A2030 50%,#4A2820 100%);
+    --text:#E8D0C0; --dim:#7A5C54; --accent:#C4826A; --card-friend:#D49A7A;
+    --card-overlay:rgba(24,14,18,0.88); --divider:rgba(232,208,192,0.08); --dot-shadow:rgba(196,130,106,0.5);
+  }
+  :root[data-palette="morning"]{
+    --bg:#CCCFE0; --bg-gradient:linear-gradient(180deg,#BCC8DE 0%,#D0C8D4 35%,#E4CEC4 70%,#EEDCC8 100%);
+    --text:#1C2030; --dim:#7070A0; --accent:#9A6878; --card-friend:#B88890;
+    --card-overlay:rgba(22,24,40,0.78); --divider:rgba(28,32,48,0.08); --dot-shadow:rgba(154,104,120,0.35);
+  }
+  :root[data-palette="midday"]{
+    --bg:#D4DEE8; --bg-gradient:linear-gradient(180deg,#E8EDF4 0%,#DDE4EE 30%,#C8D4E4 70%,#BCC8DC 100%);
+    --text:#181E28; --dim:#7080A0; --accent:#3868A0; --card-friend:#6890C0;
+    --card-overlay:rgba(24,30,40,0.78); --divider:rgba(24,30,40,0.07); --dot-shadow:rgba(56,104,160,0.3);
+  }
+  :root[data-palette="afternoon"]{
+    --bg:#D8CCC0; --bg-gradient:linear-gradient(180deg,#C0CCE0 0%,#D0C8C4 35%,#E0D0B8 70%,#EAD8BE 100%);
+    --text:#241810; --dim:#8A7058; --accent:#B86830; --card-friend:#D08868;
+    --card-overlay:rgba(36,24,16,0.82); --divider:rgba(36,24,16,0.08); --dot-shadow:rgba(184,104,48,0.35);
+  }
+  :root[data-palette="golden"]{
+    --bg:#C88030; --bg-gradient:linear-gradient(180deg,#D8A050 0%,#C07828 50%,#A05818 100%);
+    --text:#2A1808; --dim:#5A3818; --accent:#FFFAE8; --card-friend:#F8E8C0;
+    --card-overlay:rgba(40,18,6,0.88); --divider:rgba(42,24,8,0.12); --dot-shadow:rgba(255,250,232,0.5);
+  }
+  :root[data-palette="dusk"]{
+    --bg:#2A1828; --bg-gradient:linear-gradient(180deg,#2E1C30 0%,#3A1E38 50%,#28121E 100%);
+    --text:#E0C8D0; --dim:#7A5868; --accent:#C47888; --card-friend:#D898A0;
+    --card-overlay:rgba(28,12,20,0.9); --divider:rgba(224,200,208,0.07); --dot-shadow:rgba(196,120,136,0.5);
+  }
+  :root[data-palette="night"]{
+    --bg:#0F0C0A; --bg-gradient:linear-gradient(180deg,#141008 0%,#0E0C08 100%);
+    --text:#E8D8B8; --dim:#6A5A40; --accent:#C9963A; --card-friend:#D4A85A;
+    --card-overlay:rgba(10,8,4,0.92); --divider:rgba(232,216,184,0.06); --dot-shadow:rgba(201,150,58,0.55);
+  }
+
+  :root{
+    --font-serif:'Playfair Display', Georgia, 'Times New Roman', serif;
+    --font-sans:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --maxw:920px;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--bg);
+    background-image:var(--bg-gradient);
+    background-attachment:fixed;
+    color:var(--text);
+    font-family:var(--font-sans);
+    font-weight:300;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    transition:background-color 1.2s ease, color 1.2s ease;
+    overflow-x:hidden;
+  }
+
+  ::selection{ background:var(--accent); color:var(--bg); }
+
+  a{ color:var(--accent); text-decoration:none; border-bottom:1px solid transparent; transition:border-color .2s; }
+  a:hover{ border-bottom-color:var(--accent); }
+
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 28px; }
+
+  h1,h2,h3{ font-family:var(--font-serif); font-weight:500; line-height:1.15; }
+  .lower{ text-transform:lowercase; }
+
+  /* ─── palette switcher ─── */
+  .switcher{
+    position:fixed; top:0; left:0; right:0; z-index:60;
+    display:flex; gap:6px; justify-content:center; flex-wrap:wrap;
+    padding:10px 14px;
+    background:linear-gradient(to bottom, var(--card-overlay), transparent);
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  }
+  .switcher .label{
+    font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--dim); align-self:center; margin-right:6px;
+  }
+  .chip{
+    width:18px; height:18px; border-radius:50%;
+    border:1px solid var(--divider); cursor:pointer; padding:0;
+    opacity:.55; transition:opacity .25s, transform .25s; position:relative;
+  }
+  .chip:hover{ opacity:1; transform:scale(1.18); }
+  .chip[aria-pressed="true"]{ opacity:1; box-shadow:0 0 0 2px var(--bg), 0 0 0 3px var(--accent); }
+
+  /* ─── hero ─── */
+  .hero{
+    min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center;
+    position:relative; padding:120px 24px 80px; overflow:hidden;
+  }
+  .hero .bubblefield{ position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+
+  /* Bubbles drift straight up through the field and loop — the same
+     floatUp keyframe the app uses. Positions are packed (no overlap). */
+  @keyframes floatUp{
+    0%   { transform:translate3d(0, var(--startY), 0); opacity:0; }
+    7%   { opacity:.92; }
+    93%  { opacity:.92; }
+    100% { transform:translate3d(0, var(--endY), 0); opacity:0; }
+  }
+
+  /* A single bubble — delicate translucent glass, faint rim, serif text.
+     Five color variants that adapt to whichever palette is active. */
+  /* Outer shell carries the size + round clip and has NO padding, so the
+     element stays perfectly square → a true circle. Text padding lives on
+     the inner layer (exactly how the app separates .vbubble / .vbubble-inner). */
+  .bub, .mini-bub{
+    position:absolute; top:0; box-sizing:border-box;
+    border-radius:50%; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid color-mix(in srgb, var(--text) 9%, transparent);
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    animation:floatUp linear infinite;
+    will-change:transform, opacity;
+  }
+  .bin{
+    width:100%; height:100%; box-sizing:border-box;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:14% 12%; border-radius:50%;
+  }
+  .bub .bl, .mini-bub .bl{
+    font-family:var(--font-serif); font-style:italic; color:var(--text);
+    line-height:1.16; opacity:.92; overflow-wrap:break-word; word-break:break-word;
+    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .bub .sl, .mini-bub .sl{
+    font-family:var(--font-sans); color:var(--text); opacity:.5; margin-top:3px;
+    letter-spacing:.04em; line-height:1.2;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  /* five tints — exactly the app's c0–c4 */
+  .c0{ background:color-mix(in srgb, var(--accent) 10%, transparent); }
+  .c1{ background:color-mix(in srgb, var(--dim) 14%, transparent); }
+  .c2{ background:color-mix(in srgb, var(--accent) 8%, transparent); }
+  .c3{ background:color-mix(in srgb, var(--text) 6%, transparent); }
+  .c4{ background:color-mix(in srgb, var(--dim) 10%, transparent); }
+  /* free-time (friend) bubbles get a slightly stronger rim + faint inner glow */
+  .bfree{ border-color:color-mix(in srgb, var(--text) 14%, transparent);
+           box-shadow:0 0 20px color-mix(in srgb, var(--text) 4%, transparent) inset; }
+  /* fillers — small, textless, a touch more opaque */
+  .filler{ padding:0; }
+  .filler.c0{ background:color-mix(in srgb, var(--accent) 16%, transparent); }
+  .filler.c1{ background:color-mix(in srgb, var(--dim) 20%, transparent); }
+  .filler.c2{ background:color-mix(in srgb, var(--accent) 14%, transparent); }
+  .filler.c3{ background:color-mix(in srgb, var(--text) 10%, transparent); }
+  .filler.c4{ background:color-mix(in srgb, var(--dim) 16%, transparent); }
+  .hero-inner{ position:relative; z-index:2; }
+  .hero h1{ font-style:italic; font-size:clamp(56px, 13vw, 132px); letter-spacing:-.01em; }
+  .hero .tag{ font-size:clamp(15px,2.4vw,20px); color:var(--text); margin-top:18px; font-weight:300; max-width:540px; }
+  .hero .sub{ font-size:13px; color:var(--dim); margin-top:30px; letter-spacing:.04em; }
+  .hero .clock{ font-size:11px; color:var(--dim); margin-top:8px; letter-spacing:.16em; text-transform:uppercase; }
+
+  .scroll-cue{ position:absolute; bottom:30px; left:50%; transform:translateX(-50%); color:var(--dim); font-size:11px; letter-spacing:.2em; text-transform:uppercase; z-index:2; }
+  .scroll-cue::after{ content:""; display:block; width:1px; height:30px; background:var(--dim); margin:10px auto 0; opacity:.5; }
+
+  /* ─── sections ─── */
+  section{ padding:80px 0; position:relative; z-index:1; }
+  .eyebrow{ font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--accent); margin-bottom:14px; }
+  h2.title{ font-size:clamp(30px,5vw,48px); font-style:italic; margin-bottom:8px; }
+  .lede{ font-size:clamp(16px,2.2vw,19px); color:var(--text); max-width:620px; margin-top:18px; }
+  .divider{ height:1px; background:var(--divider); margin:0 auto; max-width:var(--maxw); }
+
+  .feature-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:34px; margin-top:50px; }
+  .feature h3{ font-size:22px; font-style:italic; margin-bottom:8px; }
+  .feature p{ color:var(--dim); font-size:15px; }
+  .feature .num{ font-family:var(--font-serif); font-size:34px; font-style:italic; color:var(--accent); opacity:.6; line-height:1; }
+
+  /* ─── phone mockups ─── */
+  .phones{ display:flex; gap:36px; flex-wrap:wrap; justify-content:center; margin-top:54px; }
+  .phone-col{ display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .phone-col .cap{ font-size:13px; color:var(--dim); font-style:italic; font-family:var(--font-serif); }
+  .phone{
+    width:248px; height:512px; border-radius:38px; padding:10px;
+    background:#0a0a0c; box-shadow:0 30px 70px rgba(0,0,0,.45), 0 0 0 2px rgba(255,255,255,.04);
+    position:relative; flex:none;
+  }
+  .phone .notch{ position:absolute; top:14px; left:50%; transform:translateX(-50%); width:90px; height:22px; background:#0a0a0c; border-radius:0 0 14px 14px; z-index:5; }
+  .screen{
+    width:100%; height:100%; border-radius:30px; overflow:hidden;
+    background:var(--bg); background-image:var(--bg-gradient);
+    position:relative; color:var(--text);
+  }
+  .screen .statusbar{ display:flex; justify-content:space-between; padding:14px 20px 6px; font-size:10px; color:var(--dim); }
+  .screen .topbar{ display:flex; justify-content:space-between; align-items:center; padding:10px 18px; }
+  .screen .topbar .city{ font-family:var(--font-serif); font-style:italic; font-size:17px; }
+  .screen .topbar .ico{ width:24px; height:24px; border-radius:50%; border:1px solid var(--divider); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--dim); }
+
+  /* home bubble screen — the mini-field uses the same packed floatUp bubbles */
+  .mini-field{ position:absolute; inset:46px 0 0 0; overflow:hidden; }
+  .navbar{ position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-around; padding:14px 0 22px; background:linear-gradient(to top, var(--bg) 55%, transparent); font-size:16px; }
+  .navbar span{ color:var(--dim); }
+  .navbar span.on{ color:var(--accent); }
+
+  /* chat screen */
+  .chat-scroll{ position:absolute; inset:42px 0 0 0; padding:14px 14px 20px; display:flex; flex-direction:column; gap:10px; overflow:hidden; }
+  .ai-card{ background:var(--card-overlay); border:1px solid var(--divider); border-radius:14px; padding:12px; }
+  .ai-card .who{ font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin-bottom:6px; }
+  .ai-card .q{ font-family:var(--font-serif); font-style:italic; font-size:14px; margin-bottom:9px; }
+  .poll-opt{ display:flex; justify-content:space-between; align-items:center; font-size:11px; padding:7px 9px; border:1px solid var(--divider); border-radius:9px; margin-top:6px; color:var(--text); }
+  .poll-opt.lead{ border-color:var(--accent); }
+  .poll-opt .pct{ color:var(--dim); font-size:10px; }
+  .venue{ font-size:11px; }
+  .venue .name{ font-family:var(--font-serif); font-style:italic; font-size:15px; color:var(--text); }
+  .venue .why{ color:var(--dim); font-size:10.5px; margin-top:3px; }
+  .msg{ align-self:flex-end; background:var(--accent); color:var(--bg); font-size:11px; padding:7px 11px; border-radius:13px 13px 3px 13px; max-width:78%; }
+
+  /* diary screen */
+  .diary-scroll{ position:absolute; inset:42px 0 0 0; padding:14px; display:flex; flex-direction:column; gap:12px; }
+  .entry{ border-left:2px solid var(--divider); padding:2px 0 2px 12px; }
+  .entry.confirmed{ border-left-color:var(--accent); }
+  .entry.logged{ border-left-color:var(--card-friend); }
+  .entry .ph{ font-size:8.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); }
+  .entry .act{ font-family:var(--font-serif); font-style:italic; font-size:14px; margin:2px 0; }
+  .entry .who{ font-size:10px; color:var(--dim); }
+  .entry .note{ font-size:10.5px; color:var(--text); opacity:.8; margin-top:5px; font-style:italic; }
+
+  /* ─── build / architecture ─── */
+  .stack-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:18px; margin-top:40px; }
+  .stack-card{ border:1px solid var(--divider); border-radius:14px; padding:18px; }
+  .stack-card .k{ font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin-bottom:8px; }
+  .stack-card .v{ font-size:14px; color:var(--text); }
+  .stack-card .v small{ color:var(--dim); display:block; font-size:12px; }
+
+  .layers{ margin-top:44px; display:flex; flex-direction:column; gap:16px; }
+  .layer{ border:1px solid var(--divider); border-radius:16px; padding:22px 24px; }
+  .layer h3{ font-size:20px; font-style:italic; margin-bottom:6px; }
+  .layer p{ color:var(--dim); font-size:14.5px; }
+  .pipeline{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:16px; font-size:12px; }
+  .stage{ border:1px solid var(--divider); border-radius:999px; padding:5px 12px; color:var(--text); }
+  .arrow{ color:var(--dim); }
+
+  /* ─── design thinking ─── */
+  .think-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; margin-top:50px; }
+  .think{ border-top:1px solid var(--divider); padding-top:18px; }
+  .think h3{ font-size:19px; font-style:italic; margin-bottom:8px; }
+  .think p{ color:var(--dim); font-size:14.5px; }
+
+  /* ─── journal: videos + tweets ─── */
+  .videos{ display:flex; gap:24px; flex-wrap:wrap; justify-content:center; margin-top:46px; }
+  .short{ width:296px; max-width:100%; }
+  .short .frame{ position:relative; padding-bottom:177.7%; height:0; border-radius:22px; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,.4); border:1px solid var(--divider); }
+  .short .frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .short .cap{ font-size:13px; color:var(--dim); font-style:italic; font-family:var(--font-serif); text-align:center; margin-top:12px; }
+
+  .tweets{ columns:2; column-gap:24px; margin-top:46px; }
+  .tweets .twrap{ break-inside:avoid; margin-bottom:24px; }
+  @media (max-width:680px){ .tweets{ columns:1; } }
+
+  /* ─── prompt block ─── */
+  .prompt-box{
+    margin-top:40px; border:1px solid var(--divider); border-radius:16px;
+    background:var(--card-overlay); overflow:hidden;
+  }
+  .prompt-box .bar{ display:flex; justify-content:space-between; align-items:center; padding:12px 18px; border-bottom:1px solid var(--divider); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); }
+  .prompt-box .bar button{ font-family:var(--font-sans); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); background:none; border:1px solid var(--divider); border-radius:8px; padding:5px 12px; cursor:pointer; }
+  .prompt-box .bar button:hover{ border-color:var(--accent); }
+  .prompt-box pre{ margin:0; padding:22px; overflow-x:auto; font-size:12.5px; line-height:1.65; color:var(--text); white-space:pre-wrap; word-break:break-word; font-family:'SF Mono', ui-monospace, Menlo, Consolas, monospace; }
+
+  /* ─── footer ─── */
+  footer{ padding:70px 0 90px; text-align:center; }
+  footer .v{ font-family:var(--font-serif); font-style:italic; font-size:30px; }
+  footer p{ color:var(--dim); font-size:13px; margin-top:10px; }
+
+  /* reveal on scroll */
+  .reveal{ opacity:0; transform:translateY(20px); transition:opacity .9s ease, transform .9s ease; }
+  .reveal.in{ opacity:1; transform:none; }
+
+  @media (max-width:560px){
+    .switcher .label{ display:none; }
+    section{ padding:60px 0; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- ─── palette switcher ─── -->
+<nav class="switcher" id="switcher" aria-label="time of day palette">
+  <span class="label">a day in vendetta</span>
+</nav>
+
+<!-- ─── hero ─── -->
+<header class="hero">
+  <div class="bubblefield" id="heroField" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <h1>Vendetta</h1>
+    <p class="tag">a quieter way to actually see the people you keep meaning to see.</p>
+    <p class="sub">an ios &amp; web app · react · firebase · claude</p>
+    <p class="clock" id="clock"></p>
+  </div>
+  <div class="scroll-cue">scroll</div>
+</header>
+
+<div class="divider"></div>
+
+<!-- ─── what it does ─── -->
+<section id="what">
+  <div class="wrap reveal">
+    <p class="eyebrow">what it is</p>
+    <h2 class="title">not a calendar. not another group chat.</h2>
+    <p class="lede">
+      i have plenty of friends, a calendar, and a dozen group chats — and i still
+      don't see people. the bottleneck was never intent. it's that nobody wants to
+      be the planner. vendetta is a small, quiet layer that does the coordinating
+      work, so the plan just happens.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="num">01</div>
+        <h3>a living home</h3>
+        <p>no feed, no list. the home is a bubble universe — friends who are free tonight, their interests, things to do in your city. the whole canvas re-tints across nine palettes as the day moves from midnight to night.</p>
+      </div>
+      <div class="feature">
+        <div class="num">02</div>
+        <h3>a planner that does the type-a work</h3>
+        <p>open a chat and an in-thread ai runs the whole plan: reads both rosters, finds the overlap, polls activities, narrows times against your calendars, suggests real named venues, confirms.</p>
+      </div>
+      <div class="feature">
+        <div class="num">03</div>
+        <h3>a private social diary</h3>
+        <p>every confirmed plan becomes a diary entry — drafting, confirmed, live, past, logged. after a hangout, a soft nudge to write a note. over a year it becomes a record of who you actually showed up for.</p>
+      </div>
+      <div class="feature">
+        <div class="num">04</div>
+        <h3>travel mode</h3>
+        <p>type any city and the bubbles fall away, then re-form around that destination — friends who live there, plus activities curated for it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── app views ─── -->
+<section id="views">
+  <div class="wrap reveal">
+    <p class="eyebrow">views</p>
+    <h2 class="title">how it feels in the hand.</h2>
+    <p class="lede">these mockups use the exact same palette variables as the app, so they tint with the switcher above too — try changing the time of day and watch them move with you.</p>
+  </div>
+
+  <div class="wrap phones reveal">
+
+    <!-- HOME -->
+    <div class="phone-col">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>vendetta</span></div>
+          <div class="topbar">
+            <span class="city">bangalore</span>
+            <span class="ico">+</span>
+          </div>
+          <div class="mini-field" id="miniField"></div>
+          <div class="navbar"><span class="on">○</span><span>◇</span><span>♡</span><span>☉</span></div>
+        </div>
+      </div>
+      <div class="cap">home — the bubble universe</div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="phone-col">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>maya &amp; you</span></div>
+          <div class="chat-scroll">
+            <div class="ai-card">
+              <div class="who">vendetta</div>
+              <div class="q">you both pinned natural wine. start there?</div>
+              <div class="poll-opt lead"><span>natural wine, somewhere low-lit</span><span class="pct">you · maya</span></div>
+              <div class="poll-opt"><span>a long walk + coffee after</span><span class="pct">—</span></div>
+              <div class="poll-opt"><span>that film you both saved</span><span class="pct">—</span></div>
+            </div>
+            <div class="msg">thursday's better for me</div>
+            <div class="ai-card">
+              <div class="who">vendetta</div>
+              <div class="q">thursday it is. you're both free after 7.</div>
+            </div>
+            <div class="ai-card venue">
+              <div class="who">vendetta · venue</div>
+              <div class="name">soka</div>
+              <div class="why">tiny natural wine room in shanti nagar. low-lit, no menu, the kind of place you stay later than planned.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">chat — the planning engine</div>
+    </div>
+
+    <!-- DIARY -->
+    <div class="phone-col">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>diary</span></div>
+          <div class="diary-scroll">
+            <div class="entry confirmed">
+              <div class="ph">confirmed · thu 7:30</div>
+              <div class="act">natural wine at soka</div>
+              <div class="who">with maya</div>
+            </div>
+            <div class="entry logged">
+              <div class="ph">logged · last sunday</div>
+              <div class="act">long walk in cubbon park</div>
+              <div class="who">with arjun</div>
+              <div class="note">"we ended up at the bookshop. three hours gone before either of us noticed."</div>
+            </div>
+            <div class="entry">
+              <div class="ph">drafting</div>
+              <div class="act">that rooftop, before the rains</div>
+              <div class="who">with priya</div>
+            </div>
+            <div class="entry logged">
+              <div class="ph">logged · this month</div>
+              <div class="act">oysters &amp; a late film</div>
+              <div class="who">with maya</div>
+              <div class="note">"a weekday turned into a story worth keeping."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">diary — what actually happened</div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── how i built it ─── -->
+<section id="build">
+  <div class="wrap reveal">
+    <p class="eyebrow">how i built it</p>
+    <h2 class="title">three layers, one quiet machine.</h2>
+
+    <div class="stack-grid">
+      <div class="stack-card"><div class="k">client</div><div class="v">react 18 + vite<small>tailwind, capacitor for ios</small></div></div>
+      <div class="stack-card"><div class="k">backend</div><div class="v">cloud functions<small>node 22, express, one https fn</small></div></div>
+      <div class="stack-card"><div class="k">data</div><div class="v">firestore<small>realtime onSnapshot</small></div></div>
+      <div class="stack-card"><div class="k">ai</div><div class="v">claude sonnet 4.5<small>@anthropic-ai/sdk</small></div></div>
+      <div class="stack-card"><div class="k">auth</div><div class="v">firebase auth<small>native sign in with apple</small></div></div>
+      <div class="stack-card"><div class="k">integrations</div><div class="v">calendar · places<small>ticketmaster · tmdb</small></div></div>
+    </div>
+
+    <div class="layers">
+      <div class="layer">
+        <h3>1 · the bubble canvas</h3>
+        <p>a stack of hooks — useFriendBubbles, useMyInterests, useActivitySuggestions — fans out three firestore subscriptions and an http call, merges them into one bubble list, and filters by home vs travel city. switching cities runs a falling → loading → idle state machine so old bubbles don't pop out before the new ones arrive.</p>
+      </div>
+      <div class="layer">
+        <h3>2 · the chat planner (a server-driven state machine)</h3>
+        <p>every chat carries a planningState that advances through nine states. the ai writes messages server-side as 'vendetta-ai' so they bypass client rules; votes live in a subcollection per poll. most "ai" moments aren't llm calls at all — overlap is a set intersection, times are calendar arithmetic. claude is reserved for the one thing only it can do: turning two people's tastes into a suggestion that sounds human.</p>
+        <div class="pipeline">
+          <span class="stage">init</span><span class="arrow">→</span>
+          <span class="stage">roster-poll</span><span class="arrow">→</span>
+          <span class="stage">time-find</span><span class="arrow">→</span>
+          <span class="stage">time-poll</span><span class="arrow">→</span>
+          <span class="stage">venue-suggest</span><span class="arrow">→</span>
+          <span class="stage">venue-narrow</span><span class="arrow">→</span>
+          <span class="stage">summary</span><span class="arrow">→</span>
+          <span class="stage">confirmed</span>
+        </div>
+      </div>
+      <div class="layer">
+        <h3>3 · the three-tier suggestion engine</h3>
+        <p>the home feed never comes from one source. a city pool (claude-generated, cached forever), a personalized user pool (only in your home city), and live real-world data (ticketmaster + tmdb + places) get three-way interleaved — a[0], b[0], c[0], a[1]… so every scroll mixes something that knows you, something the city is known for, and something happening tonight. a nightly job refines each city from what people actually picked; a weekly job regenerates from scratch to catch real-world drift.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── design thinking ─── -->
+<section id="design">
+  <div class="wrap reveal">
+    <p class="eyebrow">the thinking</p>
+    <h2 class="title">why every choice is quiet on purpose.</h2>
+
+    <div class="think-grid">
+      <div class="think"><h3>bubbles, not a list</h3><p>a list ranks. a list creates obligation — the top friend is the one you "should" see. bubbles are spatial, light, refusable. the home is a mood, not a to-do.</p></div>
+      <div class="think"><h3>the app knows what time it is</h3><p>most apps look identical at 7am and 11pm. vendetta moves with you — warm at dusk, inky at midnight. the difference between a tool and a companion.</p></div>
+      <div class="think"><h3>structured ai, not a chatbot</h3><p>when the ai commits to a venue, a time, a confirmed plan, it has to be deterministic, auditable, reversible. state on the chat doc — not buried in a transcript.</p></div>
+      <div class="think"><h3>a diary, not a feed</h3><p>posts are performative. a diary is private — which is exactly why people fill it in. it's the part nobody else sees, and the part that lasts.</p></div>
+      <div class="think"><h3>three sources, always mixed</h3><p>pure personalization is a filter bubble. pure curation is generic. pure real-data is a yelp list. interleaving forces every scroll to carry all three.</p></div>
+      <div class="think"><h3>what i left out</h3><p>no public profiles. no follower counts. no visible streaks. no dopamine notifications. the whole genre of social-app dark patterns is absent on purpose.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── build journal: videos ─── -->
+<section id="journal">
+  <div class="wrap reveal">
+    <p class="eyebrow">the journal</p>
+    <h2 class="title">thinking out loud, while building.</h2>
+    <p class="lede">cahoots — short recordings i made along the way, talking through the build as it happened.</p>
+  </div>
+
+  <div class="wrap videos reveal">
+    <div class="short">
+      <div class="frame">
+        <iframe src="https://www.youtube.com/embed/RBAkK8fXTe0" title="Vendetta build — cahoots" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+      <div class="cap">cahoots · one</div>
+    </div>
+    <div class="short">
+      <div class="frame">
+        <iframe src="https://www.youtube.com/embed/n76HQ9dowtc" title="Vendetta build — cahoots" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+      <div class="cap">cahoots · two</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── build journal: tweets ─── -->
+<section id="tweets">
+  <div class="wrap reveal">
+    <p class="eyebrow">in real time</p>
+    <h2 class="title">posted while it was still half-built.</h2>
+    <p class="lede">the build, narrated on x as it happened.</p>
+  </div>
+
+  <div class="wrap reveal">
+    <div class="tweets">
+      <div class="twrap"><blockquote class="twitter-tweet" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2043060029432172671"></a></blockquote></div>
+      <div class="twrap"><blockquote class="twitter-tweet" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2043225776213123218"></a></blockquote></div>
+      <div class="twrap"><blockquote class="twitter-tweet" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2043262681357160827"></a></blockquote></div>
+      <div class="twrap"><blockquote class="twitter-tweet" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2043297205482860877"></a></blockquote></div>
+      <div class="twrap"><blockquote class="twitter-tweet" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2043377690720506193"></a></blockquote></div>
+      <div class="twrap"><blockquote class="twitter-tweet" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2043586503360884865"></a></blockquote></div>
+      <div class="twrap"><blockquote class="twitter-tweet" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2044357540818133231"></a></blockquote></div>
+      <div class="twrap"><blockquote class="twitter-tweet" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2045225441355837936"></a></blockquote></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── build it yourself ─── -->
+<section id="prompt">
+  <div class="wrap reveal">
+    <p class="eyebrow">build it yourself</p>
+    <h2 class="title">the brief i'd hand an agent.</h2>
+    <p class="lede">a self-contained prompt for claude code (or any agentic ide) to recreate vendetta from scratch.</p>
+
+    <div class="prompt-box">
+      <div class="bar">
+        <span>the prompt</span>
+        <button id="copyBtn">copy</button>
+      </div>
+<pre id="promptText">Build Vendetta, a React + Vite + Firebase web app (Capacitor-wrapped for iOS) that helps small groups of close friends actually spend time together. Replace social-media patterns with quieter ones. The product is opinionated — match the tone exactly.
+
+STACK: React 18 + Vite + Tailwind on the client. Firebase Auth, Firestore, and Cloud Functions (Node 22, Express behind a single exports.api = onRequest(app)). Anthropic SDK for AI calls. Optional: Google Calendar, Google Places, Ticketmaster, TMDB.
+
+CORE SURFACES:
+1. Home — the bubble universe. A canvas of floating circular "bubbles". Each is one of: a friend who marked themselves free tonight, a friend's pinned interest, the user's own interest, or an AI-curated activity for the user's city. The page background uses nine CSS-variable palettes (midnight, predawn, dawn, morning, midday, afternoon, golden, dusk, night) auto-selected by the current hour via a TimeThemeProvider. Typing a different city in the top bar triggers a falling → loading → idle transition.
+
+2. Chats with a structured AI planner. Each chat document has a planningState field that advances through: idle → init → roster-poll → time-find → time-poll → venue-suggest → venue-narrow → summary → confirmed. AI messages are written server-side with senderId 'vendetta-ai'. Endpoints /api/chat/{init,vote,find-times,venue-suggest,respond,confirm,cancel} drive the state machine. Init compares both users' interest rosters and seeds a poll; time-find pulls Google Calendar busy windows and proposes 3 slots; venue-suggest calls Claude with both rosters + city pool + chosen activity and returns 3 specific named venues with a feedback loop.
+
+3. Three-tier suggestion engine. GET /api/suggestions returns a merged stream of (a) a city pool — Claude-generated, cached forever, 25 ideas per city; (b) a personalized user pool, only when requested city == home city; (c) live Ticketmaster + TMDB + Places data. Three-way interleave: a[0], b[0], c[0], a[1], b[1], c[1]...
+
+4. Social diary. Lists every plan involving the user. Phase computed client-side: drafting → confirmed → live → past → logged. After a plan ends, prompt for a private note.
+
+5. Scheduled jobs. A nightly job reads recent picks + taps, groups by city, asks Claude to refine each list (keep resonant, replace ignored, add fresh). A weekly job regenerates each cached city from scratch. A Firestore trigger updates lastTogetherAt on the friendship when a plan is confirmed.
+
+AI PROMPTING RULES (non-negotiable): all generated copy is lowercase, no emojis, no exclamation marks, no clichés. Tone: refined, understated, for well-traveled adults. Use real, named venues. 3–8 word activity labels. "Details" are 2–3 short sentences (max 180 chars) about the mood, not the logistics.
+
+VISUAL LANGUAGE: italic serif headers, clean sans body, all UI strings lowercase. Empty states are evocative ("the city is still unfolding"). Every color is a CSS custom property so the hourly palette swap is one variable update.
+
+WHAT NOT TO BUILD: no public profiles, no like/comment surfaces, no streaks shown to friends, no notification dopamine, no infinite scroll. The diary is private by default.
+
+Build incrementally: auth + bubble canvas + rosters first; then the chat state machine; then the suggestion pipeline; then the diary; the scheduled jobs last.</pre>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<footer>
+  <div class="wrap">
+    <div class="v">Vendetta</div>
+    <p>built by rhea karuturi · 2026</p>
+    <p style="margin-top:4px;">the city is still unfolding.</p>
+  </div>
+</footer>
+
+<!-- twitter embed script (upgrades the blockquotes into rendered tweets) -->
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<script>
+  // ── palettes + hour mapping (mirrors the app's getPaletteForHour) ──
+  const PALETTES = ['midnight','predawn','dawn','morning','midday','afternoon','golden','dusk','night'];
+  const SWATCH = {
+    midnight:'#0A0C14', predawn:'#141628', dawn:'#3A2030', morning:'#E4CEC4',
+    midday:'#DDE4EE', afternoon:'#E0D0B8', golden:'#C07828', dusk:'#3A1E38', night:'#141008'
+  };
+  function paletteForHour(h){
+    if(h>=0&&h<4)  return 'midnight';
+    if(h>=4&&h<5)  return 'predawn';
+    if(h>=5&&h<7)  return 'dawn';
+    if(h>=7&&h<11) return 'morning';
+    if(h>=11&&h<14)return 'midday';
+    if(h>=14&&h<17)return 'afternoon';
+    if(h>=17&&h<19)return 'golden';
+    if(h>=19&&h<21)return 'dusk';
+    return 'night';
+  }
+  function setPalette(name){
+    document.documentElement.setAttribute('data-palette', name);
+    document.querySelectorAll('.chip').forEach(c =>
+      c.setAttribute('aria-pressed', c.dataset.p === name ? 'true' : 'false'));
+  }
+
+  // build the switcher chips
+  const sw = document.getElementById('switcher');
+  PALETTES.forEach(p => {
+    const b = document.createElement('button');
+    b.className='chip'; b.dataset.p=p; b.title=p;
+    b.style.background = SWATCH[p];
+    b.setAttribute('aria-label', 'preview '+p);
+    b.addEventListener('click', ()=> setPalette(p));
+    sw.appendChild(b);
+  });
+
+  // initial palette = visitor's local hour
+  const hour = new Date().getHours();
+  setPalette(paletteForHour(hour));
+
+  // live clock + which palette is in play
+  const clockEl = document.getElementById('clock');
+  function tick(){
+    const now = new Date();
+    const hh = now.getHours(), mm = String(now.getMinutes()).padStart(2,'0');
+    clockEl.textContent = `it's ${paletteForHour(hh)} where you are · ${String(hh).padStart(2,'0')}:${mm}`;
+  }
+  tick(); setInterval(tick, 30000);
+
+  // ── bubble universe — a faithful port of the app's packer ──
+  // Bubbles drift straight up on one shared 95s loop. Each has a fixed
+  // x and a negative delay, so any two keep a constant offset forever —
+  // which turns non-overlap into a one-time circle packing on a torus.
+  const DURATION = 95;
+
+  const CONTENT = [
+    {l:'maya', s:'free tonight', free:true},
+    {l:'natural wine, low-lit'},
+    {l:'a long walk', s:'cubbon park'},
+    {l:'that film you both saved'},
+    {l:'arjun', s:'in town', free:true},
+    {l:'oysters', s:'a small splurge'},
+    {l:'a bookshop afternoon'},
+    {l:'pickleball', s:'an hour'},
+    {l:'rooftop, before the rains'},
+    {l:'a late breakfast'},
+    {l:'coffee, a slow hour'},
+    {l:'priya', s:'free sunday', free:true},
+    {l:'a quiet swim'},
+    {l:'the planetarium'},
+    {l:'a cocktail bar'},
+    {l:'cook something together'},
+    {l:'a small show', s:'tonight'},
+    {l:'play tourist, an hour'},
+  ];
+
+  // deterministic-ish hash → [0,1)
+  function hash(str){ let h=5381; str=String(str); for(let i=0;i<str.length;i++) h=((h*33)+str.charCodeAt(i))>>>0; return (h%10000)/10000; }
+
+  function sizeForContent(item, i, cfg){
+    const roll = hash(item.l + i + '_b'), noise = hash(item.l + i + '_n');
+    let t;
+    if(roll < .45) t = cfg.cMin + Math.floor(noise * cfg.cMin*0.35);
+    else if(roll < .80) t = cfg.cMin*1.35 + Math.floor(noise * cfg.cMin*0.45);
+    else t = cfg.cMax*0.82 + Math.floor(noise * cfg.cMax*0.18);
+    return Math.round(Math.max(cfg.cMin, Math.min(cfg.cMax, t)));
+  }
+  function sizeForFiller(rng, cfg){
+    const r = rng();
+    if(r < .55) return cfg.fMin + Math.floor(rng()*(cfg.fMin*0.7));
+    if(r < .85) return cfg.fMin*1.6 + Math.floor(rng()*(cfg.fMin*0.7));
+    return cfg.fMax*0.75 + Math.floor(rng()*(cfg.fMax*0.25));
+  }
+  function torusDy(a,b,speed){ const raw=((a-b)%DURATION+DURATION)%DURATION; return Math.min(raw,DURATION-raw)*speed; }
+  function collides(x,delay,r,placed,speed){
+    for(const p of placed){
+      const dx=x-p.x, dy=torusDy(delay,p.delay,speed), min=r+p.r+4;
+      if(dx*dx+dy*dy < min*min) return true;
+    }
+    return false;
+  }
+  function tryPlace(size,placed,rng,attempts,speed,W){
+    const r=size/2, xMin=r+3, xMax=W-r-3;
+    if(xMax<=xMin) return null;
+    for(let a=0;a<attempts;a++){
+      const x=xMin+rng()*(xMax-xMin), delay=-rng()*DURATION;
+      if(!collides(x,delay,r,placed,speed)) return {x,delay,r,size};
+    }
+    return null;
+  }
+
+  function buildField(el, cfg){
+    const W = el.clientWidth || cfg.fallbackW;
+    const H = el.clientHeight || cfg.fallbackH;
+    const startY = H + 120, endY = -160;
+    const speed = (startY - endY) / DURATION;
+
+    // simple seeded rng so a refresh looks consistent
+    let seed = 1234 + cfg.fallbackW;
+    const rng = () => { seed = (seed*16807)%2147483647; return seed/2147483647; };
+
+    const placed = [];
+
+    // pass 1 — content (biggest first)
+    const sized = CONTENT.map((it,i)=>({ ...it, size:sizeForContent(it,i,cfg), key:'c'+i }))
+                         .sort((a,b)=>b.size-a.size);
+    for(const it of sized){
+      let pick = tryPlace(it.size, placed, rng, 260, speed, W);
+      if(!pick){ const sm=Math.round(it.size*0.85); pick=tryPlace(sm,placed,rng,120,speed,W); }
+      if(pick) placed.push({ ...it, ...pick });
+    }
+
+    // pass 2 — small textless fillers into the gaps
+    let fails=0;
+    for(let i=0;i<cfg.maxFillers;i++){
+      const size=sizeForFiller(rng,cfg), pick=tryPlace(size,placed,rng,80,speed,W);
+      if(!pick){ if(++fails>=4) break; continue; }
+      fails=0;
+      placed.push({ filler:true, key:'f'+i, ...pick });
+    }
+
+    // render
+    for(const b of placed){
+      const d=document.createElement('div');
+      const variant = 'c'+Math.floor(hash(b.key+'v')*5);
+      const cls = b.filler ? `bub filler ${variant}`
+                : `bub ${variant}${b.free?' bfree':''}`;
+      d.className = cls;
+      d.style.width = d.style.height = b.size+'px';
+      d.style.left = (b.x/W*100)+'%';
+      d.style.marginLeft = (-b.size/2)+'px';
+      d.style.setProperty('--startY', startY+'px');
+      d.style.setProperty('--endY', endY+'px');
+      d.style.animationDuration = DURATION+'s';
+      d.style.animationDelay = b.delay+'s';
+      if(!b.filler){
+        const inner=document.createElement('div'); inner.className='bin';
+        const fs = b.size<70?10:b.size<100?12:b.size<130?14:16;
+        const lab=document.createElement('span'); lab.className='bl';
+        lab.style.fontSize=fs+'px'; lab.textContent=b.l; inner.appendChild(lab);
+        if(b.s){ const sub=document.createElement('span'); sub.className='sl';
+          sub.style.fontSize=Math.max(8, fs-3)+'px'; sub.textContent=b.s; inner.appendChild(sub); }
+        d.appendChild(inner);
+      }
+      el.appendChild(d);
+    }
+  }
+
+  function renderFields(){
+    const hero=document.getElementById('heroField');
+    const mini=document.getElementById('miniField');
+    hero.innerHTML=''; mini.innerHTML='';
+    buildField(hero, { cMin:64, cMax:150, fMin:16, fMax:52, maxFillers:22, fallbackW:900, fallbackH:760 });
+    buildField(mini, { cMin:42, cMax:92,  fMin:12, fMax:30, maxFillers:14, fallbackW:228, fallbackH:430 });
+  }
+  renderFields();
+  // re-pack on resize so the mosaic stays collision-free at any width
+  let rT; window.addEventListener('resize', ()=>{ clearTimeout(rT); rT=setTimeout(renderFields, 250); });
+
+  // ── reveal on scroll ──
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  }, { threshold:0.12 });
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // ── copy prompt ──
+  document.getElementById('copyBtn').addEventListener('click', async (e)=>{
+    try{
+      await navigator.clipboard.writeText(document.getElementById('promptText').innerText);
+      e.target.textContent='copied';
+      setTimeout(()=>{ e.target.textContent='copy'; }, 1800);
+    }catch(_){ e.target.textContent='select & copy'; }
+  });
+</script>
+
+</body>
+</html>

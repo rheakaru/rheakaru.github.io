@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Brief — an anti-overwhelm news app</title>
+<meta name="description" content="The Brief: a calm, anti-overwhelm news reading app built with React, Firebase, and Claude. What it does, how it was built, the design thinking, and a prompt to build your own." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f5f2ec;
+    --ink: #1c1b18;
+    --green: #2a5a3c;
+    --chip-bg: #e8e2d8;
+    --amber: #9b6b2a;
+    --blue: #3d6b9e;
+    --muted: #9b9589;
+    --hair: #d9d4cb;
+    --max-w: 720px;
+    --font-body: 'Lora', Georgia, 'Times New Roman', serif;
+    --font-ui: 'DM Mono', 'Courier New', monospace;
+  }
+
+  * , *::before, *::after { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--bg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    font-family: var(--font-body);
+    color: var(--ink);
+    margin: 0;
+    padding: 0;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+
+  /* ── Masthead / hero ── */
+  header.hero {
+    padding: 72px 0 28px;
+    border-bottom: 1px solid var(--hair);
+    margin-bottom: 8px;
+  }
+  .hero-kicker {
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 18px;
+  }
+  .hero-title {
+    font-family: var(--font-body);
+    font-size: clamp(2.6rem, 7vw, 4rem);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 0.98;
+    margin: 0 0 16px;
+  }
+  .hero-sub {
+    font-size: 1.18rem;
+    line-height: 1.55;
+    color: #3a3833;
+    max-width: 33em;
+    margin: 0 0 26px;
+  }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    align-items: center;
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .hero-meta .dot { color: var(--hair); }
+
+  .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    padding: 11px 20px;
+    border-radius: 6px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary { background: var(--green); color: #fff; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(42,90,60,0.22); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+  .btn-ghost:hover { background: var(--ink); color: var(--bg); }
+
+  /* ── Section scaffolding ── */
+  section { padding: 52px 0; border-bottom: 1px solid var(--hair); }
+  section:last-of-type { border-bottom: none; }
+  .sec-num {
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--green);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  h2 {
+    font-family: var(--font-body);
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0 0 22px;
+  }
+  h3 {
+    font-family: var(--font-body);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 30px 0 10px;
+  }
+  p { margin: 0 0 18px; font-size: 1.05rem; }
+  p.lead-para { font-size: 1.12rem; }
+  a.inline { color: var(--green); text-decoration: underline; text-underline-offset: 2px; }
+
+  /* concept-chip nod, reused from the app */
+  .chip {
+    background: var(--chip-bg);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 0.92em;
+    position: relative;
+    top: -1px;
+    white-space: nowrap;
+  }
+  .chip.green { background: var(--green); color: #fff; }
+  .chip.blue { background: var(--blue); color: #fff; }
+
+  ul.clean { list-style: none; padding: 0; margin: 0 0 18px; }
+  ul.clean li {
+    padding: 12px 0 12px 26px;
+    border-bottom: 1px solid var(--hair);
+    position: relative;
+    font-size: 1.02rem;
+  }
+  ul.clean li:last-child { border-bottom: none; }
+  ul.clean li::before {
+    content: '·';
+    position: absolute;
+    left: 6px;
+    color: var(--green);
+    font-size: 1.3rem;
+    line-height: 1.2;
+  }
+  ul.clean li b, ul.clean li strong { font-weight: 600; }
+  ul.clean li .k {
+    font-family: var(--font-ui);
+    font-size: 0.74rem;
+    color: var(--green);
+    letter-spacing: 0.03em;
+  }
+
+  ol.steps { padding-left: 22px; margin: 0 0 18px; }
+  ol.steps li { margin-bottom: 14px; line-height: 1.6; }
+
+  /* ── Stack grid ── */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    margin: 8px 0 8px;
+  }
+  .stack-cell {
+    background: #faf9f7;
+    border: 1px solid #e2ddd5;
+    border-radius: 6px;
+    padding: 14px 14px 13px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .stack-cell .role {
+    font-family: var(--font-ui);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  .stack-cell .tech { font-family: var(--font-body); font-size: 1.02rem; font-weight: 600; }
+
+  /* ───────────────────────────────────────────
+     MOCKUP: device frame
+  ─────────────────────────────────────────── */
+  .device {
+    background: var(--bg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    border: 1px solid var(--hair);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin: 6px 0 10px;
+  }
+  .device-bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--hair);
+    background: rgba(255,255,255,0.35);
+  }
+  .device-bar .lt { width: 10px; height: 10px; border-radius: 50%; background: #d9d4cb; }
+  .device-bar .url {
+    margin-left: 10px;
+    font-family: var(--font-ui);
+    font-size: 0.66rem;
+    color: var(--muted);
+  }
+  .device-body { padding: 26px 28px 30px; }
+
+  .figcap {
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: center;
+    margin: 0 0 34px;
+    letter-spacing: 0.02em;
+  }
+
+  /* mock masthead */
+  .m-masthead { border-bottom: 1px solid var(--hair); padding-bottom: 12px; margin-bottom: 14px; }
+  .m-title { font-family: var(--font-body); font-size: 1.9rem; font-weight: 400; letter-spacing: -0.02em; line-height: 1; margin: 0 0 6px; }
+  .m-meta { display: flex; justify-content: space-between; font-family: var(--font-ui); font-size: 0.66rem; color: var(--muted); }
+  .m-meta .loc { text-decoration: underline; }
+
+  /* mock tabs */
+  .m-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--hair); margin-bottom: 20px; flex-wrap: wrap; }
+  .m-tab { font-family: var(--font-ui); font-size: 0.72rem; color: var(--muted); padding: 9px 12px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .m-tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+  /* mock story list */
+  ol.m-stories { list-style: decimal; padding-left: 22px; margin: 0; }
+  ol.m-stories > li { margin-bottom: 17px; line-height: 1.5; font-size: 0.98rem; }
+  ol.m-stories .lead { color: var(--ink); }
+  .m-expanded { margin-top: 9px; padding-top: 9px; border-top: 1px solid #e2ddd5; }
+  .m-expanded p { font-size: 0.9rem; line-height: 1.7; margin: 0 0 10px; color: #2c2a26; }
+  .m-actions { display: flex; gap: 14px; font-family: var(--font-ui); font-size: 0.66rem; color: var(--muted); }
+  .m-actions span.act { color: var(--green); }
+
+  /* mock chip popover */
+  .m-pop {
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    padding: 12px 14px;
+    max-width: 290px;
+    margin: 8px 0 4px;
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+  .m-pop .more { font-family: var(--font-ui); font-size: 0.66rem; color: var(--green); margin-top: 6px; display: block; }
+
+  /* ── Inbox mock ── */
+  .ib-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #f0f7f3; border: 1px solid #c4dccd; border-left: 3px solid var(--green);
+    border-radius: 6px; padding: 14px 18px; margin-bottom: 22px;
+  }
+  .ib-banner .lab { font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: var(--green); }
+  .ib-banner .hint { font-family: var(--font-ui); font-size: 0.62rem; color: #6b6560; margin-top: 3px; }
+  .ib-banner .arr { font-size: 1.4rem; color: var(--green); }
+
+  .ib-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  @media (max-width: 600px) { .ib-grid { grid-template-columns: repeat(3, 1fr); } }
+  .ib-card {
+    position: relative; background: #faf9f7; border: 1px solid #e2ddd5; border-radius: 5px;
+    padding: 12px 8px 9px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    aspect-ratio: 1 / 0.9; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06); z-index: 1;
+  }
+  .ib-card::after {
+    content: ''; position: absolute; inset: 0; background: #f0ece5; border: 1px solid #e2ddd5;
+    border-radius: 6px; z-index: -1; opacity: 0;
+  }
+  .ib-card.d1::after { opacity: 1; transform: rotate(1.2deg) translate(2px,3px); }
+  .ib-card.d2 { box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 6px 16px rgba(0,0,0,0.06); }
+  .ib-card.d2::after { opacity: 1; transform: rotate(1.6deg) translate(3px,4px); }
+  .ib-card.d3 { box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 10px 26px rgba(0,0,0,0.07); }
+  .ib-card.d3::after { opacity: 1; transform: rotate(2.5deg) translate(5px,6px); }
+  .ib-card .nm { font-family: var(--font-ui); font-size: 0.52rem; font-weight: 500; color: #6b6560; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 5px; line-height: 1.2; }
+  .ib-card .ct { font-family: var(--font-body); font-size: 1.15rem; font-weight: 700; }
+  .ib-badge { position: absolute; top: -5px; right: -5px; background: var(--green); color: #fff; font-family: var(--font-ui); font-size: 0.5rem; font-weight: 600; min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+  /* ── Prompt block ── */
+  .prompt-wrap { position: relative; }
+  .prompt {
+    background: #1c1b18;
+    color: #ece7dd;
+    border-radius: 10px;
+    padding: 26px 26px 28px;
+    font-family: var(--font-ui);
+    font-size: 0.82rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    border: 1px solid #2c2a26;
+  }
+  .prompt .hl { color: #8fcfa6; }
+  .copy-btn {
+    position: absolute; top: 14px; right: 14px;
+    font-family: var(--font-ui); font-size: 0.66rem; letter-spacing: 0.04em;
+    background: rgba(255,255,255,0.08); color: #ece7dd; border: 1px solid rgba(255,255,255,0.18);
+    padding: 6px 12px; border-radius: 5px; cursor: pointer; transition: background 0.15s ease;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.16); }
+  .copy-btn.done { background: var(--green); border-color: var(--green); color: #fff; }
+
+  /* ── Video embed ── */
+  .video-embed {
+    position: relative; width: 100%; aspect-ratio: 16 / 9;
+    border-radius: 12px; overflow: hidden; border: 1px solid var(--hair);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05);
+    margin: 6px 0 10px; background: #1c1b18;
+  }
+  .video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  /* ── Build thread (live X embeds, masonry columns) ── */
+  .thread-embeds {
+    column-count: 2;
+    column-gap: 18px;
+    margin: 8px 0 14px;
+  }
+  @media (max-width: 640px) { .thread-embeds { column-count: 1; } }
+  .thread-embeds .twitter-tweet {
+    break-inside: avoid;
+    margin: 0 0 18px !important;
+  }
+  .thread-follow {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-family: var(--font-ui); font-size: 0.74rem; color: var(--green);
+    text-decoration: none; margin-top: 4px;
+  }
+  .thread-follow:hover { text-decoration: underline; }
+  .thread-follow .xmark { width: 15px; height: 15px; fill: var(--green); }
+
+  /* ── Footer ── */
+  footer { padding: 50px 0 70px; text-align: center; }
+  footer .ft-title { font-family: var(--font-body); font-size: 1.6rem; margin: 0 0 8px; }
+  footer .ft-sub { font-family: var(--font-ui); font-size: 0.72rem; color: var(--muted); margin-bottom: 22px; }
+  footer .ft-links { display: flex; gap: 20px; justify-content: center; font-family: var(--font-ui); font-size: 0.76rem; }
+  footer .ft-links a { color: var(--green); text-decoration: none; }
+  footer .ft-links a:hover { text-decoration: underline; }
+
+  .callout {
+    background: #f0f7f3; border: 1px solid #c4dccd; border-left: 3px solid var(--green);
+    border-radius: 6px; padding: 16px 20px; margin: 6px 0 18px;
+    font-size: 0.98rem;
+  }
+  .callout .k { font-family: var(--font-ui); font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green); display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-kicker">A project by Rhea Karuturi</div>
+    <h1 class="hero-title">The Brief</h1>
+    <p class="hero-sub">An anti-overwhelm news app. It opens as a near-blank page — no images competing for attention, no headlines screaming. You go as shallow or as deep as you want, at your own pace.</p>
+    <div class="hero-meta">
+      <span>React + Firebase + Claude</span>
+      <span class="dot">·</span>
+      <span>Built with Claude Code</span>
+      <span class="dot">·</span>
+      <span>2026</span>
+    </div>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="https://the-b-590d2.web.app" target="_blank" rel="noopener">Open the app &nbsp;→</a>
+      <a class="btn btn-ghost" href="https://github.com/rheakaru/theBrief" target="_blank" rel="noopener">View the code</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 1. WHAT IT DOES -->
+  <section id="what">
+    <div class="sec-num">01 — What it does</div>
+    <h2>A calm front page for the news</h2>
+    <p class="lead-para">Most news apps are designed to keep you there: autoplay video, push alerts, infinite scroll, ten headlines fighting for the same square inch. The Brief is the opposite. It treats reading the news like reading a single, well-set page — quiet, finite, and yours to pace.</p>
+    <p>You land on a numbered list of about eight story leads, each a single sentence. Nothing expands until you ask it to. Tap a lead and it unfolds a short, Claude-written summary — no ads, no related-content rabbit holes, just the story.</p>
+
+    <h3>Watch it work</h3>
+    <div class="video-embed">
+      <iframe src="https://www.youtube-nocookie.com/embed/Y6ptbPwbKNU?start=48" title="The Brief — how it works" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+    <p class="figcap">A walkthrough of The Brief — how it reads, expands, and explains.</p>
+
+    <div class="device" role="img" aria-label="Mockup of The Brief news reading view">
+      <div class="device-bar">
+        <span class="lt"></span><span class="lt"></span><span class="lt"></span>
+        <span class="url">the-b-590d2.web.app</span>
+      </div>
+      <div class="device-body">
+        <div class="m-masthead">
+          <div class="m-title">the brief</div>
+          <div class="m-meta"><span>Wednesday, May 27</span><span class="loc">Bengaluru ▾</span></div>
+        </div>
+        <div class="m-tabs">
+          <span class="m-tab active">World</span>
+          <span class="m-tab">India</span>
+          <span class="m-tab">Karnataka</span>
+          <span class="m-tab">Climate</span>
+          <span class="m-tab">+ topic</span>
+        </div>
+        <ol class="m-stories">
+          <li><span class="lead">Central banks signal a pause as inflation cools across major economies.</span>
+            <div class="m-expanded">
+              <p>After eighteen months of hikes, the <span class="chip">US Federal Reserve</span> and the <span class="chip blue">ECB</span> both held rates steady, citing easing price pressure. Markets read it as the start of a longer pause.</p>
+              <div class="m-pop">
+                <strong>European Central Bank</strong> — the central bank for the 20 countries that use the euro; sets interest rates for the eurozone.
+                <span class="more">tell me more →</span>
+              </div>
+              <div class="m-actions"><span class="act">＋ follow</span><span>ask a question</span><span>note</span></div>
+            </div>
+          </li>
+          <li><span class="lead">India's monsoon forecast lands early, and farmers are watching the numbers.</span></li>
+          <li><span class="lead">A new battery chemistry promises cheaper storage — if it survives the lab.</span></li>
+          <li><span class="lead">Talks resume over a long-stalled regional trade corridor.</span></li>
+        </ol>
+      </div>
+    </div>
+    <p class="figcap">The reading view — a masthead, category tabs, and a numbered list of one-sentence leads. Tap to expand.</p>
+
+    <h3>What makes it different</h3>
+    <ul class="clean">
+      <li><b>Concept chips.</b> Inside every summary, names and terms you might not know are <span class="chip green">tappable pills</span>. Tap one for a one-line explanation, then <i>tell me more</i> for depth. Learn the background without leaving the story or feeling talked down to.</li>
+      <li><b>Ask anything.</b> Have a question about a story? Ask it in plain language. Claude answers using that story as context.</li>
+      <li><b>Follow a thread.</b> Mark a story to follow and The Brief keeps pulling the thread over time.</li>
+      <li><b>Your tabs, your place.</b> World, India, and your own city — plus up to three custom interest topics you add yourself.</li>
+      <li><b>It remembers what you learned.</b> Every concept you open is saved to a running list of what you picked up today.</li>
+    </ul>
+
+    <h3>And a private inbox, reimagined</h3>
+    <p>The Brief has a second life at <span class="chip">/inbox</span>: a personal Gmail dashboard that sorts every email into tactile, stacked-paper "bucket" cards — the stack gets visibly thicker the more mail it holds. Buckets match how you actually think about your inbox (work, banking, calendar, real conversations) rather than generic folders. There's even an <b>"Emails you should send"</b> feature that drafts outreach for you based on what you've been reading.</p>
+
+    <div class="device" role="img" aria-label="Mockup of The Brief inbox view">
+      <div class="device-bar">
+        <span class="lt"></span><span class="lt"></span><span class="lt"></span>
+        <span class="url">the-b-590d2.web.app/inbox</span>
+      </div>
+      <div class="device-body">
+        <div class="m-masthead">
+          <div class="m-title">the brief <span style="font-size:0.9rem;color:var(--muted);">inbox</span></div>
+          <div class="m-meta"><span>Wednesday, May 27</span><span>refreshed just now</span></div>
+        </div>
+        <div class="ib-banner">
+          <div>
+            <div class="lab">Emails you should send</div>
+            <div class="hint">3 suggestions drafted from what you've been reading →</div>
+          </div>
+          <div class="arr">→</div>
+        </div>
+        <div class="ib-grid">
+          <div class="ib-card d3"><span class="ib-badge">12</span><div class="nm">Work</div><div class="ct">41</div></div>
+          <div class="ib-card d2"><div class="nm">Banking</div><div class="ct">18</div></div>
+          <div class="ib-card d2"><span class="ib-badge">3</span><div class="nm">Calendar</div><div class="ct">14</div></div>
+          <div class="ib-card d1"><div class="nm">Brain&nbsp;juice</div><div class="ct">9</div></div>
+          <div class="ib-card d1"><div class="nm">Real&nbsp;convos</div><div class="ct">7</div></div>
+          <div class="ib-card"><div class="nm">Auth&nbsp;codes</div><div class="ct">4</div></div>
+        </div>
+      </div>
+    </div>
+    <p class="figcap">The inbox — emails sorted into stacked-paper buckets, depth proportional to volume.</p>
+  </section>
+
+  <!-- 2. HOW I BUILT IT -->
+  <section id="how">
+    <div class="sec-num">02 — How I built it</div>
+    <h2>The build, end to end</h2>
+    <p class="lead-para">I built The Brief with <a class="inline" href="https://claude.com/claude-code" target="_blank" rel="noopener">Claude Code</a> — describing what I wanted in plain language and iterating on the result. The whole thing runs on Firebase, with Claude doing the editorial heavy lifting on the server.</p>
+
+    <div class="stack-grid">
+      <div class="stack-cell"><div class="role">Frontend</div><div class="tech">React + Vite</div></div>
+      <div class="stack-cell"><div class="role">Hosting</div><div class="tech">Firebase Hosting</div></div>
+      <div class="stack-cell"><div class="role">Backend</div><div class="tech">Express on Cloud Functions</div></div>
+      <div class="stack-cell"><div class="role">Database</div><div class="tech">Firestore</div></div>
+      <div class="stack-cell"><div class="role">AI</div><div class="tech">Claude (Sonnet)</div></div>
+      <div class="stack-cell"><div class="role">News</div><div class="tech">GNews API</div></div>
+      <div class="stack-cell"><div class="role">Auth</div><div class="tech">6-digit email OTP + JWT</div></div>
+      <div class="stack-cell"><div class="role">Styling</div><div class="tech">Vanilla CSS</div></div>
+    </div>
+
+    <h3>The shape of it</h3>
+    <p>The frontend is a single-page React app installable as a PWA. The backend is one Express server deployed as a single Firebase Cloud Function that handles every <span class="chip">/api/*</span> route. All data lives in Firestore — and the security rules <i>deny all direct client access</i>. Every read and write goes through the server, where a JWT middleware is the real access-control layer. Nothing sensitive ever touches the browser.</p>
+
+    <h3>Where Claude does the work</h3>
+    <p>Claude runs server-side only, never from the browser. It powers the editorial layer that turns raw articles into a calm reading experience:</p>
+    <ul class="clean">
+      <li><span class="k">summarise</span> Turns a raw article into a short, plain summary with concept chips embedded.</li>
+      <li><span class="k">rewrite&nbsp;lead</span> Rewrites jargon-y headlines into one clear sentence.</li>
+      <li><span class="k">select</span> Picks the top stories from a larger pool of articles.</li>
+      <li><span class="k">explain&nbsp;concept</span> Generates the one-liner and the "tell me more" for each chip.</li>
+      <li><span class="k">answer</span> Responds to a reader's free-text question using the story as context.</li>
+      <li><span class="k">suggest&nbsp;emails</span> Drafts outreach for the inbox feature from your reading history.</li>
+    </ul>
+    <p>To keep it fast and cheap, Claude-processed stories are cached in Firestore with a short time-to-live, and concept explanations are cached permanently — the second reader to open a story gets it instantly.</p>
+
+    <h3>The inbox, technically</h3>
+    <p>The inbox connects to Gmail over OAuth 2.0 and streams your mail live on each load — nothing is stored. The clever bit is that classification into buckets is <b>pure JavaScript running in the browser</b>: a priority-ordered chain of domain and sender rules, no AI involved. The only AI in the inbox is the "Emails you should send" feature, which sends your context to Claude and gets back structured JSON with insights and ready-to-edit drafts.</p>
+
+    <h3>My process, in public</h3>
+    <p>I built The Brief in the open, posting the wins, dead ends, and course-corrections along the way. Here's the build thread:</p>
+    <div class="thread-embeds">
+      <blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2034734998180569551"></a></blockquote>
+      <blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2034846977993973943"></a></blockquote>
+      <blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2035051097497510202"></a></blockquote>
+      <blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2035989507867373578"></a></blockquote>
+      <blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2036307041850106160"></a></blockquote>
+      <blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2036390147508568324"></a></blockquote>
+      <blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2036805074769617180"></a></blockquote>
+      <blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2037535409090253184"></a></blockquote>
+      <blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2042692910681071755"></a></blockquote>
+      <blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><a href="https://twitter.com/MillionPageProj/status/2043995808757100796"></a></blockquote>
+    </div>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <a class="thread-follow" href="https://x.com/MillionPageProj" target="_blank" rel="noopener">
+      <svg class="xmark" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      Follow the full build at @MillionPageProj →
+    </a>
+  </section>
+
+  <!-- 3. DESIGN THINKING -->
+  <section id="design">
+    <div class="sec-num">03 — The design thinking</div>
+    <h2>Designing for calm, not engagement</h2>
+    <p class="lead-para">Every decision in The Brief comes from one question: <i>what would a news app look like if it respected your attention instead of mining it?</i></p>
+
+    <h3>Open with almost nothing</h3>
+    <p>The app opens nearly blank on purpose. No hero image, no autoplaying anything, no notification badge demanding you. Just a title, the date, and a short numbered list. The blankness is the feature — it signals that this is a place you can leave whenever you want.</p>
+
+    <h3>Progressive disclosure, all the way down</h3>
+    <p>You're never shown more than you asked for. Lead → summary → concept chip → "tell me more" → ask a question. Each layer is one tap deeper, and you control how far you go. A headline can be the whole experience, or the start of twenty minutes of reading. Both are fine.</p>
+
+    <h3>It reads like paper, not like an app</h3>
+    <p>The whole interface borrows from print. A warm cream background with a faint paper grain. <b>Lora</b>, a serif, for everything you read. <b>DM Mono</b>, a typewriter-ish monospace, for the small functional labels — dates, tabs, buttons — so the interface chrome stays visually separate from the writing. A single forest-green accent does all the work; there is no second color shouting for attention.</p>
+
+    <div class="callout">
+      <span class="k">The palette</span>
+      Cream paper <span class="chip">#f5f2ec</span>, ink <span class="chip">#1c1b18</span>, one green accent <span class="chip green">#2a5a3c</span>. That's the whole system.
+    </div>
+
+    <h3>Respect the reader's intelligence — and their gaps</h3>
+    <p>Concept chips solve a real tension: nobody knows every acronym, every minister, every treaty — but a glossary feels condescending and a wall of context is exhausting. Chips let you ask for exactly the background you need, inline, in the flow of reading, and then get on with it. The app quietly tracks what you've learned rather than quizzing you on it.</p>
+
+    <h3>The inbox makes volume physical</h3>
+    <p>The stacked-paper bucket cards aren't decoration. The stack literally gets thicker as a bucket fills, so you <i>feel</i> the weight of forty unread work emails versus four auth codes before you read a single subject line. And the buckets are named the way you'd name them to a friend — not "Promotions" and "Updates," but the actual categories of your life.</p>
+  </section>
+
+  <!-- 4. BUILD IT YOURSELF -->
+  <section id="prompt">
+    <div class="sec-num">04 — Build it yourself</div>
+    <h2>A prompt to make your own</h2>
+    <p class="lead-para">Want to build something like this? Paste the prompt below into <a class="inline" href="https://claude.com/claude-code" target="_blank" rel="noopener">Claude Code</a> (or Claude) and iterate from there. It captures the philosophy and the stack — then make it yours.</p>
+
+    <div class="prompt-wrap">
+      <button class="copy-btn" id="copyBtn" type="button">Copy prompt</button>
+      <div class="prompt" id="promptText">Build me an anti-overwhelm news reading web app called The Brief.
+
+<span class="hl">The core idea:</span> it should open as a near-blank, calm page — no images,
+no screaming headlines, no infinite feed. A reader can go as shallow
+or as deep as they want. Reading the news should feel like reading one
+quiet, well-set page, not scrolling a feed.
+
+<span class="hl">Stack:</span>
+- React + Vite frontend, deployed to Firebase Hosting (make it a PWA).
+- Node + Express backend running as a single Firebase Cloud Function.
+- Firestore for all storage.
+- The Anthropic Claude API for all AI work — server-side ONLY, never
+  from the browser.
+- Vanilla CSS with CSS custom properties. Two Google Fonts: Lora (serif)
+  for body and headlines, DM Mono (monospace) for UI labels and buttons.
+- A warm cream paper background (#f5f2ec), dark ink text (#1c1b18),
+  and a single forest-green accent (#2a5a3c). Add a faint paper grain.
+
+<span class="hl">Features:</span>
+- A masthead: the title, today's date, and the reader's location.
+- Category tabs: World, India, the reader's city, plus up to 3 custom
+  interest topics the reader can add themselves.
+- A numbered list of ~8 story leads, each a single sentence. Tapping a
+  lead expands a short, Claude-written summary. Nothing expands until
+  asked.
+- Inside each summary, embed "concept chips": tappable inline pills over
+  names and terms. Tapping one opens a popover with a one-line Claude
+  explanation, plus a "tell me more" link for depth. Track which concepts
+  a reader has opened in a "what you learned today" list.
+- Let a reader ask a free-text question about any story; answer it with
+  Claude using that story as context.
+- Let a reader "follow" a story over time.
+- Auth via 6-digit email OTP (or Google sign-in). Store the session as a
+  JWT in localStorage.
+
+<span class="hl">Architecture rules:</span>
+- Lock Firestore security rules to deny all direct client access. Every
+  read/write goes through the Express function, gated by JWT middleware.
+- Cache Claude-processed stories in Firestore with a short TTL, and cache
+  concept explanations permanently, so repeat loads are fast and cheap.
+
+Make the whole thing feel quiet, textual, and unhurried. Favor white
+space and restraint over density. When in doubt, show less.</div>
+    </div>
+    <p class="figcap">Tip: build the calm reading view first, get it deployed, then layer on chips, Q&A, and tabs one at a time.</p>
+  </section>
+
+  <!-- 5. LINK -->
+  <section id="link">
+    <div class="sec-num">05 — Check it out</div>
+    <h2>See it for yourself</h2>
+    <p class="lead-para">The Brief is live, and the full source is on GitHub.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="https://the-b-590d2.web.app" target="_blank" rel="noopener">the-b-590d2.web.app &nbsp;→</a>
+      <a class="btn btn-ghost" href="https://github.com/rheakaru/theBrief" target="_blank" rel="noopener">github.com/rheakaru/theBrief</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="ft-title">the brief</div>
+    <div class="ft-sub">Built by Rhea Karuturi · React · Firebase · Claude</div>
+    <div class="ft-links">
+      <a href="https://the-b-590d2.web.app" target="_blank" rel="noopener">Live app</a>
+      <a href="https://github.com/rheakaru/theBrief" target="_blank" rel="noopener">Source</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copyBtn');
+    var src = document.getElementById('promptText');
+    if (!btn || !src) return;
+    btn.addEventListener('click', function () {
+      var text = src.innerText;
+      navigator.clipboard.writeText(text).then(function () {
+        btn.textContent = 'Copied ✓';
+        btn.classList.add('done');
+        setTimeout(function () {
+          btn.textContent = 'Copy prompt';
+          btn.classList.remove('done');
+        }, 2000);
+      }).catch(function () {
+        var r = document.createRange();
+        r.selectNodeContents(src);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(r);
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

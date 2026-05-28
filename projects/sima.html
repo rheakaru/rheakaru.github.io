@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sima — Rank your beauty products. See what your friends love.</title>
+<meta name="description" content="Sima is a social beauty-product ranking app. Pairwise ranking, AI photo scanning, and a feed driven by your 'skin twins'. Built with React, Firebase, and Claude." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* ─────────────────────────────────────────────
+   Sima — project writeup page
+   Self-contained. Visual language mirrors the app:
+   "Warm Editorial Minimalism"
+   ───────────────────────────────────────────── */
+:root{
+  --cream:#f5f2ec;
+  --ink:#1c1b18;
+  --green:#2a5a3c;
+  --blue:#3d6b9e;
+  --amber:#9b6b2a;
+  --border:#d9d4cb;
+  --muted:#9b9589;
+  --border-light:#e2ddd5;
+  --chip-bg:#e8e2d8;
+  --panel:#faf9f7;
+  --panel-alt:#ede8e0;
+  --card:#ffffff;
+  --serif:'Lora', Georgia, 'Times New Roman', serif;
+  --mono:'DM Mono','Menlo',monospace;
+  --maxw:1080px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;}
+body{
+  font-family:var(--serif);
+  background:var(--cream);
+  color:var(--ink);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+/* grain overlay, same trick as the app */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:256px 256px;
+}
+a{color:var(--blue);text-decoration:none;}
+a:hover{opacity:.72;}
+img{display:block;max-width:100%;}
+::selection{background:rgba(42,90,60,.18);}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
+.label{
+  font-family:var(--mono);font-size:.6875rem;font-weight:500;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.12em;
+}
+.serif-i{font-style:italic;color:var(--muted);}
+.chip{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:var(--chip-bg);
+  border-radius:3px;font-family:var(--mono);font-size:.6875rem;color:var(--ink);white-space:nowrap;line-height:1.4;
+}
+.chip-green{background:rgba(42,90,60,.1);color:var(--green);}
+.chip-amber{background:rgba(155,107,42,.12);color:var(--amber);}
+.chip-muted{background:var(--chip-bg);color:var(--muted);}
+
+/* ── Top bar ── */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(245,242,236,.82);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-light);
+}
+.topbar .inner{display:flex;align-items:center;justify-content:space-between;height:60px;}
+.brandmark{font-family:var(--serif);font-weight:600;font-size:1.4rem;letter-spacing:-.01em;}
+.brandmark .dot{color:var(--green);}
+.topnav{display:flex;gap:26px;align-items:center;}
+.topnav a{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.topnav a:hover{color:var(--ink);opacity:1;}
+.btn-gh{
+  display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:600;font-size:.72rem;
+  padding:9px 16px;border-radius:4px;background:var(--green);color:#fff;transition:opacity .15s ease;
+}
+.btn-gh:hover{opacity:.88;}
+@media(max-width:720px){.topnav a:not(.btn-gh){display:none;}}
+
+/* ── Hero ── */
+.hero{padding:84px 0 56px;position:relative;}
+.hero .eyebrow{margin-bottom:22px;}
+.hero h1{
+  font-family:var(--serif);font-weight:600;font-size:clamp(3.4rem,9vw,6.2rem);line-height:.98;
+  letter-spacing:-.02em;margin-bottom:8px;
+}
+.hero h1 .dot{color:var(--green);}
+.hero .tag{font-size:clamp(1.15rem,2.6vw,1.5rem);font-style:italic;color:var(--ink);max-width:30ch;line-height:1.45;margin-bottom:30px;}
+.hero .sub{max-width:60ch;font-size:1.0625rem;color:#4a4842;margin-bottom:34px;}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:var(--mono);font-weight:600;font-size:.78rem;padding:13px 24px;border-radius:4px;
+  transition:opacity .15s ease,border-color .15s ease,background .15s ease;border:1px solid transparent;
+}
+.btn-primary{background:var(--green);color:#fff;}
+.btn-primary:hover{opacity:.88;}
+.btn-secondary{background:none;color:var(--ink);border-color:var(--border);}
+.btn-secondary:hover{border-color:var(--green);color:var(--green);}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px;}
+
+/* divider rule */
+.rule{height:1px;background:var(--border-light);border:none;margin:0;}
+
+/* ── Section scaffolding ── */
+section{padding:72px 0;}
+.sec-head{margin-bottom:42px;max-width:62ch;}
+.sec-head .num{font-family:var(--mono);font-size:.72rem;color:var(--green);letter-spacing:.14em;display:block;margin-bottom:14px;}
+.sec-head h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.9rem,4.4vw,2.9rem);line-height:1.12;letter-spacing:-.015em;margin-bottom:16px;}
+.sec-head p{font-size:1.0625rem;color:#4a4842;}
+.lead{font-size:1.1rem;}
+
+/* ── Feature grid ── */
+.grid{display:grid;gap:1px;background:var(--border-light);border:1px solid var(--border-light);border-radius:8px;overflow:hidden;}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+@media(max-width:860px){.grid-3{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.grid-3,.grid-2{grid-template-columns:1fr;}}
+.cell{background:var(--card);padding:28px 26px;}
+.cell .ic{
+  width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;background:rgba(42,90,60,.08);
+}
+.cell.blue .ic{background:rgba(61,107,158,.09);}
+.cell.amber .ic{background:rgba(155,107,42,.1);}
+.cell h3{font-family:var(--serif);font-weight:600;font-size:1.15rem;margin-bottom:7px;line-height:1.3;}
+.cell p{font-size:.94rem;color:#54524b;line-height:1.6;}
+
+/* ── Screens / device mockups ── */
+.screens-band{background:var(--panel-alt);border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);}
+.screens-rail{
+  display:flex;gap:34px;overflow-x:auto;padding:14px 4px 26px;scroll-snap-type:x mandatory;
+}
+.screens-rail::-webkit-scrollbar{height:8px;}
+.screens-rail::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.phone-wrap{scroll-snap-align:center;flex-shrink:0;text-align:center;}
+.phone-cap{font-family:var(--mono);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:16px;}
+.phone{
+  width:300px;height:620px;background:var(--cream);border-radius:42px;padding:12px;
+  border:1px solid var(--border);
+  box-shadow:0 24px 60px rgba(28,27,24,.16),0 4px 14px rgba(28,27,24,.08);
+  position:relative;
+}
+.phone::before{
+  content:'';position:absolute;top:20px;left:50%;transform:translateX(-50%);
+  width:104px;height:26px;background:var(--ink);border-radius:14px;z-index:5;
+}
+.screen{
+  width:100%;height:100%;background:var(--cream);border-radius:32px;overflow:hidden;position:relative;
+  display:flex;flex-direction:column;text-align:left;
+}
+.screen-scroll{flex:1;overflow:hidden;padding:42px 18px 14px;}
+/* mini app components inside screens */
+.s-h1{font-family:var(--serif);font-weight:600;font-size:1.4rem;}
+.s-h2{font-family:var(--serif);font-weight:600;font-size:1.15rem;}
+.s-mono{font-family:var(--mono);font-size:.62rem;color:var(--muted);}
+.s-card{background:#fff;border:1px solid var(--border-light);border-radius:6px;padding:13px;}
+.s-row{display:flex;align-items:center;gap:10px;}
+.s-prod{width:42px;height:42px;border-radius:5px;flex-shrink:0;border:1px solid var(--border-light);overflow:hidden;}
+.s-av{width:30px;height:30px;border-radius:6px;background:var(--panel-alt);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:600;font-size:.8rem;color:var(--ink);flex-shrink:0;}
+.s-name{font-size:.8rem;font-weight:500;line-height:1.2;}
+.s-brand{font-family:var(--mono);font-size:.6rem;color:var(--muted);}
+.s-chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:3px;font-family:var(--mono);font-size:.56rem;line-height:1.4;}
+.s-divider{height:1px;background:var(--border-light);margin:14px 0;}
+.s-label{font-family:var(--mono);font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+.s-btn{font-family:var(--mono);font-weight:600;font-size:.66rem;padding:10px;border-radius:4px;background:var(--green);color:#fff;text-align:center;}
+.s-catrow{display:flex;gap:6px;overflow:hidden;}
+.s-catbtn{flex-shrink:0;padding:5px 10px;border-radius:3px;font-family:var(--mono);font-size:.6rem;font-weight:600;background:var(--chip-bg);color:var(--muted);}
+.s-catbtn.on{background:var(--green);color:#fff;}
+.s-bottomnav{
+  height:54px;border-top:1px solid var(--border-light);background:var(--cream);
+  display:flex;align-items:center;justify-content:space-around;padding:0 6px;
+}
+.s-nav{display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--mono);font-size:.5rem;color:var(--muted);}
+.s-nav.on{color:var(--green);}
+.s-nav svg{width:18px;height:18px;}
+/* gradient product "images" — stand in for real product shots */
+.pg1{background:linear-gradient(135deg,#e9ddc9,#cdb89a);}
+.pg2{background:linear-gradient(135deg,#d6e3da,#a9c4b3);}
+.pg3{background:linear-gradient(135deg,#dfe1ec,#b3bcd6);}
+.pg4{background:linear-gradient(135deg,#efd9d4,#d3a99e);}
+.pg5{background:linear-gradient(135deg,#ece3d2,#cfc3a3);}
+.compare-card{flex:1;padding:11px;background:var(--panel);border:1px solid var(--border-light);border-radius:6px;text-align:center;}
+
+/* ── How built: stack list ── */
+.stack{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border-light);border:1px solid var(--border-light);border-radius:8px;overflow:hidden;}
+@media(max-width:680px){.stack{grid-template-columns:1fr;}}
+.stack-item{background:var(--card);padding:22px 24px;display:flex;gap:16px;align-items:flex-start;}
+.stack-item .k{font-family:var(--mono);font-size:.66rem;color:var(--green);text-transform:uppercase;letter-spacing:.1em;flex-shrink:0;width:84px;padding-top:3px;}
+.stack-item .v h4{font-family:var(--serif);font-weight:600;font-size:1.02rem;margin-bottom:3px;}
+.stack-item .v p{font-size:.9rem;color:#54524b;}
+.flow{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:30px;
+  font-family:var(--mono);font-size:.74rem;color:var(--ink);
+}
+.flow .node{padding:8px 14px;background:#fff;border:1px solid var(--border);border-radius:5px;}
+.flow .arr{color:var(--muted);}
+
+/* ── Design principles ── */
+.principles{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+@media(max-width:760px){.principles{grid-template-columns:1fr;}}
+.princ-list{display:flex;flex-direction:column;gap:26px;}
+.princ{display:flex;gap:18px;}
+.princ .n{font-family:var(--mono);font-size:.8rem;color:var(--green);padding-top:4px;flex-shrink:0;}
+.princ h4{font-family:var(--serif);font-weight:600;font-size:1.12rem;margin-bottom:5px;}
+.princ p{font-size:.96rem;color:#54524b;}
+.palette{background:var(--card);border:1px solid var(--border-light);border-radius:10px;padding:26px;}
+.swatches{display:flex;flex-direction:column;gap:12px;margin-top:18px;}
+.swatch{display:flex;align-items:center;gap:14px;}
+.swatch .sw{width:38px;height:38px;border-radius:6px;border:1px solid rgba(0,0,0,.06);flex-shrink:0;}
+.swatch .meta{display:flex;flex-direction:column;}
+.swatch .meta b{font-family:var(--serif);font-weight:600;font-size:.92rem;}
+.swatch .meta span{font-family:var(--mono);font-size:.68rem;color:var(--muted);}
+.typ-row{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--border-light);}
+.typ-row:last-child{border-bottom:none;}
+
+/* ── Prompt block ── */
+.prompt-band{background:var(--ink);color:#e9e5dc;border-radius:0;}
+.prompt-band .sec-head .num{color:#9ec3ab;}
+.prompt-band .sec-head h2{color:#f5f2ec;}
+.prompt-band .sec-head p{color:#b8b3a8;}
+.code-wrap{position:relative;background:#141312;border:1px solid #34322d;border-radius:10px;overflow:hidden;}
+.code-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #2a2925;background:#1b1a17;}
+.code-bar .dots{display:flex;gap:7px;}
+.code-bar .dots i{width:11px;height:11px;border-radius:50%;display:block;}
+.code-bar .fname{font-family:var(--mono);font-size:.7rem;color:#8a857a;margin-left:6px;}
+.copy-btn{
+  font-family:var(--mono);font-size:.68rem;font-weight:500;color:#cfcabd;background:#2a2925;border:1px solid #3a3833;
+  padding:6px 13px;border-radius:5px;cursor:pointer;transition:all .15s ease;
+}
+.copy-btn:hover{background:#34322d;color:#fff;}
+.copy-btn.done{color:#9ec3ab;border-color:#3c5a47;}
+pre{margin:0;padding:22px 20px;overflow-x:auto;}
+code{font-family:var(--mono);font-size:.82rem;line-height:1.75;color:#d8d3c7;white-space:pre-wrap;word-break:break-word;}
+code .c{color:#7d8a7f;font-style:italic;}
+code .h{color:#cba36a;}
+
+/* ── CTA / footer ── */
+.cta{text-align:center;padding:96px 0;}
+.cta h2{font-family:var(--serif);font-weight:600;font-size:clamp(2.2rem,5vw,3.2rem);line-height:1.08;letter-spacing:-.02em;margin-bottom:18px;}
+.cta p{font-size:1.1rem;color:#4a4842;max-width:48ch;margin:0 auto 30px;font-style:italic;}
+.cta .hero-cta{justify-content:center;}
+footer{border-top:1px solid var(--border-light);padding:32px 0 56px;}
+.foot-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+.foot-inner .label{letter-spacing:.08em;}
+.foot-links{display:flex;gap:22px;}
+.foot-links a{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.foot-links a:hover{color:var(--ink);opacity:1;}
+
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.in{opacity:1;transform:none;}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none;}html{scroll-behavior:auto;}}
+</style>
+</head>
+<body>
+
+<!-- ───────── Top bar ───────── -->
+<header class="topbar">
+  <div class="wrap inner">
+    <span class="brandmark">Sima<span class="dot">.</span></span>
+    <nav class="topnav">
+      <a href="#about">What</a>
+      <a href="#build">Build</a>
+      <a href="#design">Design</a>
+      <a href="#prompt">Prompt</a>
+      <a class="btn-gh" href="https://github.com/rheakaru/Sima" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.2 3.44 9.6 8.21 11.16.6.11.82-.25.82-.56v-2c-3.34.71-4.04-1.6-4.04-1.6-.55-1.36-1.34-1.72-1.34-1.72-1.09-.73.08-.72.08-.72 1.2.08 1.84 1.21 1.84 1.21 1.07 1.8 2.81 1.28 3.5.98.11-.76.42-1.28.76-1.58-2.67-.3-5.47-1.31-5.47-5.83 0-1.29.47-2.34 1.24-3.17-.12-.3-.54-1.52.12-3.16 0 0 1.01-.32 3.3 1.21a11.6 11.6 0 016 0c2.29-1.53 3.3-1.21 3.3-1.21.66 1.64.24 2.86.12 3.16.77.83 1.23 1.88 1.23 3.17 0 4.53-2.8 5.52-5.48 5.81.43.36.81 1.08.81 2.18v3.23c0 .31.22.68.83.56A12.02 12.02 0 0024 12.29C24 5.78 18.63.5 12 .5z"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>
+
+<!-- ───────── Hero ───────── -->
+<section class="hero">
+  <div class="wrap">
+    <span class="label eyebrow">A side project · React + Firebase + Claude</span>
+    <h1>Sima<span class="dot">.</span></h1>
+    <p class="tag">Rank your beauty products. See what your friends love.</p>
+    <p class="sub">Beauty advice is drowning in five-star reviews from strangers. Sima flips it: rank the products <em>you</em> actually use against each other, then surface what your real friends — and the people whose skin behaves like yours — keep reaching for. It's a beauty shelf, a ranked list, and a group chat in one.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="https://sima-c07b5.web.app" target="_blank" rel="noopener">Open the live app →</a>
+      <a class="btn btn-secondary" href="https://github.com/rheakaru/Sima" target="_blank" rel="noopener">View the code</a>
+    </div>
+    <div class="hero-meta">
+      <span class="chip chip-green">Pairwise ranking</span>
+      <span class="chip chip-amber">AI photo scan</span>
+      <span class="chip">Skin Twins</span>
+      <span class="chip chip-muted">Mobile-first</span>
+    </div>
+  </div>
+</section>
+
+<hr class="rule" />
+
+<!-- ───────── What it does ───────── -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">01 — WHAT IT DOES</span>
+      <h2>A ranked, social second opinion on everything on your shelf.</h2>
+      <p class="lead">You search or scan a product, decide how it stacks up against the others you own, and write a one-line verdict. Sima turns that into a living ranked list per category — and into a feed your friends can actually trust.</p>
+    </div>
+
+    <div class="grid grid-3 reveal">
+      <div class="cell">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.7" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg></div>
+        <h3>Rank by comparison, not stars</h3>
+        <p>Add a product and Sima asks "Which do you prefer?" against ones you've already ranked. A binary-insertion sort slots it into place. #1 becomes your <b>Holy Grail</b>; last place is flagged <b>Regret</b>.</p>
+      </div>
+      <div class="cell blue">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.7" stroke-linecap="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        <h3>Scan a product with your camera</h3>
+        <p>Point your camera at a bottle. Claude reads the label, identifies the product, brand and category, and runs the search for you. Mistyped a name? Claude suggests the "did you mean".</p>
+      </div>
+      <div class="cell amber">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.7" stroke-linecap="round"><circle cx="9" cy="7" r="4"/><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><path d="M16 3.1a4 4 0 010 7.75"/></svg></div>
+        <h3>Find your Skin Twins</h3>
+        <p>During onboarding you pick your skin type, hair type, and concerns. Anyone who shares three or more concerns with you is tagged a <b>Skin Twin</b> — their reviews get surfaced first, because their skin behaves like yours.</p>
+      </div>
+      <div class="cell">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.7" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+        <h3>A feed of people you know</h3>
+        <p>Home is your friends' activity — reviews, ranked products, uploaded looks, and linked Instagram / TikTok posts with the products tagged. No influencers, no ads. Just your council.</p>
+      </div>
+      <div class="cell blue">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.7" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg></div>
+        <h3>A personal match score</h3>
+        <p>Every product is tagged with the concerns it targets — derived from its ingredients. Sima compares those to <em>your</em> concerns and shows a match percentage, plus how many friends rank it.</p>
+      </div>
+      <div class="cell amber">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.7" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></div>
+        <h3>Reviews that mean something</h3>
+        <p>Reviews are deliberately small: a sentence and a single honest toggle — <b>would you repurchase?</b> When you review something a friend has saved, they get a notification.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── Screens ───────── -->
+<section class="screens-band">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-bottom:18px;">
+      <span class="num">— A LOOK INSIDE</span>
+      <h2>Built mobile-first, like a print magazine that happens to be an app.</h2>
+    </div>
+    <p class="serif-i" style="margin-bottom:8px;font-size:.9rem;">Swipe through →</p>
+    <div class="screens-rail">
+
+      <!-- Login -->
+      <div class="phone-wrap reveal">
+        <div class="phone"><div class="screen">
+          <div class="screen-scroll" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+            <div class="s-h1" style="font-size:2.4rem;margin-bottom:8px;">Sima</div>
+            <p class="serif-i" style="font-size:.86rem;margin-bottom:42px;line-height:1.7;">Rank your beauty products.<br/>See what your friends love.</p>
+            <div style="width:100%;border:1px solid var(--border);border-radius:4px;padding:11px;display:flex;align-items:center;justify-content:center;gap:9px;background:#fff;font-family:var(--mono);font-size:.68rem;font-weight:600;">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Continue with Google
+            </div>
+            <p class="s-mono" style="margin-top:28px;">Your beauty journey starts here</p>
+          </div>
+        </div></div>
+        <div class="phone-cap">Sign in</div>
+      </div>
+
+      <!-- Home feed -->
+      <div class="phone-wrap reveal">
+        <div class="phone"><div class="screen">
+          <div class="screen-scroll">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;">
+              <span class="s-h1">Sima</span><span class="s-mono">Hey, Rhea</span>
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:14px;">
+              <span class="s-chip" style="background:rgba(42,90,60,.1);color:var(--green);border:1px solid var(--green);">Dryness</span>
+              <span class="s-chip" style="background:var(--chip-bg);color:var(--ink);">Pigmentation</span>
+              <span class="s-chip" style="background:var(--chip-bg);color:var(--ink);">Acne</span>
+            </div>
+            <div class="s-label" style="margin-bottom:10px;">Friend Activity</div>
+            <div class="s-card" style="margin-bottom:10px;">
+              <div class="s-row" style="margin-bottom:10px;">
+                <div class="s-av">M</div>
+                <div style="flex:1;min-width:0;">
+                  <div style="display:flex;align-items:center;gap:6px;"><span class="s-name">Maya</span><span class="s-chip" style="background:rgba(42,90,60,.1);color:var(--green);">Skin Twin</span></div>
+                  <div class="s-label">reviewed a product</div>
+                </div>
+              </div>
+              <div class="s-row">
+                <div class="s-prod pg2"></div>
+                <div style="flex:1;min-width:0;"><div class="s-name">Niacinamide 10% + Zinc</div><div class="s-brand">The Ordinary</div></div>
+                <span class="s-chip" style="background:rgba(42,90,60,.1);color:var(--green);">Repurchase</span>
+              </div>
+              <p class="serif-i" style="font-size:.72rem;margin-top:9px;">"Cleared my texture in two weeks."</p>
+            </div>
+            <div class="s-card">
+              <div class="s-row" style="margin-bottom:10px;">
+                <div class="s-av">L</div>
+                <div style="flex:1;min-width:0;"><span class="s-name">Léa</span><div class="s-label">shared a post</div></div>
+              </div>
+              <div class="pg4" style="height:120px;border-radius:4px;margin-bottom:8px;"></div>
+              <div class="s-row" style="background:var(--panel);border-radius:4px;padding:7px;">
+                <div class="s-prod pg1" style="width:30px;height:30px;"></div>
+                <div style="flex:1;min-width:0;"><div class="s-name" style="font-size:.72rem;">Soft Pinch Blush</div><div class="s-brand">Rare Beauty</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="s-bottomnav">
+            <div class="s-nav on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Home</div>
+            <div class="s-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Search</div>
+            <div class="s-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h12"/></svg>Rank</div>
+            <div class="s-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0112 0v1"/></svg>You</div>
+          </div>
+        </div></div>
+        <div class="phone-cap">Friend feed</div>
+      </div>
+
+      <!-- Rank / compare -->
+      <div class="phone-wrap reveal">
+        <div class="phone"><div class="screen">
+          <div class="screen-scroll">
+            <div class="s-h1" style="margin-bottom:16px;">Rankings</div>
+            <div class="s-catrow" style="margin-bottom:16px;">
+              <span class="s-catbtn on">skincare</span><span class="s-catbtn">haircare</span><span class="s-catbtn">makeup</span>
+            </div>
+            <div class="s-card" style="box-shadow:0 4px 20px rgba(0,0,0,.1);padding:16px;margin-bottom:18px;">
+              <p class="s-label" style="text-align:center;margin-bottom:13px;">Which do you prefer?</p>
+              <div style="display:flex;gap:10px;align-items:center;">
+                <div class="compare-card">
+                  <div class="s-prod pg3" style="width:48px;height:48px;margin:0 auto 7px;"></div>
+                  <div class="s-name" style="font-size:.68rem;">Watermelon Glow</div>
+                  <div class="s-brand">Glow Recipe</div>
+                </div>
+                <span class="s-mono" style="flex-shrink:0;">vs</span>
+                <div class="compare-card">
+                  <div class="s-prod pg2" style="width:48px;height:48px;margin:0 auto 7px;"></div>
+                  <div class="s-name" style="font-size:.68rem;">Protini Cream</div>
+                  <div class="s-brand">Drunk Elephant</div>
+                </div>
+              </div>
+            </div>
+            <div style="border:1px solid var(--border-light);border-radius:6px;overflow:hidden;">
+              <div class="s-row" style="padding:10px 13px;background:#fff;border-bottom:1px solid var(--border-light);">
+                <span style="width:18px;text-align:right;font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--green);">1</span>
+                <div class="s-prod pg2" style="width:34px;height:34px;"></div>
+                <div style="flex:1;min-width:0;"><div class="s-name" style="font-size:.74rem;">Protini Cream</div><div class="s-brand">Drunk Elephant</div></div>
+                <span class="s-chip" style="background:rgba(155,107,42,.12);color:var(--amber);">Holy Grail</span>
+              </div>
+              <div class="s-row" style="padding:10px 13px;background:#fff;border-bottom:1px solid var(--border-light);">
+                <span style="width:18px;text-align:right;font-family:var(--mono);font-size:.68rem;color:var(--border);">2</span>
+                <div class="s-prod pg3" style="width:34px;height:34px;"></div>
+                <div style="flex:1;min-width:0;"><div class="s-name" style="font-size:.74rem;">Watermelon Glow</div><div class="s-brand">Glow Recipe</div></div>
+              </div>
+              <div class="s-row" style="padding:10px 13px;background:#fff;">
+                <span style="width:18px;text-align:right;font-family:var(--mono);font-size:.68rem;color:var(--border);">3</span>
+                <div class="s-prod pg5" style="width:34px;height:34px;"></div>
+                <div style="flex:1;min-width:0;"><div class="s-name" style="font-size:.74rem;">Cleansing Balm</div><div class="s-brand">Banila Co</div></div>
+                <span class="s-chip" style="background:var(--chip-bg);color:var(--muted);">Regret</span>
+              </div>
+            </div>
+          </div>
+          <div class="s-bottomnav">
+            <div class="s-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Home</div>
+            <div class="s-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Search</div>
+            <div class="s-nav on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h12"/></svg>Rank</div>
+            <div class="s-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0112 0v1"/></svg>You</div>
+          </div>
+        </div></div>
+        <div class="phone-cap">Pairwise ranking</div>
+      </div>
+
+      <!-- Product page -->
+      <div class="phone-wrap reveal">
+        <div class="phone"><div class="screen">
+          <div class="screen-scroll" style="padding:0;">
+            <div class="pg1" style="height:170px;display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid var(--border-light);">
+              <div style="position:absolute;top:42px;left:14px;width:30px;height:30px;background:#fff;border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+              <div style="position:absolute;top:42px;right:14px;width:30px;height:30px;background:#fff;border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="var(--green)" stroke="var(--green)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg></div>
+              <div style="width:80px;height:96px;background:rgba(255,255,255,.5);border-radius:6px;"></div>
+            </div>
+            <div style="padding:14px 16px;">
+              <div class="s-h2" style="font-size:1.05rem;">Watermelon Glow PHA Toner</div>
+              <div class="s-brand" style="margin-top:3px;">Glow Recipe · Sephora</div>
+              <div style="display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;">
+                <span class="s-chip" style="background:rgba(42,90,60,.1);color:var(--green);">67% match</span>
+                <span class="s-chip" style="background:rgba(155,107,42,.12);color:var(--amber);">3 friends ranked · 2 skin twins</span>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+                <span class="s-chip" style="background:rgba(42,90,60,.1);color:var(--green);">Pigmentation</span>
+                <span class="s-chip" style="background:rgba(42,90,60,.1);color:var(--green);">Dryness</span>
+              </div>
+              <div class="s-divider"></div>
+              <div class="s-label" style="margin-bottom:8px;">Friends who use this</div>
+              <div style="border:1px solid var(--border-light);border-radius:6px;overflow:hidden;">
+                <div class="s-row" style="padding:8px 11px;border-bottom:1px solid var(--border-light);">
+                  <div class="s-av" style="width:24px;height:24px;font-size:.66rem;">M</div>
+                  <div style="flex:1;min-width:0;"><div style="display:flex;gap:5px;align-items:center;"><span class="s-name" style="font-size:.72rem;">Maya</span><span class="s-chip" style="background:rgba(42,90,60,.1);color:var(--green);">Skin Twin</span></div><div class="s-brand">#2 in skincare · Would repurchase</div></div>
+                </div>
+                <div class="s-row" style="padding:8px 11px;">
+                  <div class="s-av" style="width:24px;height:24px;font-size:.66rem;">J</div>
+                  <div style="flex:1;min-width:0;"><span class="s-name" style="font-size:.72rem;">Jo</span><div class="s-brand">#5 in skincare</div></div>
+                </div>
+              </div>
+              <div class="s-btn" style="margin-top:13px;">Add to Rankings</div>
+            </div>
+          </div>
+        </div></div>
+        <div class="phone-cap">Product detail</div>
+      </div>
+
+      <!-- Onboarding -->
+      <div class="phone-wrap reveal">
+        <div class="phone"><div class="screen">
+          <div class="screen-scroll" style="display:flex;flex-direction:column;">
+            <div style="display:flex;gap:6px;margin-bottom:30px;">
+              <div style="flex:1;height:2px;background:var(--green);border-radius:1px;"></div>
+              <div style="flex:1;height:2px;background:var(--green);border-radius:1px;"></div>
+              <div style="flex:1;height:2px;background:var(--green);border-radius:1px;"></div>
+              <div style="flex:1;height:2px;background:var(--border-light);border-radius:1px;"></div>
+            </div>
+            <div class="s-h2" style="font-size:1.3rem;margin-bottom:4px;">Your concerns?</div>
+            <p class="serif-i" style="font-size:.78rem;margin-bottom:22px;">Select all that apply.</p>
+            <div class="s-label" style="margin-bottom:8px;">Skin</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;">
+              <span class="s-chip" style="background:rgba(42,90,60,.1);color:var(--green);border:1px solid var(--green);padding:4px 10px;">Acne &amp; Breakouts</span>
+              <span class="s-chip" style="background:var(--chip-bg);padding:4px 10px;">Dark Circles</span>
+              <span class="s-chip" style="background:rgba(42,90,60,.1);color:var(--green);border:1px solid var(--green);padding:4px 10px;">Pigmentation</span>
+              <span class="s-chip" style="background:var(--chip-bg);padding:4px 10px;">Redness</span>
+              <span class="s-chip" style="background:rgba(42,90,60,.1);color:var(--green);border:1px solid var(--green);padding:4px 10px;">Dryness</span>
+              <span class="s-chip" style="background:var(--chip-bg);padding:4px 10px;">Aging</span>
+            </div>
+            <div class="s-label" style="margin-bottom:8px;">Hair</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;">
+              <span class="s-chip" style="background:var(--chip-bg);padding:4px 10px;">Frizz &amp; Damage</span>
+              <span class="s-chip" style="background:var(--chip-bg);padding:4px 10px;">Dandruff</span>
+              <span class="s-chip" style="background:var(--chip-bg);padding:4px 10px;">Hair Loss</span>
+            </div>
+            <div style="margin-top:auto;display:flex;gap:10px;">
+              <div style="flex:1;padding:11px;border:1px solid var(--border);border-radius:4px;text-align:center;font-family:var(--mono);font-size:.66rem;color:var(--muted);">Back</div>
+              <div class="s-btn" style="flex:2;">Get Started</div>
+            </div>
+          </div>
+        </div></div>
+        <div class="phone-cap">Onboarding</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ───────── How I built it ───────── -->
+<section id="build">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">02 — HOW I BUILT IT</span>
+      <h2>A lean stack: React on the front, Firebase on the back, Claude where it earns its keep.</h2>
+      <p class="lead">No heavy framework, no design system off the shelf. The whole UI runs on a hand-rolled CSS utility layer and two Google fonts. The interesting work lives in the data model and the few places AI does something a regex couldn't.</p>
+    </div>
+
+    <div class="stack reveal">
+      <div class="stack-item"><div class="k">Frontend</div><div class="v"><h4>React 19 + Vite + React Router</h4><p>A single-page app, mobile-first at a 480px max width. Components are plain React with hooks — no state library.</p></div></div>
+      <div class="stack-item"><div class="k">Styling</div><div class="v"><h4>Hand-written CSS tokens</h4><p>One stylesheet of variables, utilities, and components. Lora for body, DM Mono for labels, and a faint SVG grain overlay.</p></div></div>
+      <div class="stack-item"><div class="k">Auth + Data</div><div class="v"><h4>Firebase Auth &amp; Firestore</h4><p>Google sign-in. Firestore holds users, rankings, reviews, saved products, posts, friend requests, and a shared product cache — all locked down with ownership rules.</p></div></div>
+      <div class="stack-item"><div class="k">Media</div><div class="v"><h4>Firebase Storage</h4><p>Uploaded looks live in Storage; Instagram and TikTok posts are embedded by URL via oEmbed, so there's nothing to host.</p></div></div>
+      <div class="stack-item"><div class="k">Serverless</div><div class="v"><h4>Cloud Functions (v2)</h4><p>Callable functions for product identification, query correction, and image search — plus a Firestore trigger that notifies friends when you review something they saved.</p></div></div>
+      <div class="stack-item"><div class="k">AI + Search</div><div class="v"><h4>Claude + SerpAPI</h4><p>Claude (Sonnet) reads product photos and fixes fuzzy queries. SerpAPI's Google Images, scoped to Sephora / Ulta / Nykaa, fetches product shots and metadata.</p></div></div>
+    </div>
+
+    <div class="reveal">
+      <p class="label" style="margin:38px 0 4px;">The scan-to-rank flow</p>
+      <div class="flow">
+        <span class="node">📷 Photo</span><span class="arr">→</span>
+        <span class="node">Claude identifies product</span><span class="arr">→</span>
+        <span class="node">SerpAPI image search</span><span class="arr">→</span>
+        <span class="node">Tag concerns from ingredients</span><span class="arr">→</span>
+        <span class="node">"Which do you prefer?"</span><span class="arr">→</span>
+        <span class="node">Ranked list</span>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-top:46px;background:var(--card);border:1px solid var(--border-light);border-radius:10px;padding:28px;">
+      <p class="label" style="margin-bottom:14px;">A couple of decisions I'm fond of</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <div>
+          <h4 style="font-family:var(--serif);font-weight:600;font-size:1.05rem;margin-bottom:6px;">Insertion sort as a UX primitive</h4>
+          <p style="font-size:.94rem;color:#54524b;">Ranking is just a binary search the user drives. Each "which do you prefer?" halves the candidates, so placing a product takes only a handful of taps even with a long list — and every answer is a genuine head-to-head, never an abstract star rating.</p>
+        </div>
+        <div>
+          <h4 style="font-family:var(--serif);font-weight:600;font-size:1.05rem;margin-bottom:6px;">Ingredients → concerns, locally</h4>
+          <p style="font-size:.94rem;color:#54524b;">A small keyword map turns an ingredient list into concern tags (salicylic acid → acne, niacinamide → acne, ceramide → dryness…). That powers the match score and concern filters without an extra API call.</p>
+        </div>
+      </div>
+    </div>
+    <p class="serif-i reveal" style="margin-top:26px;font-size:.92rem;">A note on safety: every API key lives in Firebase Secret Manager and is read only inside Cloud Functions. Nothing sensitive ships to the browser or the repo — the public Firebase web config is locked to the app's domain.</p>
+  </div>
+</section>
+
+<hr class="rule" />
+
+<!-- ───────── Design thinking ───────── -->
+<section id="design">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">03 — THE DESIGN THINKING</span>
+      <h2>Warm editorial minimalism — the opposite of a clinical beauty app.</h2>
+      <p class="lead">Most beauty apps are either sterile lab-white or loud and gradient-soaked. I wanted Sima to feel like a well-set magazine: cream paper, ink type, one quiet green, and a little grain so nothing feels digital-perfect.</p>
+    </div>
+
+    <div class="principles reveal">
+      <div class="princ-list">
+        <div class="princ"><span class="n">i</span><div><h4>Honesty over hype</h4><p>Rankings are relative and reviews are one toggle deep — "would you repurchase?". Stars invite inflation; a forced comparison and a yes/no can't be gamed.</p></div></div>
+        <div class="princ"><span class="n">ii</span><div><h4>Trust comes from similarity</h4><p>A glowing review from someone with opposite skin is noise. Skin Twins put people who share your concerns at the top, so advice actually transfers.</p></div></div>
+        <div class="princ"><span class="n">iii</span><div><h4>Nudge, don't nag</h4><p>Empty states use rotating, playful prompts and soft progress bars ("Best friends vs. blemishes") instead of red badges and guilt.</p></div></div>
+        <div class="princ"><span class="n">iv</span><div><h4>Editorial restraint</h4><p>Serif body text, monospace labels, generous whitespace, and exactly one accent colour. Personality lives in the words — "Holy Grail", "Regret", "Skin Twin" — not in the chrome.</p></div></div>
+      </div>
+
+      <div class="palette">
+        <p class="label">The palette</p>
+        <div class="swatches">
+          <div class="swatch"><span class="sw" style="background:#f5f2ec;"></span><span class="meta"><b>Cream</b><span>#f5f2ec · paper</span></span></div>
+          <div class="swatch"><span class="sw" style="background:#1c1b18;"></span><span class="meta"><b>Ink</b><span>#1c1b18 · text</span></span></div>
+          <div class="swatch"><span class="sw" style="background:#2a5a3c;"></span><span class="meta"><b>Forest green</b><span>#2a5a3c · the one accent</span></span></div>
+          <div class="swatch"><span class="sw" style="background:#3d6b9e;"></span><span class="meta"><b>Slate blue</b><span>#3d6b9e · links</span></span></div>
+          <div class="swatch"><span class="sw" style="background:#9b6b2a;"></span><span class="meta"><b>Amber</b><span>#9b6b2a · highlights</span></span></div>
+        </div>
+        <p class="label" style="margin-top:24px;">The type</p>
+        <div style="margin-top:10px;">
+          <div class="typ-row"><span style="font-family:var(--serif);font-weight:600;font-size:1.3rem;">Lora</span><span class="s-mono">Headings &amp; body — serif</span></div>
+          <div class="typ-row"><span style="font-family:var(--mono);font-size:1rem;">DM Mono</span><span class="s-mono">LABELS &amp; META — MONO</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── Prompt ───────── -->
+<section id="prompt" class="prompt-band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">04 — BUILD IT YOURSELF</span>
+      <h2>The prompt I'd hand an AI coding agent to recreate Sima.</h2>
+      <p>Drop this into Claude Code (or your agent of choice) at the root of an empty folder. It captures the product, the stack, the data model, and the design language in one go. Tweak the retailers, concerns, and palette to make it yours.</p>
+    </div>
+
+    <div class="code-wrap reveal">
+      <div class="code-bar">
+        <div class="dots"><i style="background:#e06c5a;"></i><i style="background:#e0b44a;"></i><i style="background:#7bb274;"></i><span class="fname">build-sima.txt</span></div>
+        <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">Copy prompt</button>
+      </div>
+<pre><code id="promptText"><span class="c">// PROJECT</span>
+Build "Sima", a mobile-first social app for ranking beauty products and
+seeing what friends actually love. Think Beli-for-skincare. Max width 480px.
+
+<span class="c">// STACK</span>
+- React 19 + Vite + React Router (single-page app, hooks only, no Redux)
+- Firebase: Google Auth, Firestore, Storage, Cloud Functions v2
+- Anthropic Claude (Sonnet) for vision + text; SerpAPI for product images
+- Plain hand-written CSS (no Tailwind): design tokens, utilities, components
+- Keep every API key in Firebase Secret Manager, read only inside functions
+
+<span class="c">// CORE LOOP</span>
+1. Onboard: pick display name, skin type(s), hair type(s), and concerns
+   (acne, dryness, pigmentation, frizz, etc.) across skin / hair / body.
+2. Find a product: text search OR snap a photo. A callable function sends
+   the image to Claude -> {productName, brand, category}; another corrects
+   fuzzy queries ("did you mean"). Image search hits SerpAPI Google Images
+   scoped to (site:sephora.com OR site:ulta.com OR site:nykaa.com).
+3. Rank: adding a product runs a <span class="h">binary-insertion sort</span> driven by the user —
+   show "Which do you prefer?" against the median of the current list and
+   narrow until it slots in. #1 = "Holy Grail", last = "Regret". Per category.
+4. Review: free-text + a single "would repurchase?" yes/no toggle.
+5. Social: friend requests; a home feed of friends' reviews, ranked items,
+   uploaded looks, and linked Instagram/TikTok posts (oEmbed) with products
+   tagged. Two users sharing 3+ concerns are "Skin Twins" — surface them first.
+
+<span class="c">// INTELLIGENCE</span>
+- Map ingredient keywords -> concern tags locally (salicylic acid->acne,
+  ceramide->dryness, vitamin c->pigmentation...). No extra API call.
+- Personal match score = % overlap of user's concerns and a product's tags.
+- A Firestore onCreate trigger on reviews notifies friends who saved that product.
+
+<span class="c">// FIRESTORE MODEL</span>
+users/{uid}, productCache/{id}, rankings/{uid}/categories/{cat},
+savedProducts/{uid}/items/{id}, reviews/{uid}/items/{id},
+posts/{uid}/items/{id}, notifications/{uid}/items/{id}, friendRequests/{id}.
+Lock every collection to owner-writes with security rules.
+
+<span class="c">// DESIGN — "warm editorial minimalism"</span>
+- Palette: cream #f5f2ec bg, ink #1c1b18 text, forest green #2a5a3c accent,
+  slate blue #3d6b9e links, amber #9b6b2a highlights. Borders ~#d9d4cb.
+- Type: Lora (serif) for headings + body; DM Mono for labels/meta (uppercase,
+  letter-spaced). A faint SVG fractal-noise grain overlay at 4% opacity.
+- Components: pill chips, underline tabs, stacked list rows, bottom tab nav,
+  bottom-sheet modals. Italic muted placeholders. One accent colour only.
+- Feel: a print magazine that happens to be an app. Calm, not clinical.
+
+Scaffold the repo, write the code, and give me setup steps (.env.example,
+firebase config, how to set the Claude + SerpAPI secrets).</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── CTA ───────── -->
+<section class="cta">
+  <div class="wrap">
+    <h2>See it for yourself.</h2>
+    <p>The live app, and the full source — rules, functions, and all.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="https://github.com/rheakaru/Sima" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.2 3.44 9.6 8.21 11.16.6.11.82-.25.82-.56v-2c-3.34.71-4.04-1.6-4.04-1.6-.55-1.36-1.34-1.72-1.34-1.72-1.09-.73.08-.72.08-.72 1.2.08 1.84 1.21 1.84 1.21 1.07 1.8 2.81 1.28 3.5.98.11-.76.42-1.28.76-1.58-2.67-.3-5.47-1.31-5.47-5.83 0-1.29.47-2.34 1.24-3.17-.12-.3-.54-1.52.12-3.16 0 0 1.01-.32 3.3 1.21a11.6 11.6 0 016 0c2.29-1.53 3.3-1.21 3.3-1.21.66 1.64.24 2.86.12 3.16.77.83 1.23 1.88 1.23 3.17 0 4.53-2.8 5.52-5.48 5.81.43.36.81 1.08.81 2.18v3.23c0 .31.22.68.83.56A12.02 12.02 0 0024 12.29C24 5.78 18.63.5 12 .5z"/></svg>
+        github.com/rheakaru/Sima
+      </a>
+      <a class="btn btn-secondary" href="https://sima-c07b5.web.app" target="_blank" rel="noopener">Open live app →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <span class="label">Sima — built by Rhea Karuturi · 2026</span>
+    <div class="foot-links">
+      <a href="#about">What</a>
+      <a href="#build">Build</a>
+      <a href="#design">Design</a>
+      <a href="#prompt">Prompt</a>
+      <a href="https://github.com/rheakaru/Sima" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Copy-to-clipboard for the prompt (uses the raw text, strips highlight spans)
+function copyPrompt(){
+  var el=document.getElementById('promptText');
+  var text=el.innerText;
+  var btn=document.getElementById('copyBtn');
+  function done(){btn.textContent='Copied ✓';btn.classList.add('done');setTimeout(function(){btn.textContent='Copy prompt';btn.classList.remove('done');},1900);}
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text);done();});
+  }else{fallback(text);done();}
+}
+function fallback(text){
+  var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);
+}
+// Reveal-on-scroll
+(function(){
+  var els=document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});return;}
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});
+  },{threshold:0.12});
+  els.forEach(function(e){io.observe(e);});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapel — a sanctuary for the things that moved you</title>
+<meta name="description" content="Chapel is a personal commonplace book reimagined as a living constellation. Here's what it does, how I built it, and how you can build your own." />
+<meta property="og:title" content="Chapel — a sanctuary for the things that moved you" />
+<meta property="og:description" content="A personal commonplace book reimagined as a living constellation. Built with React, Firebase, and Claude." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ─── Chapel design tokens (from the app itself) ─────────────────────── */
+  :root {
+    --bg: #0d0d0d;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #353535;
+    --text: #ede9e2;
+    --text-dim: #a09a92;
+    --text-muted: #6b6660;
+    --gold: #d4b478;
+    --gold-dim: #a08550;
+    --font-serif: 'EB Garamond', Georgia, serif;
+    --font-mono: 'DM Mono', ui-monospace, monospace;
+    --radius: 4px;
+    --radius-lg: 8px;
+    /* type colors */
+    --t-artwork: #c9a86c; --t-book: #7ab8d3; --t-poem: #b8d37a; --t-article: #d3b87a;
+    --t-song: #a89fd3; --t-movie: #d3a87a; --t-tv: #7ad3b8; --t-quote: #d37a7a;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-serif);
+    font-size: 18px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  ::selection { background: rgba(212,180,120,0.3); }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 1.5rem; }
+
+  .mono { font-family: var(--font-mono); letter-spacing: 0.06em; }
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--gold-dim);
+  }
+
+  /* ─── Top bar ─────────────────────────────────────────────────────────── */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px; padding: 0 1.5rem;
+    background: rgba(13,13,13,0.82); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    font-size: 1.15rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold);
+  }
+  .topbar nav { display: flex; gap: 1.6rem; }
+  .topbar nav a {
+    font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-dim); transition: color .15s;
+  }
+  .topbar nav a:hover { color: var(--text); }
+  @media (max-width: 720px) { .topbar nav { display: none; } }
+
+  /* ─── Buttons ─────────────────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex; align-items: center; gap: .55rem;
+    padding: .65rem 1.4rem; border-radius: var(--radius);
+    font-family: var(--font-mono); font-size: .82rem; letter-spacing: .05em;
+    transition: all .15s; border: 1px solid transparent;
+  }
+  .btn-primary { background: var(--gold); color: #0d0d0d; }
+  .btn-primary:hover { background: #e2c285; transform: translateY(-1px); }
+  .btn-ghost { border-color: var(--border); color: var(--text-dim); background: var(--surface); }
+  .btn-ghost:hover { border-color: var(--text-dim); color: var(--text); }
+
+  /* ─── Hero ────────────────────────────────────────────────────────────── */
+  .hero {
+    position: relative; min-height: 86vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 5rem 1.5rem 4rem; overflow: hidden;
+  }
+  .hero-constellation { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: .85; }
+  .hero-inner { position: relative; z-index: 2; }
+  .hero h1 {
+    font-weight: 500; font-size: clamp(3.2rem, 11vw, 6.5rem); line-height: .95;
+    letter-spacing: 0.04em; color: var(--text);
+    text-shadow: 0 0 60px rgba(13,13,13,0.9);
+  }
+  .hero .tagline {
+    font-style: italic; font-size: clamp(1.1rem, 3vw, 1.5rem); color: var(--text-dim);
+    margin-top: 1.2rem;
+  }
+  .hero-actions { margin-top: 2.4rem; display: flex; gap: .9rem; justify-content: center; flex-wrap: wrap; }
+  .scrolldown { position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 2;
+    font-family: var(--font-mono); font-size: .65rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--text-muted); animation: bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translate(-50%,0); } 50% { transform: translate(-50%,8px); } }
+
+  /* seed ticker */
+  .seed-strip {
+    position: relative; z-index: 2; margin-top: 2.6rem; max-width: 560px;
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    padding: .7rem 0; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .seed-track { display: inline-flex; gap: 1.4rem; white-space: nowrap; animation: scrollx 28s linear infinite; }
+  .seed-track span { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .14em; color: var(--text-muted); }
+  .seed-track span::before { content: '✦'; color: var(--gold-dim); margin-right: 1.4rem; }
+  @keyframes scrollx { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ─── Sections ────────────────────────────────────────────────────────── */
+  section { padding: 4.5rem 0; border-top: 1px solid var(--border); }
+  .section-head { margin-bottom: 2.4rem; }
+  .section-head h2 {
+    font-weight: 500; font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1.1; margin-top: .5rem;
+  }
+  .section-head p.lead { color: var(--text-dim); margin-top: .8rem; max-width: 62ch; font-size: 1.08rem; }
+  p { margin-bottom: 1.1rem; }
+  p .hl { color: var(--gold); }
+  .prose { max-width: 68ch; }
+  .prose strong { color: var(--text); font-weight: 600; }
+
+  /* ─── Feature grid (eight ways to see) ───────────────────────────────── */
+  .ways { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: .9rem; }
+  .way {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 1.3rem 1.3rem 1.4rem; transition: border-color .2s, transform .2s;
+    border-top: 2px solid var(--accent, var(--gold-dim));
+  }
+  .way:hover { transform: translateY(-3px); border-color: var(--accent, var(--gold-dim)); }
+  .way .ico { font-size: 1.3rem; line-height: 1; }
+  .way h3 { font-size: 1.15rem; font-weight: 600; margin: .6rem 0 .35rem; }
+  .way p { font-size: .92rem; color: var(--text-dim); margin: 0; }
+
+  /* ─── Node card mockup row ───────────────────────────────────────────── */
+  .views { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.2rem; align-items: stretch; }
+  @media (max-width: 760px) { .views { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 1.1rem; position: relative; overflow: hidden;
+  }
+  .panel-label {
+    font-family: var(--font-mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--gold-dim); margin-bottom: .9rem;
+  }
+  .nodecards { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
+  .ncard { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--surface-2); }
+  .ncard .cover { aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+    background: linear-gradient(150deg, color-mix(in srgb, var(--c) 38%, #161616), #141414); color: var(--c); }
+  .ncard .meta { padding: .45rem .5rem .55rem; }
+  .ncard .meta .t { font-size: .78rem; line-height: 1.25; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .ncard .meta .a { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .04em; color: var(--text-muted); margin-top: .25rem; }
+
+  /* daily window mockup */
+  .daily { display: flex; flex-direction: column; }
+  .daily .win {
+    flex: 1; border: 1px solid rgba(201,168,108,0.25); border-radius: var(--radius);
+    background: radial-gradient(circle at 50% 45%, #141414, #0a0a0a); min-height: 220px; position: relative; overflow: hidden;
+  }
+  .daily .seedword { position: absolute; top: 12px; left: 14px; font-family: var(--font-mono); font-size: .6rem;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--gold-dim); }
+  .daily .cap { font-style: italic; color: var(--text-muted); font-size: .82rem; margin-top: .8rem; }
+
+  /* ─── Stack / how I built it ─────────────────────────────────────────── */
+  .stack { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: .7rem; margin: 1.6rem 0; }
+  .chip {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: .7rem .9rem; font-family: var(--font-mono); font-size: .78rem; color: var(--text-dim);
+  }
+  .chip b { color: var(--text); font-weight: 500; display: block; font-size: .82rem; margin-bottom: .15rem; }
+  .archflow {
+    font-family: var(--font-mono); font-size: .8rem; color: var(--text-dim); line-height: 1.9;
+    background: #0a0a0a; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.1rem 1.2rem; overflow-x: auto; white-space: pre; margin: 1.4rem 0;
+  }
+  .archflow .g { color: var(--gold); }
+
+  /* ─── Prompt block ───────────────────────────────────────────────────── */
+  .prompt-wrap { position: relative; }
+  .prompt {
+    background: #0a0a0a; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 1.5rem 1.4rem; font-family: var(--font-mono); font-size: .82rem; line-height: 1.75;
+    color: var(--text-dim); white-space: pre-wrap; max-height: 460px; overflow-y: auto;
+  }
+  .prompt::-webkit-scrollbar { width: 8px; } .prompt::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .copy-btn {
+    position: absolute; top: .9rem; right: .9rem;
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+    border-radius: var(--radius); padding: .4rem .8rem; font-family: var(--font-mono); font-size: .68rem;
+    letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: all .15s;
+  }
+  .copy-btn:hover { color: var(--gold); border-color: var(--gold-dim); }
+
+  /* ─── Video grid (facades) ───────────────────────────────────────────── */
+  .videos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1rem; }
+  .vid {
+    position: relative; aspect-ratio: 16/9; border-radius: var(--radius-lg); overflow: hidden;
+    border: 1px solid var(--border); cursor: pointer; background: #000 center/cover no-repeat;
+  }
+  .vid::after {
+    content: ''; position: absolute; inset: 0; background: rgba(13,13,13,0.35); transition: background .2s;
+  }
+  .vid:hover::after { background: rgba(13,13,13,0.12); }
+  .vid .play {
+    position: absolute; z-index: 2; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 56px; height: 56px; border-radius: 50%; background: rgba(212,180,120,0.92);
+    display: flex; align-items: center; justify-content: center; transition: transform .2s;
+  }
+  .vid:hover .play { transform: translate(-50%,-50%) scale(1.08); }
+  .vid .play svg { width: 22px; height: 22px; fill: #0d0d0d; margin-left: 3px; }
+  .vid .vnum { position: absolute; z-index: 2; top: 10px; left: 12px; font-family: var(--font-mono);
+    font-size: .62rem; letter-spacing: .12em; color: var(--text); text-shadow: 0 1px 4px #000; }
+  .vid iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  /* ─── Tweets ─────────────────────────────────────────────────────────── */
+  #tweets-grid { columns: 3 300px; column-gap: 1rem; }
+  #tweets-grid > * { break-inside: avoid; margin-bottom: 1rem; }
+  .tweet-fallback {
+    display: block; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 1rem 1.1rem; transition: border-color .2s;
+  }
+  .tweet-fallback:hover { border-color: var(--gold-dim); }
+  .tweet-fallback .th { display: flex; align-items: center; gap: .55rem; margin-bottom: .5rem; }
+  .tweet-fallback .av { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(140deg,var(--gold),var(--gold-dim)); flex: none; }
+  .tweet-fallback .nm { font-size: .85rem; color: var(--text); }
+  .tweet-fallback .hn { font-family: var(--font-mono); font-size: .68rem; color: var(--text-muted); }
+  .tweet-fallback .body { font-size: .9rem; color: var(--text-dim); }
+  .tweet-fallback .open { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-dim); margin-top: .7rem; }
+  .twitter-tweet { margin: 0 auto !important; }
+
+  /* ─── CTA + footer ───────────────────────────────────────────────────── */
+  .cta { text-align: center; }
+  .cta h2 { font-weight: 500; font-size: clamp(2rem,6vw,3rem); }
+  .cta p { color: var(--text-dim); max-width: 50ch; margin: .8rem auto 1.8rem; }
+  footer { border-top: 1px solid var(--border); padding: 2.5rem 0 3.5rem; text-align: center; color: var(--text-muted); }
+  footer .links { display: flex; gap: 1.4rem; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  footer a { font-family: var(--font-mono); font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+  footer a:hover { color: var(--gold); }
+  footer .fine { font-family: var(--font-mono); font-size: .68rem; color: var(--text-muted); }
+
+  .note { font-family: var(--font-mono); font-size: .72rem; color: var(--text-muted); border-left: 2px solid var(--gold-dim); padding-left: .9rem; margin: 1.4rem 0; }
+</style>
+</head>
+<body>
+
+<!-- ─── Top bar ─────────────────────────────────────────────────────────── -->
+<div class="topbar">
+  <a href="#top" class="brand">Chapel</a>
+  <nav>
+    <a href="#what">What it is</a>
+    <a href="#ways">The views</a>
+    <a href="#build">How I built it</a>
+    <a href="#prompt">Build your own</a>
+    <a href="#videos">Build log</a>
+    <a href="#tweets">Notes</a>
+  </nav>
+  <a href="https://chapel-59b48.web.app" target="_blank" rel="noopener" class="btn btn-primary" style="padding:.45rem 1rem;">Visit&nbsp;→</a>
+</div>
+
+<!-- ─── Hero ────────────────────────────────────────────────────────────── -->
+<header class="hero" id="top">
+  <svg class="hero-constellation" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g stroke="#d4b478" stroke-opacity="0.16" stroke-width="1">
+      <line x1="180" y1="160" x2="360" y2="280"/><line x1="360" y1="280" x2="540" y2="180"/>
+      <line x1="540" y1="180" x2="720" y2="300"/><line x1="360" y1="280" x2="420" y2="470"/>
+      <line x1="420" y1="470" x2="640" y2="520"/><line x1="640" y1="520" x2="720" y2="300"/>
+      <line x1="720" y1="300" x2="850" y2="430"/><line x1="180" y1="160" x2="240" y2="380"/>
+      <line x1="240" y1="380" x2="420" y2="470"/><line x1="540" y1="180" x2="640" y2="520"/>
+      <line x1="850" y1="430" x2="640" y2="520"/><line x1="240" y1="380" x2="360" y2="280"/>
+    </g>
+    <g class="cnodes"></g>
+  </svg>
+  <div class="hero-inner">
+    <h1>Chapel</h1>
+    <p class="tagline">A sanctuary for the things that moved you.</p>
+    <div class="hero-actions">
+      <a href="https://chapel-59b48.web.app" target="_blank" rel="noopener" class="btn btn-primary">Enter the chapel →</a>
+      <a href="https://github.com/rheakaru/Chapel" target="_blank" rel="noopener" class="btn btn-ghost">View on GitHub</a>
+    </div>
+  </div>
+  <div class="seed-strip">
+    <div class="seed-track" id="seedtrack"></div>
+  </div>
+  <div class="scrolldown">scroll ↓</div>
+</header>
+
+<!-- ─── What it is ──────────────────────────────────────────────────────── -->
+<section id="what">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The project</span>
+      <h2>A commonplace book, reimagined as a living constellation</h2>
+      <p class="lead">Chapel is where I keep the things that moved me — books, poems, paintings, songs, films, quotes — and let them talk to each other.</p>
+    </div>
+    <div class="prose">
+      <p>Most reading apps end at the list. You log a book, it sits in a row, and that's it. Chapel begins where the list ends. You <strong>light a node</strong> for each work that stayed with you, and the app weaves those nodes into a graph of shared themes, shapes, lineages, and time.</p>
+      <p>The same library can be rendered <span class="hl">eight different ways</span>. A force-directed map of your whole collection. A daily "window" built from a single seed word. A jigsaw of works that interlock around a theme. An ancestry tree of who influenced what. A timeline that spans centuries. Or a "living essay" you write with <span class="hl">@-mentions</span> of your own collection.</p>
+      <p>Underneath, <strong>Claude</strong> does the connective tissue: it reads sparse entries and fleshes them out with author, year, cover art, movement, and themes; it identifies a painting from a photo; and it composes each visualization as structured data the app renders directly — no chatbot, no chat window, just compositions.</p>
+      <p class="note">Built for a single curator, open for anyone to wander. Anyone can sign in and browse; only an allowlist can write. The whole thing lives on Firebase and costs almost nothing to run.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Views / mockups ─────────────────────────────────────────────────── -->
+<section id="views" style="border-top:none;padding-top:0;">
+  <div class="wrap">
+    <div class="views">
+      <div class="panel">
+        <div class="panel-label">◈ The library — your nodes</div>
+        <div class="nodecards" id="nodecards"></div>
+      </div>
+      <div class="panel daily">
+        <div class="panel-label">✦ Today's window</div>
+        <div class="win">
+          <span class="seedword">seed · longing</span>
+          <svg viewBox="0 0 320 220" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+            <g stroke="#d4b478" stroke-opacity="0.2"><line x1="80" y1="70" x2="160" y2="120"/><line x1="160" y1="120" x2="250" y2="80"/><line x1="160" y1="120" x2="130" y2="180"/><line x1="250" y1="80" x2="230" y2="160"/></g>
+            <circle cx="80" cy="70" r="7" fill="#7ab8d3"/><circle cx="160" cy="120" r="9" fill="#c9a86c"/>
+            <circle cx="250" cy="80" r="6" fill="#b8d37a"/><circle cx="130" cy="180" r="6" fill="#a89fd3"/>
+            <circle cx="230" cy="160" r="7" fill="#d37a7a"/>
+          </svg>
+        </div>
+        <p class="cap">A new window opens each day. Each one casts your constellation differently — and arrives by email at 9am.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Eight ways to see ───────────────────────────────────────────────── -->
+<section id="ways">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Capture · See · Compose · Share</span>
+      <h2>Eight ways to see the same collection</h2>
+      <p class="lead">Every mode is just a different render of the same nodes. Each colour below is one of Chapel's eight work-types.</p>
+    </div>
+    <div class="ways" id="ways"></div>
+  </div>
+</section>
+
+<!-- ─── How I built it ──────────────────────────────────────────────────── -->
+<section id="build">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">How I built it</span>
+      <h2>One curator, a thin server, and Claude as a composition partner</h2>
+    </div>
+    <div class="prose">
+      <p>Chapel is a <strong>React + Vite</strong> single-page app on the front, and a <strong>single Express server deployed as one Firebase Cloud Function</strong> on the back. Firestore is the source of truth; Cloud Storage holds uploaded covers and artwork photos. There's no database I babysit and no server I keep warm.</p>
+    </div>
+    <div class="stack">
+      <div class="chip"><b>Frontend</b>React 18 · Vite · React Router</div>
+      <div class="chip"><b>Graph</b>react-force-graph-2d</div>
+      <div class="chip"><b>Editor</b>TipTap (essay + @mentions)</div>
+      <div class="chip"><b>Backend</b>Express on Cloud Functions</div>
+      <div class="chip"><b>Data</b>Firestore + Cloud Storage</div>
+      <div class="chip"><b>Auth</b>Firebase Auth (Google)</div>
+      <div class="chip"><b>Intelligence</b>Claude (Anthropic SDK)</div>
+      <div class="chip"><b>Metadata</b>Open Library · Google Books · TMDB · Wikipedia</div>
+      <div class="chip"><b>Email</b>Scheduled fn + Nodemailer</div>
+    </div>
+    <div class="archflow"><span class="g">client/</span>   React + Vite SPA  →  Firebase Hosting
+<span class="g">server/</span>   Express  →  one HTTPS Cloud Function
+          + a scheduled fn (daily window email, 9am IST)
+<span class="g">Firestore</span>  nodes · visualizations · essays · daily archive
+<span class="g">Storage</span>    uploaded covers & artwork photos
+<span class="g">Claude</span>     vision · flesh-out · compose every visualization</div>
+    <div class="prose">
+      <p><strong>The key design idea:</strong> Claude never returns prose to paste into a chat bubble. Every model call returns <span class="hl">structured JSON</span> — a visualization spec, a lineage tree, a jigsaw layout — and the frontend renders it directly. Adding a new way to see the collection is mostly a new page plus a new endpoint that returns its own spec.</p>
+      <p><strong>Capture is the unglamorous half that makes the rest work.</strong> You can add a work by title, by URL, by dragging in an image, or in bulk from a spreadsheet. Claude + the metadata services then flesh out the sparse entry — author, year, cover, medium, movement, tags — so the graph has something real to connect. Point your camera at a painting and Claude Vision returns title, artist, year, and movement.</p>
+      <p><strong>Security is boring on purpose.</strong> Reads are open; writes are gated by an email allowlist enforced both client-side and in server middleware, on top of Firestore security rules. The Firebase web config is public by design — it ships to every browser — and the real keys live only in server-side environment variables, never in the repo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Build your own (prompt) ─────────────────────────────────────────── -->
+<section id="prompt">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Build your own</span>
+      <h2>The prompt</h2>
+      <p class="lead">Drop this into Claude (or your coding agent of choice) to scaffold your own Chapel. Tweak the work-types and the views to taste.</p>
+    </div>
+    <div class="prompt-wrap">
+      <button class="copy-btn" id="copyBtn">Copy</button>
+      <div class="prompt" id="promptText">Build me a web app called "Chapel" — a personal commonplace book that turns the art that moved someone into a living, connected constellation.
+
+CORE CONCEPT
+Users "light a node" for each work that stayed with them. Each node is one of eight types: artwork, book, poem, article, song, movie, tv, quote — each with its own accent color and a small glyph. The same library of nodes can be rendered many different ways; every view is just a different projection of the same data.
+
+STACK
+- Frontend: React + Vite single-page app, React Router. Dark, editorial aesthetic: near-black background (#0d0d0d), warm gold accent (#d4b478), EB Garamond serif for headings/body, DM Mono for labels. Calm, gallery-like, generous whitespace.
+- Backend: a single Express app deployed as one serverless function. Expose REST routes: /api/nodes, /api/search, /api/visualizations, /api/essays, plus one per extra view.
+- Data: a document database (Firestore or similar) as the source of truth; object storage for uploaded cover images.
+- Auth: Google sign-in. Reads are public; writes are restricted to an email allowlist enforced on both client and server.
+- Intelligence: the Claude API (Anthropic SDK). IMPORTANT — every model call must return STRUCTURED JSON that the frontend renders directly. No chat UI anywhere.
+
+CAPTURE
+- Add a node by title, by URL, by drag-and-drop image, or in bulk from a CSV/XLSX.
+- "Flesh out": given a sparse node, call Claude + public metadata sources (Open Library, Google Books, TMDB, Wikipedia) to fill in author/creator, year, cover image, medium, movement, themes, and tags.
+- "Identify artwork": send a photo to Claude Vision and return {title, artist, year, medium, movement, period} as JSON.
+
+THE VIEWS (each is its own page + endpoint)
+1. Library — filterable grid of node cards by type.
+2. Constellation — force-directed graph; nodes connected by shared keywords/themes, edge weight scaled to overlap depth.
+3. Daily Window — hash today's date to pick a seed word from a curated pool (colors, feelings, elements, abstractions). Claude composes a one-of-one visualization from the user's library around that word. Archive past days. Email a summary each morning via a scheduled function.
+4. Visualize — free-text prompt ("solitude in postwar Europe", "the color blue") → Claude returns a custom graph spec of the user's nodes around that theme. Allow saving.
+5. Pictorial — flowing prose interleaved with sized thumbnails of referenced works.
+6. Jigsaw — Claude lays works out as interlocking puzzle pieces around a theme; edges matched by shared motif.
+7. Lineage — pick a node; Claude returns its ancestors (influences) and descendants (influenced), flagging which already exist in the library.
+8. Span — a chronological timeline across centuries, collapsing empty year-ranges.
+9. Living Essay — a rich-text editor (TipTap) where typing @ summons your nodes inline and # summons tags. Publish a read-only public view at /read/:id.
+
+DETAILS
+- Give visualizations an /embed/* route that renders bare (no nav) so they can be iframed onto a personal site.
+- Keep all real secrets in server-side env vars; never commit them. The frontend auth config is public by design.
+- Ship a clean README and a sensible .gitignore.
+
+Start by scaffolding the data model, the node CRUD endpoints, and the Library + Constellation views, then add the other views one at a time.</div>
+    </div>
+    <p class="note">This is the shape of Chapel, not a copy of my code. The actual source — every view, the Claude prompts, the metadata plumbing — is open on GitHub if you'd rather read the real thing.</p>
+  </div>
+</section>
+
+<!-- ─── Build log / videos ──────────────────────────────────────────────── -->
+<section id="videos">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Thinking out loud · video</span>
+      <h2>The build log</h2>
+      <p class="lead">I recorded myself building Chapel — working through the ideas, the dead ends, and the moments it clicked. Click any frame to play.</p>
+    </div>
+    <div class="videos" id="videos"></div>
+  </div>
+</section>
+
+<!-- ─── Tweets ──────────────────────────────────────────────────────────── -->
+<section id="tweets">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Thinking out loud · notes</span>
+      <h2>Notes from the build</h2>
+      <p class="lead">Posted as I went, from <a href="https://x.com/MillionPageProj" target="_blank" rel="noopener" style="color:var(--gold)">@MillionPageProj</a>.</p>
+    </div>
+    <div id="tweets-grid"></div>
+  </div>
+</section>
+
+<!-- ─── CTA ─────────────────────────────────────────────────────────────── -->
+<section class="cta">
+  <div class="wrap">
+    <h2>Go light a node.</h2>
+    <p>Chapel is live, and the whole thing is open source.</p>
+    <div class="hero-actions" style="justify-content:center;">
+      <a href="https://chapel-59b48.web.app" target="_blank" rel="noopener" class="btn btn-primary">Visit Chapel →</a>
+      <a href="https://github.com/rheakaru/Chapel" target="_blank" rel="noopener" class="btn btn-ghost">Read the source</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="links">
+      <a href="https://chapel-59b48.web.app" target="_blank" rel="noopener">Live app</a>
+      <a href="https://github.com/rheakaru/Chapel" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://x.com/MillionPageProj" target="_blank" rel="noopener">@MillionPageProj</a>
+    </div>
+    <div class="fine">Chapel — a sanctuary for the things that moved you. Built with React, Firebase &amp; Claude.</div>
+  </div>
+</footer>
+
+<script>
+  // ─── Hero constellation: scatter glowing nodes on the existing lines ──
+  (function () {
+    const pts = [[180,160,'#7ab8d3'],[360,280,'#c9a86c'],[540,180,'#b8d37a'],[720,300,'#d3b87a'],
+                 [420,470,'#a89fd3'],[640,520,'#d37a7a'],[850,430,'#7ad3b8'],[240,380,'#d3a87a']];
+    const g = document.querySelector('.cnodes');
+    pts.forEach(([x,y,c],i)=>{
+      const circ = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circ.setAttribute('cx',x); circ.setAttribute('cy',y); circ.setAttribute('r', 5+(i%3)*2);
+      circ.setAttribute('fill',c);
+      circ.style.filter='drop-shadow(0 0 6px '+c+')';
+      const anim = document.createElementNS('http://www.w3.org/2000/svg','animate');
+      anim.setAttribute('attributeName','opacity');
+      anim.setAttribute('values','0.5;1;0.5'); anim.setAttribute('dur',(3+i*0.4)+'s');
+      anim.setAttribute('repeatCount','indefinite');
+      circ.appendChild(anim); g.appendChild(circ);
+    });
+  })();
+
+  // ─── Seed-word ticker ─────────────────────────────────────────────────
+  (function () {
+    const words = ['longing','grief','the color blue','solitude','exile','wonder','rain','memory','mother',
+      'distance','faith','the moon','tenderness','ghosts','home','silence','awe','departure','a wound','desire'];
+    const track = document.getElementById('seedtrack');
+    const make = () => words.map(w=>'<span>'+w+'</span>').join('');
+    track.innerHTML = make() + make(); // duplicate for seamless loop
+  })();
+
+  // ─── Node card mockups ────────────────────────────────────────────────
+  (function () {
+    const cards = [
+      ['📖','#7ab8d3','The Waves','Woolf'],
+      ['🖼','#c9a86c','Wheatfield','van Gogh'],
+      ['✦','#b8d37a','Aubade','Larkin'],
+      ['♪','#a89fd3','Avril 14th','Aphex Twin'],
+      ['◻','#d3a87a','Stalker','Tarkovsky'],
+      ['❝','#d37a7a','"…tenderness"','Hafiz'],
+    ];
+    document.getElementById('nodecards').innerHTML = cards.map(([ic,c,t,a])=>
+      '<div class="ncard"><div class="cover" style="--c:'+c+'">'+ic+'</div>'+
+      '<div class="meta"><div class="t">'+t+'</div><div class="a">'+a+'</div></div></div>'
+    ).join('');
+  })();
+
+  // ─── Eight ways ───────────────────────────────────────────────────────
+  (function () {
+    const ways = [
+      ['◈','#d3b87a','Library','Your whole collection, filterable by type — book, poem, artwork, song, film, TV, article, quote.'],
+      ['✦','#c9a86c','Constellation','A force-directed graph where works connect by shared themes, edges weighted by how deeply they overlap.'],
+      ['☀','#b8d37a','Daily Window','A new seed word each day; Claude composes a one-of-one visualization from your library — and emails it at 9am.'],
+      ['◉','#a89fd3','Visualize','Type any prompt and Claude builds a custom graph of your nodes around that theme. Save the good ones.'],
+      ['❝','#d37a7a','Pictorial','A flowing essay where prose is interleaved with sized thumbnails of the works it references.'],
+      ['▦','#7ad3b8','Jigsaw','Works laid out as interlocking puzzle pieces, edges matched by shared motif.'],
+      ['⛢','#7ab8d3','Lineage','Pick a work; Claude maps its ancestors and descendants, flagging which already live in your library.'],
+      ['▤','#d3a87a','Span','A chronological timeline across centuries, collapsing the empty years.'],
+      ['@','#d4b478','Living Essay','Write an essay where typing @ summons your own nodes inline and # summons tags. Publish it read-only.'],
+    ];
+    document.getElementById('ways').innerHTML = ways.map(([ic,c,t,d])=>
+      '<div class="way" style="--accent:'+c+'"><div class="ico" style="color:'+c+'">'+ic+'</div>'+
+      '<h3>'+t+'</h3><p>'+d+'</p></div>'
+    ).join('');
+  })();
+
+  // ─── Copy prompt ──────────────────────────────────────────────────────
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    const txt = document.getElementById('promptText').innerText;
+    navigator.clipboard.writeText(txt).then(()=>{
+      this.textContent = 'Copied ✓';
+      setTimeout(()=>{ this.textContent = 'Copy'; }, 1800);
+    }).catch(()=>{ this.textContent = 'Press ⌘C'; });
+  });
+
+  // ─── YouTube facades (click to load) ──────────────────────────────────
+  (function () {
+    const ids = ['ACo7Dr7zBmk','lpROsexKDr4','0hQBvJ8UOJ0','0dOh4YaQhAs','CinCNymOx08','UHj2VkEoGbw',
+                 'cgQCflLLBG8','UURQSlv0jAo','eIxmY4WUnig','vZWUjKIUGTM','IUhScOC9AOA','XQEGApLJ0Uc'];
+    const playSvg = '<span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>';
+    const wrap = document.getElementById('videos');
+    wrap.innerHTML = ids.map((id,i)=>
+      '<div class="vid" data-id="'+id+'" style="background-image:url(https://i.ytimg.com/vi/'+id+'/hqdefault.jpg)">'+
+      '<span class="vnum">log '+String(i+1).padStart(2,'0')+'</span>'+playSvg+'</div>'
+    ).join('');
+    wrap.addEventListener('click', e=>{
+      const v = e.target.closest('.vid'); if(!v || v.dataset.loaded) return;
+      v.dataset.loaded='1';
+      v.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+v.dataset.id+'?autoplay=1&rel=0" '+
+        'title="Chapel build log" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+    });
+  })();
+
+  // ─── Tweets: official embeds with graceful link fallback ──────────────
+  (function () {
+    const ids = ['2041795577198080152','2043052279927050704','2051312311454097743','2041442674964832336',
+      '2042999686110548439','2041630984035299527','2041630997322854843','2043388727683383614',
+      '2043388732167057739','2043388721698115631','2051498869914255463','2047367907135701431',
+      '2041231284484366742','2042999689868644792','2051514472523530745','2043574158827909313',
+      '2041602646826742078'];
+    const grid = document.getElementById('tweets-grid');
+    grid.innerHTML = ids.map(id=>{
+      const url = 'https://x.com/MillionPageProj/status/'+id;
+      // Fallback card stays if widgets.js fails; official embed replaces it if it loads.
+      return '<blockquote class="twitter-tweet" data-theme="dark" data-conversation="none">'+
+        '<a class="tweet-link" href="'+url+'"></a>'+
+        '<div class="tweet-fallback-inner">'+
+          '<a class="tweet-fallback" href="'+url+'" target="_blank" rel="noopener">'+
+            '<div class="th"><span class="av"></span><span><span class="nm">Million Page Project</span><br>'+
+            '<span class="hn">@MillionPageProj</span></span></div>'+
+            '<div class="body">A note from building Chapel →</div>'+
+            '<div class="open">Open on X ↗</div>'+
+          '</a></div>'+
+        '</blockquote>';
+    }).join('');
+
+    // Load Twitter widgets; if it loads it upgrades the blockquotes into real tweets.
+    const s = document.createElement('script');
+    s.src = 'https://platform.twitter.com/widgets.js';
+    s.async = true; s.charset = 'utf-8';
+    document.body.appendChild(s);
+  })();
+</script>
+</body>
+</html>
