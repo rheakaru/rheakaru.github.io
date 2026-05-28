@@ -56,7 +56,8 @@
     var sy = window.scrollY || window.pageYOffset;
     var pts = [];
     var or = origin.getBoundingClientRect();
-    pts.push({ x: or.left + or.width / 2, y: or.top + sy + or.height / 2 });
+    // start just below the chip so the line never crosses the word
+    pts.push({ x: or.left + or.width / 2, y: or.bottom + sy + 7 });
 
     nodeEls.forEach(function (el, i) {
       var r = el.getBoundingClientRect();
