@@ -416,6 +416,7 @@ em { font-style: italic; }
 .pc--comprice { --c-bg:#ffffff; --c-ink:#171717; --c-dim:#525252; --c-accent:#b45309; --c-accent-ink:#fff; --c-border:#e5e5e5; --c-display:'Inter',system-ui,sans-serif; --c-body:'Inter',system-ui,sans-serif; --c-mono:'JetBrains Mono',monospace; }
 .pc--throughline { --c-bg:#15120e; --c-ink:#ece4d6; --c-dim:#b8ad99; --c-accent:#d4a85f; --c-accent-ink:#15120e; --c-border:#2a241c; --c-display:'EB Garamond',Georgia,serif; --c-body:'EB Garamond',Georgia,serif; --c-mono:'JetBrains Mono',monospace; --c-glow:rgba(212,168,95,0.15); --c-shadow:rgba(0,0,0,0.6); }
 .pc--hoovu { --c-bg:#fbfaf4; --c-ink:#2b2b2c; --c-dim:#696b6d; --c-accent:#f7941d; --c-accent-ink:#2b2b2c; --c-border:#dcd6c4; --c-display:'Fraunces',Georgia,serif; --c-body:'Inter',system-ui,sans-serif; --c-mono:'JetBrains Mono',monospace; }
+.pc--vanaja { --c-bg:#fbfaf4; --c-ink:#2b2b2c; --c-dim:#696b6d; --c-accent:#57a97e; --c-accent-ink:#fff; --c-border:#dcd6c4; --c-display:'Fraunces',Georgia,serif; --c-body:'Inter',system-ui,sans-serif; --c-mono:'JetBrains Mono',monospace; }
 .pc--agents { --c-bg:#fbfaf4; --c-ink:#2b2b2c; --c-dim:#696b6d; --c-accent:#7c3aed; --c-accent-ink:#fff; --c-border:#dcd6c4; --c-display:'Fraunces',Georgia,serif; --c-body:'Inter',system-ui,sans-serif; --c-mono:'JetBrains Mono',monospace; }
 
 /* ── TRUST chip + the throughline ── */
