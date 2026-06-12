@@ -17,6 +17,7 @@ const targets = [
   ['projects/hoovu-dashboard.html', 'og/hoovu-dashboard.png'],
   ['projects/hoovu-ai-agents.html', 'og/hoovu-ai-agents.png'],
   ['projects/vanaja.html', 'og/vanaja.png'],
+  ['projects/ai-cmo.html', 'og/ai-cmo.png'],
 ];
 
 // Neutralise scroll-reveal + looping animations so the capture is static and

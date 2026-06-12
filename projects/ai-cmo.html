@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>An AI CMO that learns your brand — Rhea Karuturi</title>
+<meta name="description" content="I built a tool that interviews a company, structures everything it learns into a reusable brand ontology, then uses that ontology to generate a content calendar, design creatives across six AI tools, and tackle marketing work beyond content. Here's how it works — and a prompt to build your own." />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="An AI CMO that learns your brand" />
+<meta property="og:description" content="A tool that interviews a company, structures what it learns into a brand ontology, then uses it to plan a month of content, design creatives across six AI tools, and tackle marketing work beyond posts." />
+<meta property="og:url" content="https://rheakaru.github.io/projects/ai-cmo.html" />
+<meta property="og:image" content="https://rheakaru.github.io/og/ai-cmo.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="An AI CMO that learns your brand" />
+<meta name="twitter:description" content="Invest once in a brand ontology — then watch an agent do a dozen marketing jobs in your voice." />
+<meta name="twitter:image" content="https://rheakaru.github.io/og/ai-cmo.png" />
+<link rel="icon" type="image/png" href="data:image/png;base64,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" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --white-rock:#EDE8D8; --white-rock-tint:#F3F0E6; --paper:#FBFAF4;
+    --roja:#F16667; --roja-deep:#D51C5C;
+    --turmeric:#FEBD11; --turmeric-deep:#F7941D;
+    --rama:#B4C8A5; --rama-deep:#57A97E;
+    --smoke:#414142; --smoke-soft:#696B6D; --ink:#2B2B2C; --line:#DCD6C4;
+    --ai:#7C3AED; --ai-deep:#5B21B6; --ai-tint:#F3E8FF; --code-bg:#1C1B2E;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin:0; background-color:var(--white-rock);
+    background-image:linear-gradient(rgba(65,65,66,0.045) 1px,transparent 1px),linear-gradient(90deg,rgba(65,65,66,0.045) 1px,transparent 1px);
+    background-size:28px 28px; color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,sans-serif; font-size:17px; line-height:1.65; -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:1060px; margin:0 auto; padding:0 26px; }
+  .wrap-wide { max-width:1080px; margin:0 auto; padding:0 26px; }
+  h1,h2,h3,h4,h5 { font-family:'Fraunces',Georgia,serif; color:var(--smoke); line-height:1.13; margin:0; }
+  a { color:var(--ai-deep); }
+  .kicker { text-transform:uppercase; letter-spacing:0.18em; font-size:0.72rem; font-weight:700; color:var(--roja-deep); margin-bottom:12px; }
+
+  .hero { position:relative; overflow:hidden; }
+  .hero-inner { padding:72px 26px 64px; position:relative; z-index:2; }
+  .brandrow { display:flex; align-items:center; gap:16px; margin-bottom:34px; }
+  .b-logo { height:74px; width:auto; display:block; }
+  .brandrow .b-sub { font-size:0.82rem; color:var(--smoke-soft); border-left:2px solid var(--line); padding-left:16px; }
+  .hero h1 { font-size:clamp(2.3rem,5.8vw,4.1rem); font-weight:900; letter-spacing:-0.015em; }
+  .hero .lede { font-size:clamp(1.05rem,2.4vw,1.32rem); max-width:740px; margin:22px 0 0; }
+  .hero .by { margin-top:24px; font-size:0.9rem; }
+
+  .hero.ai { background:linear-gradient(155deg,#1A1330 0%,#2A1A52 50%,#3A1D6B 100%); color:#EDE9F7; border-bottom:3px solid var(--turmeric); }
+  .hero.ai .glow { position:absolute; inset:0; z-index:1; background:radial-gradient(640px 300px at 82% -8%,rgba(254,189,17,0.30),transparent 60%),radial-gradient(620px 320px at -5% 120%,rgba(124,58,237,0.45),transparent 55%); }
+  .hero.ai .b-logo { height:56px; background:#FBFAF4; padding:7px 12px; border-radius:12px; }
+  .hero.ai .brandrow .b-sub { color:#C9BEE8; border-left-color:rgba(255,255,255,0.2); }
+  .hero.ai h1 { color:#fff; } .hero.ai h1 em { font-style:italic; color:var(--turmeric); }
+  .hero.ai .lede { color:#D9D0F0; } .hero.ai .by { color:#B6A9D9; } .hero.ai .by b { color:#fff; }
+  .hero.ai .kicker { color:#C4B5FD; }
+
+  .ingredients { display:flex; flex-wrap:wrap; gap:10px; margin-top:34px; }
+  .ing { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.16); border-radius:30px; padding:8px 16px; font-size:0.85rem; color:#EDE9F7; }
+  .ing b { color:var(--turmeric); }
+
+  section { padding:70px 0; border-bottom:1px dashed var(--line); }
+  section.tight { padding:54px 0; }
+  .sec-head { max-width:780px; margin-bottom:40px; }
+  .sec-head h2 { font-size:clamp(1.8rem,4vw,2.7rem); font-weight:700; }
+  .sec-head p { color:var(--smoke); font-size:1.05rem; margin:16px 0 0; }
+  .act-head { text-align:center; max-width:760px; margin:0 auto 44px; }
+  .act-label { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--ai); border:1px solid var(--ai-tint); background:var(--ai-tint); padding:4px 14px; border-radius:20px; margin-bottom:16px; }
+  .act-head h2 { font-size:clamp(1.9rem,4.2vw,2.8rem); font-weight:700; }
+  .act-head p { color:var(--smoke); font-size:1.08rem; margin:16px 0 0; }
+  .prose p { color:var(--smoke); } .prose strong { color:var(--smoke); }
+
+  .mock { border-radius:16px; overflow:hidden; border:1px solid var(--line); box-shadow:0 18px 44px -22px rgba(65,65,66,0.4); background:var(--paper); margin:26px 0; }
+  .mock-bar { background:var(--smoke); padding:9px 14px; display:flex; align-items:center; gap:7px; }
+  .mock-bar i { width:11px; height:11px; border-radius:50%; display:inline-block; }
+  .mock-bar .t { margin-left:10px; color:#C9C7C0; font-size:0.74rem; font-family:'JetBrains Mono',monospace; }
+  .mock-body { padding:18px; }
+  .cap { font-size:0.82rem; color:var(--smoke-soft); font-style:italic; margin:-10px 0 26px; text-align:center; }
+
+  .tour { position:relative; margin-top:12px; }
+  .tour::before { content:""; position:absolute; left:19px; top:8px; bottom:8px; width:2px; background:linear-gradient(var(--turmeric),var(--ai),var(--rama-deep)); opacity:0.5; }
+  .step { position:relative; padding:0 0 26px 56px; }
+  .step .dot { position:absolute; left:8px; top:2px; width:24px; height:24px; border-radius:50%; background:var(--paper); border:2px solid var(--roja); display:grid; place-items:center; font-size:0.7rem; }
+  .step.ai .dot { border-color:var(--ai); }
+  .step h4 { font-size:1.18rem; font-weight:600; color:var(--smoke); }
+  .step p { margin:5px 0 0; color:var(--smoke-soft); font-size:0.98rem; }
+  .step .grp { display:inline-block; font-size:0.66rem; text-transform:uppercase; letter-spacing:0.12em; font-weight:700; color:var(--rama-deep); margin-bottom:18px; }
+
+  .stack { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; }
+  .layer { border:1px solid var(--line); border-radius:12px; padding:18px; background:var(--paper); }
+  .layer h4 { font-family:'Inter'; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--smoke-soft); margin-bottom:10px; }
+  .layer ul { margin:0; padding-left:18px; } .layer li { font-size:0.88rem; margin-bottom:6px; color:var(--smoke); }
+  code.inline, .layer code { font-family:'JetBrains Mono',monospace; font-size:0.8rem; background:var(--white-rock); padding:1px 6px; border-radius:5px; color:var(--ai-deep); }
+
+  .princ { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+  .pcard { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:22px; }
+  .pcard .pn { font-family:'JetBrains Mono',monospace; color:var(--roja-deep); font-size:0.8rem; }
+  .pcard h4 { font-size:1.12rem; font-weight:600; margin:8px 0; }
+  .pcard p { font-size:0.9rem; color:var(--smoke-soft); margin:0; }
+  .pcard .map { margin-top:12px; font-size:0.82rem; color:var(--rama-deep); border-top:1px dashed var(--line); padding-top:10px; } .pcard .map b { color:var(--smoke); }
+
+  .cols { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  @media (max-width:860px){ .cols { grid-template-columns:1fr; } }
+  .feature { background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:26px; }
+  .feature.ai { border-color:#E3D4FB; background:linear-gradient(180deg,#FBF8FF,var(--paper)); }
+  .feature h3 { font-size:1.35rem; font-weight:700; margin-bottom:6px; }
+  .feature .tag { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--ai); margin-bottom:14px; display:block; }
+  .feature ul { margin:14px 0 0; padding-left:0; list-style:none; }
+  .feature li { position:relative; padding-left:22px; margin-bottom:9px; font-size:0.94rem; color:var(--smoke); }
+  .feature li::before { content:"✦"; position:absolute; left:0; color:var(--turmeric-deep); }
+
+  pre.code { background:var(--code-bg); color:#E7E3F5; border-radius:12px; padding:18px 20px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:0.78rem; line-height:1.62; margin:6px 0 14px; box-shadow:0 14px 34px -20px rgba(28,27,46,0.7); white-space:pre-wrap; }
+  pre.code .c { color:#8B86B8; } pre.code .k { color:#C792EA; } pre.code .s { color:#FFCB6B; } pre.code .f { color:#82AAFF; } pre.code .m { color:#C3E88D; }
+  .code-label { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--smoke-soft); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:5px; }
+
+  .loop { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; align-items:stretch; margin-top:8px; }
+  @media (max-width:820px){ .loop { grid-template-columns:1fr 1fr; } }
+  .loop-node { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px 12px; text-align:center; }
+  .loop-node .ic { font-size:1.7rem; } .loop-node h4 { font-size:1rem; margin:8px 0 4px; } .loop-node p { font-size:0.76rem; color:var(--smoke-soft); margin:0; line-height:1.4; }
+  .loop-node.lead { border-color:var(--ai); box-shadow:0 0 0 3px var(--ai-tint); }
+  .loop-note { text-align:center; font-size:0.82rem; color:var(--smoke-soft); margin-top:14px; font-style:italic; }
+
+  /* chat + small mocks */
+  .m-chat { display:flex; flex-direction:column; gap:7px; } .m-msg { font-size:0.84rem; padding:8px 12px; border-radius:10px; max-width:88%; line-height:1.45; } .m-msg.u { background:var(--ai); color:#fff; align-self:flex-end; border-bottom-right-radius:3px; } .m-msg.a { background:#fff; border:1px solid var(--line); color:var(--smoke); align-self:flex-start; border-bottom-left-radius:3px; } .m-msg.a .who { font-family:'JetBrains Mono',monospace; font-size:0.64rem; color:var(--ai-deep); background:var(--ai-tint); border-radius:5px; padding:2px 6px; display:inline-block; margin-bottom:5px; } .m-sug { font-size:0.74rem; color:var(--ai-deep); background:var(--ai-tint); border-radius:8px; padding:5px 9px; margin-top:5px; }
+
+  .scrape { background:#111827; border-radius:10px; padding:13px 15px; font-family:'JetBrains Mono',monospace; font-size:0.76rem; line-height:1.7; }
+  .scrape .d { color:#6EE7B7; } .scrape .w { color:#9CA3AF; }
+
+  .pb { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+  .pb-box { border:1px solid var(--line); border-radius:10px; padding:13px 15px; background:var(--white-rock-tint); }
+  .pb-box .h { font-size:0.66rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--smoke-soft); font-weight:700; margin-bottom:9px; }
+  .sw { display:inline-block; width:26px; height:26px; border-radius:7px; border:1px solid rgba(0,0,0,0.08); margin:2px; vertical-align:middle; }
+  .fontchip { font-size:0.78rem; background:var(--ai-tint); color:var(--ai-deep); border-radius:20px; padding:3px 10px; display:inline-block; margin:2px; }
+
+  .cal { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .cal .dh { font-size:0.6rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--smoke-soft); text-align:center; padding:3px 0; }
+  .cal .cell { aspect-ratio:1; border:1px solid var(--line); border-radius:6px; background:var(--paper); padding:3px; font-size:0.55rem; color:var(--smoke-soft); position:relative; }
+  .cal .cell .pin { display:block; border-radius:4px; padding:2px 3px; margin-top:2px; font-size:0.5rem; line-height:1.2; font-weight:600; }
+  .pin.edu { background:#DBEAFE; color:#1E40AF; } .pin.ins { background:#FCE7F3; color:#9D174D; } .pin.ent { background:#FEF3C7; color:#92400E; } .pin.per { background:#FEE2E2; color:#991B1B; }
+
+  .tools { display:flex; flex-wrap:wrap; gap:7px; }
+  .toolchip { font-size:0.72rem; font-family:'JetBrains Mono',monospace; border:1px solid var(--line); border-radius:8px; padding:6px 11px; background:var(--paper); color:var(--smoke); }
+  .toolchip b { color:var(--ai-deep); }
+
+  blockquote { margin:0; padding:20px 26px; border-left:4px solid var(--ai); background:var(--ai-tint); border-radius:0 12px 12px 0; font-family:'Fraunces',serif; font-size:1.2rem; font-style:italic; color:var(--ai-deep); }
+  .badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; } .badge { font-size:0.74rem; font-family:'JetBrains Mono',monospace; background:var(--paper); border:1px solid var(--line); border-radius:20px; padding:4px 12px; color:var(--smoke); }
+  footer { padding:54px 0 78px; text-align:center; } footer img { height:58px; width:auto; margin-bottom:16px; } footer p { color:var(--smoke-soft); font-size:0.9rem; }
+
+  .callout { background:var(--ai-tint); border:1px solid #E3D4FB; border-radius:16px; padding:26px 28px; }
+  .callout h3 { font-size:1.3rem; margin-bottom:8px; }
+  .callout p { color:var(--smoke); font-size:0.98rem; margin:0 0 10px; }
+  .promptbar { display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--smoke-soft); text-transform:uppercase; letter-spacing:0.06em; margin:18px 0 6px; }
+  .promptbar::before { content:"❯"; color:var(--ai); font-weight:700; }
+
+  .wordmark { font-family:'Fraunces',serif; font-weight:900; font-size:1.65rem; letter-spacing:-0.01em; line-height:1.05; color:var(--smoke); }
+  .hero.ai .wordmark { color:#fff; }
+  footer .wordmark { display:inline-block; margin-bottom:16px; color:var(--smoke); }
+
+  .video-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  @media (max-width:820px){ .video-grid { grid-template-columns:1fr; } }
+  .video-shell { margin:0; }
+  .video-frame { position:relative; width:100%; padding-top:56.25%; border-radius:16px; overflow:hidden; border:1px solid var(--line); box-shadow:0 22px 50px -24px rgba(65,65,66,0.5); background:#111827; }
+  .video-frame iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .video-shell .cap { margin:12px 0 0; }
+</style>
+</head>
+<body>
+
+<header class="hero ai">
+  <div class="glow"></div>
+  <div class="wrap-wide hero-inner">
+    <div class="brandrow">
+      <div class="wordmark">Rhea Karuturi</div>
+      <div class="b-sub">A field note from my AI workshops<br>Build a brand's whole marketing brain in 15 minutes</div>
+    </div>
+    <div class="kicker">A tool I built · and one you can build too</div>
+    <h1>An AI CMO that <em>learns your brand</em>.</h1>
+    <p class="lede">I run hands-on AI workshops for companies. The hardest idea to land is that AI marketing isn't "type a prompt, get a post" — it's <b>building reusable context once</b> so an agent can do a dozen marketing jobs well. So I built a tool that proves it: it interviews a company, structures everything it learns into a <em>brand ontology</em>, then uses that ontology to plan a month of content, design creatives across six AI tools, and tackle marketing work beyond content entirely.</p>
+    <p class="by">Built &amp; designed by <b>Rhea Karuturi</b> — CTO &amp; co-founder of Hoovu Fresh, and I teach companies to build with AI.</p>
+    <div class="ingredients">
+      <div class="ing">🎨 <b>Brand playbook</b></div>
+      <div class="ing">👤 <b>Personas</b></div>
+      <div class="ing">📡 <b>Channels</b></div>
+      <div class="ing">🪣 <b>Content buckets</b></div>
+      <div class="ing">✦ <b>Entity library</b></div>
+      <div class="ing">🎯 <b>Funnel + stack</b></div>
+    </div>
+  </div>
+</header>
+
+<!-- ───────── THE IDEA ───────── -->
+<section>
+  <div class="wrap-wide">
+    <div class="act-head">
+      <span class="act-label">The one idea</span>
+      <h2>An ontology is reusable brand context</h2>
+      <p>Most people meet AI marketing as a vending machine: prompt in, post out. This tool teaches the deeper move — invest once in a structured model of who you are, who you sell to, and how you talk, and <strong>every future task gets better and faster</strong>. That structured model is the ontology. Build it once; point it anywhere.</p>
+    </div>
+    <div class="loop">
+      <div class="loop-node lead"><div class="ic">✦</div><h4>The ontology</h4><p>Brand, personas, channels, buckets, entities</p></div>
+      <div class="loop-node"><div class="ic">🗓️</div><h4>Calendar</h4><p>A month of slots, with story arcs</p></div>
+      <div class="loop-node"><div class="ic">🎬</div><h4>Creatives</h4><p>Post-ready, across six tools</p></div>
+      <div class="loop-node"><div class="ic">🧠</div><h4>Apply</h4><p>Outreach, partnerships, retention</p></div>
+      <div class="loop-node"><div class="ic">📦</div><h4>Export</h4><p>Portable JSON + a brief for any AI</p></div>
+    </div>
+    <p class="loop-note">Everything downstream reads the same brief. Better ontology → better everything.</p>
+  </div>
+</section>
+
+<!-- ───────── WATCH IT RUN ───────── -->
+<section class="tight">
+  <div class="wrap">
+    <div class="sec-head"><div class="kicker">Watch it run</div><h2>A two-part walkthrough</h2><p>Me taking the tool end to end — first building a brand's ontology from scratch, then generating the calendar and creatives from it.</p></div>
+    <div class="video-grid">
+      <div class="video-shell">
+        <div class="video-frame"><iframe src="https://www.youtube.com/embed/dpREpgGZQ7k" title="Marketing ontology tool — Part 1" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <p class="cap">Part 1 — building the brand ontology</p>
+      </div>
+      <div class="video-shell">
+        <div class="video-frame"><iframe src="https://www.youtube.com/embed/T-gQkphfifk" title="Marketing ontology tool — Part 2" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <p class="cap">Part 2 — calendar &amp; content generation</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── WHAT IT DOES ───────── -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><div class="kicker">01 — The walkthrough</div><h2>What it does</h2><p>The whole experience is one guided conversation that gets visibly smarter about <em>this one company</em> as it goes. Seven steps to build the ontology, then four pages that put it to work.</p></div>
+    <div class="tour">
+      <span class="grp">Build the ontology · ~15 min</span>
+      <div class="step ai"><div class="dot">✦</div><h4>Website → brand playbook</h4><p>Paste a URL. The agent scrapes it live — narrating "got the logo… extracted the colors… found the fonts… collected the product shots" — and hands back an editable playbook. No site? Set it up by hand.</p></div>
+      <div class="step ai"><div class="dot">🎙</div><h4>Talk to your CMO</h4><p>A chat panel. Ramble out loud (voice input) or type. The agent parses the mess into a clean positioning writeup, reflects it back, and asks one sharp follow-up.</p></div>
+      <div class="step ai"><div class="dot">👤</div><h4>Personas</h4><p>Describe your customers; formal persona cards appear — motivations, voice, objections — all editable. The CMO pushes: "Who should be buying but isn't yet?"</p></div>
+      <div class="step ai"><div class="dot">📡</div><h4>Channels</h4><p>Toggle where you're active, or ask the CMO where you <em>should</em> be. It pre-picks and explains what to post on each.</p></div>
+      <div class="step ai"><div class="dot">🪣</div><h4>Content buckets</h4><p>Recurring rhythms — "Customer love Fridays", "Founder honesty posts" — balanced across Educate / Inspire / Entertain / Persuade. Suggested or hand-added.</p></div>
+      <div class="step"><div class="dot">🎯</div><h4>Funnel + stack</h4><p>One tap for this season's focus (awareness → retention) and the tools you already use.</p></div>
+      <div class="step ai"><div class="dot">✦</div><h4>Review — and a library builds itself</h4><p>A scoreboard of everything captured. In the background, the agent quietly assembles a <em>content library</em> of specific entities from your buckets, so posts reference real things, not vague categories.</p></div>
+      <span class="grp" style="margin-top:8px;">Put it to work</span>
+      <div class="step ai"><div class="dot">🗓️</div><h4>Generate the month</h4><p>One month of slots, color-coded by bucket, built into multi-day narrative arcs. Don't like it? Regenerate with feedback and the CMO bakes your notes in.</p></div>
+      <div class="step ai"><div class="dot">🎬</div><h4>Design the creatives</h4><p>One click turns a slot into a post-ready creative in your brand language — the agent picks the tool itself. Or compare the same brief across six AI platforms side by side.</p></div>
+      <div class="step ai"><div class="dot">🧠</div><h4>Apply it beyond content</h4><p>Point the same brain at a non-content job — a cold-outreach system, partnership targets, a retention flow — and it designs the system <em>and</em> writes a ready-to-use artifact.</p></div>
+      <div class="step"><div class="dot">📦</div><h4>Take it home</h4><p>Download the whole workspace as JSON, plus a Markdown brief you can paste into any AI tool to keep working.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- mock: CMO interview -->
+<section class="tight">
+  <div class="wrap">
+    <div class="mock">
+      <div class="mock-bar"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i><span class="t">marketing-engine · onboarding</span></div>
+      <div class="mock-body">
+        <div class="m-chat">
+          <div class="m-msg a"><span class="who">✦ AI CMO</span><br>I read your site — looks like fresh flowers for daily puja, delivered same-day. Tell me in your own words: who actually pays for this, and what makes them pick you over the corner vendor?</div>
+          <div class="m-msg u">honestly it's mostly the moms, 45 plus, they order weekly and never stop. they care that it's fresh and on time for the morning pooja…</div>
+          <div class="m-msg a"><span class="who">✦ AI CMO</span><br>That's a retention goldmine — a weekly habit with near-zero churn. I've drafted her as a persona. One push: who's the <b>harder</b> sale you wish you could win? Young professionals who'd love this but think it's their parents' thing?<div class="m-sug">💡 Suggested persona — "The reluctant inheritor", 28–35</div></div>
+        </div>
+      </div>
+    </div>
+    <p class="cap">The onboarding isn't a form — it's an interview. You can talk; it structures.</p>
+  </div>
+</section>
+
+<!-- ───────── HOW I BUILT IT ───────── -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><div class="kicker">02 — Under the hood</div><h2>How I built it</h2><p>Deliberately boring infrastructure so the intelligence could be the interesting part. No build step, no framework — just static files, a database, and one smart function.</p></div>
+    <div class="stack">
+      <div class="layer"><h4>Frontend</h4><ul><li>Plain HTML + vanilla JS, zero build step</li><li>One shared stylesheet, a small <code>MKT</code> helper for CRUD + UI</li><li>Voice input via the browser's <code>SpeechRecognition</code></li></ul></div>
+      <div class="layer"><h4>Data</h4><ul><li>Firebase Realtime Database</li><li>Every company is a <code>workspace</code> — all data scoped under it</li><li>Storage for uploaded logos &amp; assets</li></ul></div>
+      <div class="layer"><h4>Intelligence</h4><ul><li><code>Claude Sonnet</code> is the CMO brain — interview, calendar, design briefs, apply</li><li>One system prompt, fed the live workspace context every turn</li></ul></div>
+      <div class="layer"><h4>Backend</h4><ul><li>A single Cloud Function that switches on an <code>action</code></li><li>Long jobs persist results server-side, so they survive you closing the tab</li></ul></div>
+      <div class="layer"><h4>Multi-tool studio</h4><ul><li>The compare view fans the same brief out to image, video &amp; chat models</li><li>A Claude-rendered HTML slide as a never-fail fallback</li></ul></div>
+      <div class="layer"><h4>Discipline</h4><ul><li>Live progress bars on every slow step</li><li>Creatives auto-save the moment they're made</li><li>Everything stays editable, forever</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- mock: brand playbook + scrape feed -->
+<section class="tight">
+  <div class="wrap">
+    <div class="mock">
+      <div class="mock-bar"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i><span class="t">marketing-engine · brand playbook</span></div>
+      <div class="mock-body">
+        <div class="scrape" style="margin-bottom:14px;">
+          <div class="d">✓ Homepage loaded</div>
+          <div class="d">✓ Got the logo</div>
+          <div class="d">✓ Extracted brand colors — #2D5016 #C64A1F #F6E7C1</div>
+          <div class="d">✓ Found fonts — Fraunces, Inter</div>
+          <div class="d">✓ Collected 6 product images</div>
+          <div class="w">· Reading the about page…</div>
+        </div>
+        <div class="pb">
+          <div class="pb-box"><div class="h">Colors</div><span class="sw" style="background:#2D5016"></span><span class="sw" style="background:#C64A1F"></span><span class="sw" style="background:#F6E7C1"></span><span class="sw" style="background:#7C3AED"></span></div>
+          <div class="pb-box"><div class="h">Fonts</div><span class="fontchip">Fraunces</span><span class="fontchip">Inter</span></div>
+          <div class="pb-box"><div class="h">Tagline</div><span style="font-size:0.85rem;color:var(--smoke);">Fresh flowers for every morning ritual.</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="cap">The scrape narrates itself, then hands back a playbook you can edit — add a colour, swap a font, upload your own assets.</p>
+  </div>
+</section>
+
+<!-- ───────── THE WOW MOMENTS ───────── -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><div class="kicker">03 — The moments that land</div><h2>Where skeptics turn</h2><p>Three beats do the convincing in a workshop: the agent <em>understanding</em> their brand, the leap from idea to finished creative, and the realisation that this context is portable.</p></div>
+    <div class="cols">
+      <div class="feature ai"><span class="tag">Understand</span><h3>It sees the company the way they wish their agency did</h3><ul><li>Parses a rambling voice answer into clean structure</li><li>Surfaces a persona or angle they hadn't named</li><li>Reflects their brand back so it feels known, not processed</li></ul></div>
+      <div class="feature ai"><span class="tag">Automate</span><h3>From a month of slots to a finished post in one click</h3><ul><li>The agent picks the right tool for the format itself</li><li>Reels come back with voiceover and captions baked in</li><li>Statics use the brand palette and fonts automatically</li></ul></div>
+      <div class="feature ai"><span class="tag">Compare</span><h3>One idea, six tools, six different outputs</h3><ul><li>Nano Banana, Veo, Higgsfield, HeyGen, Claude, ChatGPT</li><li>Each gets a brief tuned to its strengths</li><li>Video tools get a real shot-by-shot script, not a vibe</li></ul></div>
+      <div class="feature ai"><span class="tag">Port</span><h3>The same brain, pointed at a different job</h3><ul><li>Proposes a non-content play specific to the company</li><li>Designs the system <em>and</em> writes the first artifact</li><li>Shows exactly which part of the ontology shaped it</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- mock: calendar + tools -->
+<section class="tight">
+  <div class="wrap">
+    <div class="mock">
+      <div class="mock-bar"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i><span class="t">marketing-engine · calendar</span></div>
+      <div class="mock-body">
+        <div class="cal">
+          <div class="dh">M</div><div class="dh">T</div><div class="dh">W</div><div class="dh">T</div><div class="dh">F</div><div class="dh">S</div><div class="dh">S</div>
+          <div class="cell">1<span class="pin edu">Reel · how-to</span></div>
+          <div class="cell">2</div>
+          <div class="cell">3<span class="pin ins">Story · ritual</span></div>
+          <div class="cell">4</div>
+          <div class="cell">5<span class="pin per">Carousel · offer</span></div>
+          <div class="cell">6<span class="pin ent">Post · BTS</span></div>
+          <div class="cell">7</div>
+          <div class="cell">8<span class="pin edu">Reel · how-to</span></div>
+          <div class="cell">9</div>
+          <div class="cell">10<span class="pin ins">Reel · arc 1/3</span></div>
+          <div class="cell">11<span class="pin ins">Reel · arc 2/3</span></div>
+          <div class="cell">12<span class="pin ins">Reel · arc 3/3</span></div>
+          <div class="cell">13</div>
+          <div class="cell">14<span class="pin per">Post · review</span></div>
+        </div>
+        <div class="tools" style="margin-top:16px;">
+          <span class="toolchip">🍌 <b>Nano Banana</b> · image</span>
+          <span class="toolchip">🎬 <b>Veo</b> · video</span>
+          <span class="toolchip">🎥 <b>Higgsfield</b> · motion</span>
+          <span class="toolchip">🗣 <b>HeyGen</b> · avatar</span>
+          <span class="toolchip">✦ <b>Claude</b> · poster</span>
+          <span class="toolchip">💬 <b>ChatGPT</b> · captions</span>
+        </div>
+      </div>
+    </div>
+    <p class="cap">A month with real story arcs (not random posts), and the studio that turns any slot into finished work.</p>
+  </div>
+</section>
+
+<!-- ───────── DESIGN PRINCIPLES ───────── -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><div class="kicker">04 — The design thinking</div><h2>Principles I kept coming back to</h2></div>
+    <div class="princ">
+      <div class="pcard"><div class="pn">P01</div><h4>Context once, reuse everywhere</h4><p>The ontology is the product. Features are just lenses on it.</p><div class="map"><b>Here:</b> calendar, design and apply all read one brief object.</div></div>
+      <div class="pcard"><div class="pn">P02</div><h4>Talk, don't fill forms</h4><p>People describe their business better out loud than in fields.</p><div class="map"><b>Here:</b> voice input + an agent that structures the mess.</div></div>
+      <div class="pcard"><div class="pn">P03</div><h4>Show the work</h4><p>Invisible AI feels like nothing happened. Narrate it.</p><div class="map"><b>Here:</b> the scrape feed and live progress bars.</div></div>
+      <div class="pcard"><div class="pn">P04</div><h4>Never lose what they made</h4><p>A workshop demo can't depend on remembering to save.</p><div class="map"><b>Here:</b> creatives auto-persist; jobs survive a closed tab.</div></div>
+      <div class="pcard"><div class="pn">P05</div><h4>The agent has a point of view</h4><p>A CMO that only takes dictation is a clipboard, not a hire.</p><div class="map"><b>Here:</b> it pushes back and suggests what you missed.</div></div>
+      <div class="pcard"><div class="pn">P06</div><h4>End with something portable</h4><p>The value should outlive the session.</p><div class="map"><b>Here:</b> export a JSON + a brief any AI tool can read.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── BUILD IT YOURSELF ───────── -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><div class="kicker">05 — Build your own</div><h2>The prompt I'd hand you</h2><p>The best way to understand this is to build a version yourself. Open <a href="https://claude.com/claude-code">Claude Code</a> in an empty folder and paste the prompt below. It describes the architecture, the ontology data model, and the flow — enough for Claude to scaffold a working version you can shape from there. Swap in your own API keys; never commit them.</p></div>
+
+    <div class="callout">
+      <h3>Before you paste</h3>
+      <p>You'll need a <b>Firebase project</b> (Auth + Realtime Database + Storage + Cloud Functions), an <b>Anthropic API key</b> for the agent, and — optionally, for live media — keys for whichever of Gemini / OpenAI / HeyGen you want to wire up. The prompt treats all of these as placeholders.</p>
+      <p style="margin:0;"><b>One honest note:</b> media models cost real money per render and most need billing enabled. Start with text + a Claude-rendered HTML slide (both cheap and reliable), then add image/video tools once the core works.</p>
+    </div>
+
+    <div class="promptbar">paste into Claude Code</div>
+    <pre class="code"><span class="c"># Build a multi-tenant "AI CMO" marketing ontology tool.</span>
+
+<span class="k">GOAL</span>
+A web app where a company signs in, spends ~15 guided minutes letting an AI
+agent learn their brand, and ends with a reusable "brand ontology" the same
+agent then uses to generate a content calendar, design social creatives, and
+propose non-content marketing systems. Built for live workshops: warm, calm,
+hand-holding, with time hints and visible progress on every slow step.
+
+<span class="k">STACK</span> (match exactly — no frameworks, no build step)
+- Frontend: vanilla HTML + JS, one shared CSS file. Pages are plain .html.
+- Auth: Firebase Auth (email/password + Google).
+- DB: Firebase Realtime Database (NOT Firestore). v8 client SDK from CDN.
+- Storage: Firebase Storage for uploaded logos/assets.
+- Functions: ONE Firebase Cloud Function (v2, Node 20) that switches on
+  payload.action — keeps the deploy unit tiny.
+- AI: Claude (claude-sonnet-4 family) for ALL text/reasoning. Read the key from
+  an env/secret, never hardcode. Optional media: Gemini image, HeyGen video.
+
+<span class="k">DATA MODEL</span> — everything scoped by workspace (one company = one workspace)
+Workspaces/{id}/
+  meta: { name, workshop_stage }
+  intake: { writeup, customer_types, funnel_focus, marketing_stack, brand:{logo,palette,fonts,assets,tagline} }
+  personas/{slug}        # name, age_range, motivations[], pain_points[], voice_to_use, sample_objection
+  channels/{slug}        # platform, handle_url, what_we_post, active
+  buckets/{slug}         # name, function (Educate|Inspire|Entertain|Persuade), frequency, description
+  entityCollections/{slug} + entities/{collection}/{slug}   # the content library
+  calendar/{YYYY-MM}/{slot}   # date, platform, format, hook, angle, persona, bucket, arc
+  creatives/{slot}            # the designed outputs
+
+<span class="k">THE AGENT</span> — an "AI CMO" with a real marketing brain
+Every AI call is fed a compact "company brief" assembled from the workspace.
+A single conversational action should: (1) parse messy/voice input into clean
+structured data for the current step, (2) reflect it back, (3) ask ONE sharp
+follow-up when something's vague, (4) proactively suggest what's missing.
+Tone: warm, specific, never generic. It should feel like it's getting smarter
+about THIS company as the session goes.
+
+<span class="k">ONBOARDING</span> — one page, 7 collapsing steps, a progress rail, autosave
+1. Website -&gt; brand playbook. A scrapeWebsite action fetches the homepage
+   (use cheerio), pulls logo/colors/fonts/product images, and writes live
+   progress to the DB so the UI can show "got the logo… extracted colors…".
+   Result is an EDITABLE playbook; allow manual uploads too.
+2. Company writeup — a chat panel with voice input (browser SpeechRecognition);
+   the agent turns the ramble into a positioning paragraph.
+3. Personas — interview -&gt; editable persona cards.
+4. Channels — toggle grid + an "where should we focus?" agent suggestion.
+5. Content buckets — agent proposes a balanced mix; allow manual add.
+6. Funnel focus + current tools.
+7. Review — and silently generate an entity "content library" from the buckets.
+
+<span class="k">OUTPUTS</span>
+- Ontology editor: tabbed view of everything above, all editable.
+- Calendar: generate ONE month of slots from the ontology, with narrative arcs
+  and bucket balance. IMPORTANT: set the model's max_tokens high (~20k) so the
+  slot array doesn't truncate, and write a loose JSON parser with a salvage
+  fallback for truncated responses. Let the user regenerate WITH feedback.
+  Persist the result server-side + a job marker so it survives a closed tab,
+  and show a progress bar.
+- Design studio: pick a slot, then "one click" -&gt; the agent picks the right
+  tool for the format and returns a post-ready creative (caption + media;
+  voiceover for video). Also a "compare 6 tools" view: same brief, tailored
+  prompt per tool (image / video / chat). Always offer a Claude-rendered
+  HTML-slide fallback so it never hard-fails. Auto-save creatives; cap at 3.
+- Apply page: point the same ontology at a NON-content task (cold outreach,
+  partnerships, retention). Return a system design + a ready-to-use artifact
+  + which ontology pieces shaped it.
+- Export: download the whole workspace as JSON + a Markdown "agent brief"
+  the user can paste into any AI tool. Stamp it schema_version: 1.
+
+<span class="k">WORKSHOP UX RULES</span>
+Time hints ("~90 sec"), demo-quality placeholders everywhere, friendly errors
+(never raw stack traces), a visible "where you are / what's next" strip, and a
+moment of payoff at export. Build it phase by phase: foundation + auth + one
+AI action first, deploy, then layer the rest.
+
+Start by scaffolding the Firebase project config, the shared CSS, the auth
+gate, the workspace picker, and the Cloud Function skeleton with the
+scrapeWebsite + agent-chat actions working. Then we'll build outward.</pre>
+
+    <div class="prose" style="max-width:780px;margin-top:8px;">
+      <p>That's the real shape of it. The thing that makes it sing isn't any single feature — it's that one well-built context object quietly powers all of them. Get the ontology right and the calendar, the creatives, and the cold-outreach script all inherit the same taste.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── CLOSE ───────── -->
+<section style="border-bottom:none;">
+  <div class="wrap">
+    <blockquote>Teach the AI your brand once. Then watch it do a dozen jobs in your voice.</blockquote>
+    <div class="prose" style="max-width:780px;margin-top:26px;">
+      <p>I built this to make one idea undeniable in a room full of skeptics: the leverage in AI isn't the prompt, it's the context you bring to it. A company that spends fifteen minutes building a real ontology walks out with a month of content, finished creatives, and a cold-outreach system — all of it sounding like them. And because it exports to a plain brief, the work doesn't die when the session ends. It's the start of how they'll use AI for everything after.</p>
+    </div>
+    <div class="badges">
+      <span class="badge">Vanilla JS</span>
+      <span class="badge">Firebase RTDB</span>
+      <span class="badge">Cloud Functions</span>
+      <span class="badge">Claude Sonnet</span>
+      <span class="badge">Multi-model studio</span>
+      <span class="badge">Voice input</span>
+      <span class="badge">Zero build step</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="wordmark wordmark-foot">Rhea Karuturi</div>
+    <p>An AI CMO that learns your brand — and a prompt to build your own.</p>
+    <p style="margin-top:14px;">Written by Rhea Karuturi</p>
+  </div>
+</footer>
+
+</body>
+</html>

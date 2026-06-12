@@ -418,6 +418,7 @@ em { font-style: italic; }
 .pc--hoovu { --c-bg:#fbfaf4; --c-ink:#2b2b2c; --c-dim:#696b6d; --c-accent:#f7941d; --c-accent-ink:#2b2b2c; --c-border:#dcd6c4; --c-display:'Fraunces',Georgia,serif; --c-body:'Inter',system-ui,sans-serif; --c-mono:'JetBrains Mono',monospace; }
 .pc--vanaja { --c-bg:#fbfaf4; --c-ink:#2b2b2c; --c-dim:#696b6d; --c-accent:#57a97e; --c-accent-ink:#fff; --c-border:#dcd6c4; --c-display:'Fraunces',Georgia,serif; --c-body:'Inter',system-ui,sans-serif; --c-mono:'JetBrains Mono',monospace; }
 .pc--agents { --c-bg:#fbfaf4; --c-ink:#2b2b2c; --c-dim:#696b6d; --c-accent:#7c3aed; --c-accent-ink:#fff; --c-border:#dcd6c4; --c-display:'Fraunces',Georgia,serif; --c-body:'Inter',system-ui,sans-serif; --c-mono:'JetBrains Mono',monospace; }
+.pc--cmo { --c-bg:#1a1330; --c-ink:#ffffff; --c-dim:#c9bee8; --c-accent:#febd11; --c-accent-ink:#1a1330; --c-border:rgba(255,255,255,0.16); --c-display:'Fraunces',Georgia,serif; --c-body:'Inter',system-ui,sans-serif; --c-mono:'JetBrains Mono',monospace; --c-shadow:rgba(0,0,0,0.6); --c-glow:rgba(124,58,237,0.28); }
 
 /* ── TRUST chip + the throughline ── */
 .trust-chip {
