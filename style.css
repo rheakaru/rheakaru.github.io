@@ -697,6 +697,7 @@ em { font-style: italic; }
 .session-form input[type="email"],
 .session-form input[type="url"],
 .session-form input[type="date"],
+.session-form select,
 .session-form textarea {
   display: block;
   width: 100%;
@@ -711,6 +712,13 @@ em { font-style: italic; }
   -webkit-appearance: none;
   appearance: none;
 }
+.session-form select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238a8278' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 12px 8px;
+  padding-right: 2.2rem;
+}
 .session-form textarea {
   resize: vertical;
   min-height: 3.4rem;
@@ -723,10 +731,12 @@ em { font-style: italic; }
   opacity: 0.7;
 }
 .session-form input:hover,
+.session-form select:hover,
 .session-form textarea:hover {
   border-color: var(--ink-soft);
 }
 .session-form input:focus,
+.session-form select:focus,
 .session-form textarea:focus {
   outline: none;
   border-color: var(--accent);
